@@ -1,0 +1,1 @@
+C:\php-5.3.29\php.exe -f "C:\xampp\htdocs\Conversor\main\index.php" -- -teste
