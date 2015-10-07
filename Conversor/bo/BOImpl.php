@@ -4,8 +4,8 @@ class BOImpl implements IBO {
 	
 	protected $dao;
 	
-	public function  __construct($schemaCompany){
-		$this->dao = new DAOImpl($schemaCompany);
+	public function  __construct($dbCompany){
+		$this->dao = new DAOImpl($dbCompany);
 	}
 	
 	public  function  __destruct(){

@@ -4,8 +4,8 @@ class SequenceDAOImpl extends DAOImpl {
 	
 	
 	
-	public function __construct($schemaCompany, $schemaParameter) {
-		parent::__construct ( $schemaCompany );
+	public function __construct($dbCompany, $schemaParameter) {
+		parent::__construct ( $dbCompany );
 		$this->setQuery($schemaParameter);
 	}
 	

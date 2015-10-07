@@ -328,7 +328,7 @@ select distinct * from information_schema.columns
  order by 1
 
 
-select
+select distinct 
 tc.table_name, 
 tc.constraint_name,  
 tc.constraint_type,  
@@ -354,7 +354,9 @@ and rc.unique_constraint_schema = ccu.constraint_schema
 and rc.unique_constraint_name = ccu.constraint_name 
 left join pg_constraint c 
 on tc.constraint_name = c.conname 
-where tc.table_schema = 'public'
+where upper(tc.constraint_name) not like '%NOT_NULL%'
+and tc.table_schema = 'public'
+and tc.table_name = 'tabela3'
 
 
  

@@ -1,0 +1,56 @@
+DAR UMA OLHADA
+http://www.alberton.info/postgresql_meta_info.html#.Vfl67BHFTGc
+
+
+9.8. Data Type Formatting Functions
+
+http://www.postgresql.org/docs/8.2/static/functions-formatting.html
+
+Table 9-20. Formatting Functions
+
+Function	Return Type	Description	Example
+to_char(timestamp, text)	text	convert time stamp to string	to_char(current_timestamp, 'HH12:MI:SS')
+to_char(interval, text)	text	convert interval to string	to_char(interval '15h 2m 12s', 'HH24:MI:SS')
+to_char(int, text)	text	convert integer to string	to_char(125, '999')
+to_char(double precision, text)	text	convert real/double precision to string	to_char(125.8::real, '999D9')
+to_char(numeric, text)	text	convert numeric to string	to_char(-125.8, '999D99S')
+to_date(text, text)	date	convert string to date	to_date('05 Dec 2000', 'DD Mon YYYY')
+to_number(text, text)	numeric	convert string to numeric	to_number('12,454.8-', '99G999D9S')
+to_timestamp(text, text)	timestamp with time zone	convert string to time stamp	to_timestamp('05 Dec 2000', 'DD Mon YYYY')
+to_timestamp(double precision)	timestamp with time zone	convert UNIX epoch to time stamp	to_timestamp(200120400)
+In an output template string (for to_char), there are certain patterns that are recognized and replaced with appropriately-formatted data from the value to be formatted. Any text that is not a template pattern is simply copied verbatim. Similarly, in an input template string (for anything but to_char), template patterns identify the parts of the input data string to be looked at and the values to be found there.
+
+--------------------------------------------------------------------
+
+HOW TO CONVERT A TABLE COLUMN TO ANOTHER DATA TYPE
+
+http://www.postgresonline.com/journal/archives/29-How-to-convert-a-table-column-to-another-data-type.html
+
+ALTER TABLE sometable 
+    ALTER COLUMN somecolumn TYPE new_data_type 
+    USING some_function_call_to_cast(somecolumn);
+The USING syntax is particularly handy because it allows you to control how casts are done. Let us suppose you have a text or varchar field that you realize later on should have been an integer and its padded on top of that because it comes from some stupid DBF or mainframe import.
+
+So now you have this field called - fraddl which is of type CHAR(10). You want to change it to an integer. There are two issues you run into.
+If you do something like
+ALTER TABLE ma_tiger ALTER COLUMN fraddl TYPE integer
+You get this rather unhelpful message: 
+column "fraddl" cannot be cast to type "pg_catalog.int4"
+
+Even if the above did work, you've got some stuff in there you don't really care about - letters and so forth or an empty string. So you want to control how the cast is done anyway
+To resolve this issue - lets suppose we write a simple function like this which takes a string value and if it looks like a number, it converts it to a number otherwise it just returns NULL:
+
+
+CREATE OR REPLACE FUNCTION pc_chartoint(chartoconvert character varying)
+  RETURNS integer AS
+$BODY$
+SELECT CASE WHEN trim($1) SIMILAR TO '[0-9]+' 
+        THEN CAST(trim($1) AS integer) 
+    ELSE NULL END;
+
+$BODY$
+  LANGUAGE 'sql' IMMUTABLE STRICT;
+
+Now with the USING syntax, we can solve this annoying issue with this command.
+
+ALTER TABLE ma_tiger ALTER COLUMN fraddl TYPE integer USING pc_chartoint(fraddl);

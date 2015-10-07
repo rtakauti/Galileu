@@ -11,33 +11,44 @@ class ColunaBO extends BOImpl{
 	
 	protected  $dao;
 	private $estrutura;
+	private $fase;
 	
-	
-	public function __construct($schemaCompany, $schemaParameter, $tableParameter, $sequenceParameter) {
-		$this->dao = new ColunaDAOImpl($schemaCompany, $schemaParameter, $tableParameter);
+	public function __construct($dbCompany, $schemaParameter, $tableParameter, $sequenceParameter, $fase) {
+		$this->dao = new ColunaDAOImpl($dbCompany, $schemaParameter, $tableParameter);
 		$this->estrutura[EstruturaQuery::SEQUENCE] = $sequenceParameter;
 		$this->estrutura[EstruturaQuery::TABELA] = $tableParameter;
 		$this->estrutura[EstruturaQuery::SCHEMA] = $schemaParameter;
-		$this->estrutura[EstruturaQuery::COMPANY] = $schemaCompany;
+		$this->estrutura[EstruturaQuery::COMPANY] = $dbCompany;
+		$this->fase = $fase;
 	}
 
-	public function createColumn() {
-		$sequence = $this->estrutura[EstruturaQuery::SEQUENCE];
-		$tabela = $this->estrutura[EstruturaQuery::TABELA];
-		$schema = $this->estrutura[EstruturaQuery::SCHEMA];
-		$empresa = $this->estrutura[EstruturaQuery::COMPANY];
-		$fase = FaseQuery::CREATE;
-		$colunas =  $this->diff_dev_homologQuery();
+	public function dropColumn(){
+		$tabela = $this->estrutura [EstruturaQuery::TABELA];
+		$colunas = $this->diff_homolog_devQuery();
 		$string = "";
-		if(!empty($colunas)){
-			foreach ($colunas as $coluna) {
-				$propriedade = new PropriedadeBO($empresa, $schema, $tabela, $coluna, $sequence, $fase);
-				$string .= "\t".$coluna." ".$propriedade->createProperty().",\n";
+		if (! empty ( $colunas )) {
+			foreach ( $colunas as $coluna ) {
+				$string .= "ALTER TABLE $tabela DROP COLUMN $coluna;\n";
 			}
-			$string = substr($string, 0, -2);
-			return $string;
 		}
-		return ;
+		return $string;
+	}
+	
+	public function createColumn() {
+		$sequence = $this->estrutura [EstruturaQuery::SEQUENCE];
+		$tabela = $this->estrutura [EstruturaQuery::TABELA];
+		$schema = $this->estrutura [EstruturaQuery::SCHEMA];
+		$empresa = $this->estrutura [EstruturaQuery::COMPANY];
+		$fase = $this->fase;
+		$colunas = $this->diff_dev_homologQuery ();
+		$string = "";
+		if (! empty ( $colunas )) {
+			foreach ( $colunas as $coluna ) {
+				$propriedade = new PropriedadeBO ( $empresa, $schema, $tabela, $coluna, $sequence, $fase );
+				$string .= "\t" . $coluna . " " . $propriedade->constructProperty () . ",\n";
+			}
+		}
+		return $string;
 	}
 	
 	

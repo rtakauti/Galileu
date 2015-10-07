@@ -9,14 +9,14 @@ class Saida {
 	private $cmd;
 	private $path;
 	
-	public function __construct($schemaCompany, $cmd) {
+	public function __construct($dbCompany, $cmd) {
 		$this->cmd = $cmd;
 		date_default_timezone_set('America/Sao_Paulo');
 		try {
 			$config = parse_ini_file ( __DIR__."/../connection/config/config.ini", true );
-			$this->homolog = $config [$schemaCompany] ['homolog'];
-			$this->dev = $config [$schemaCompany] ['dev'];
-			$this->path = __DIR__."/../scripts/".$schemaCompany.".".date('d').".".date('m').".".date('Y');
+			$this->homolog = $config [$dbCompany] ['homolog'];
+			$this->dev = $config [$dbCompany] ['dev'];
+			$this->path = __DIR__."/../scripts/".$dbCompany.".".date('d').".".date('m').".".date('Y');
 			if (!is_dir ( $this->path )) {
 				mkdir ( $this->path, 0777 );
 			}

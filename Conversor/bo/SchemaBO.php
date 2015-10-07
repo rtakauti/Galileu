@@ -11,9 +11,9 @@ class SchemaBO extends BOImpl{
 	protected  $dao;
 	private $estrutura;
 	
-	public function __construct($schemaCompany){
-		$this->dao = new SchemaDAOImpl($schemaCompany);
-		$this->estrutura[EstruturaQuery::COMPANY] = $schemaCompany;
+	public function __construct($dbCompany){
+		$this->dao = new SchemaDAOImpl($dbCompany);
+		$this->estrutura[EstruturaQuery::COMPANY] = $dbCompany;
 	}
 	
 	

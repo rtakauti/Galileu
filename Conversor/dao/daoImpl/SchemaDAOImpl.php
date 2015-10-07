@@ -1,8 +1,8 @@
 <?php
 include_once realpath(__DIR__.'/../DAOImpl.php');
 class SchemaDAOImpl extends DAOImpl {
-	public function __construct($schemaCompany) {
-		parent::__construct ( $schemaCompany );
+	public function __construct($dbCompany) {
+		parent::__construct ( $dbCompany );
 		$this->setQuery ();
 	}
 	

@@ -1,9 +1,9 @@
 <?php
 
-include_once __DIR__ .'/../enum/FaseQuery.php';
-include_once __DIR__.'/../enum/EstruturaQuery.php';
-include_once __DIR__ .'/../bo/sequence/GerenciadorSequence.php';
-include_once 'IPropriedade.php';
+include_once realpath(__DIR__ .'/../../enum/FaseQuery.php');
+include_once realpath(__DIR__.'/../../enum/EstruturaQuery.php');
+include_once realpath(__DIR__ .'/../../bo/sequence/GerenciadorSequence.php');
+include_once realpath(__DIR__.'/../IPropriedade.php');
 
 class TipoDadoTO implements IPropriedade{
 

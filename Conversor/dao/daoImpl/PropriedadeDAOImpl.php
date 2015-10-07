@@ -4,8 +4,8 @@ include_once realpath ( __DIR__ . '/../../enum/FaseQuery.php' );
 
 class PropriedadeDAOImpl extends DAOImpl {
 	
-	public function __construct($schemaCompany, $schemaParameter, $tableParameter, $columnParameter, $fase) {
-		parent::__construct ( $schemaCompany );
+	public function __construct($dbCompany, $schemaParameter, $tableParameter, $columnParameter, $fase) {
+		parent::__construct ( $dbCompany );
 		$this->setQuery ( $schemaParameter, $tableParameter, $columnParameter, $fase );
 	}
 	
@@ -20,9 +20,9 @@ class PropriedadeDAOImpl extends DAOImpl {
 				$query .= " numeric_scale	, ";
 				$query .= " character_maximum_length	, ";
 				$query .= " datetime_precision	, ";
+				$query .= " interval_type	, ";
 				$query .= " is_nullable	, ";
-				$query .= " column_default	, ";
-				$query .= " interval_type	 ";
+				$query .= " column_default	 ";
 				$query .= " from information_schema.columns ";
 				$query .= " where table_schema = '{$schemaParameter}' ";
 				$query .= " and table_name = '{$tableParameter}' ";

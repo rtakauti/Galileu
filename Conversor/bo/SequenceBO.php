@@ -2,15 +2,15 @@
 include_once __DIR__.'/../dao/daoImpl/SequenceDAOImpl.php';
 include_once __DIR__.'/../enum/SchemasCompany.php';
 include_once __DIR__.'/../enum/SchemaType.php';
-include_once '/sequence/GerenciadorSequence.php';
+include_once 'sequence/GerenciadorSequence.php';
 include_once 'BOImpl.php';
 
 class SequenceBO extends BOImpl{
 	
 protected  $dao;
 	
-	public function __construct($schemaCompany, $schemaParameter){
-		$this->dao = new SequenceDAOImpl($schemaCompany, $schemaParameter);
+	public function __construct($dbCompany, $schemaParameter){
+		$this->dao = new SequenceDAOImpl($dbCompany, $schemaParameter);
 		$this->resetSeqGerenciamento();
 		$this->cargaSeqGerenciamento();
 	}

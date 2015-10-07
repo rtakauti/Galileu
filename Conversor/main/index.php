@@ -35,9 +35,11 @@ $saida->gravar ( $schema->dropSchema () );
 $saida->gravar($schema->createSchema());
 $saida->gravar($schema->alterSchema());
 
+//$constraint = new ConstraintBO(SchemasCompany::TESTE, 'public', 'tabela3', FaseQuery::CREATE);
+
 echo "<pre>";
-//print_r ( GerenciadorSequence::getCriados() );
-print_r($schema->intersect_homolog_devQuery());
+//print_r ( $constraint->createConstraint() );
+//print_r($schema->intersect_homolog_devQuery());
 echo "</pre>";
 
 

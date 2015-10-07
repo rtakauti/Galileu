@@ -2,5 +2,5 @@
 
 interface IPropriedade{
 	
-	function retorna($valor,$fase,$condicao,$coluna);
+	function retorna($valor,$fase,$condicao,$estrutura);
 }

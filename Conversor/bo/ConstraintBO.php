@@ -1,51 +1,41 @@
 <?php
-include_once __DIR__.'/../dao/daoImpl/ConstraintDAOImpl.php';
-include_once __DIR__.'/../enum/SchemasCompany.php';
-include_once __DIR__.'/../enum/SchemaType.php';
+include_once __DIR__ . '/../dao/daoImpl/ConstraintDAOImpl.php';
+include_once realpath ( __DIR__ . '/../enum/SchemasCompany.php' );
+include_once realpath ( __DIR__ . '/../enum/SchemaType.php' );
+include_once realpath ( __DIR__ . '/../enum/EstruturaQuery.php' );
+include_once realpath ( __DIR__ . '/../enum/FaseQuery.php' );
 include_once 'BOImpl.php';
-
-class ConstraintBO extends BOImpl{
-	
+include_once 'RestricaoBO.php';
+class ConstraintBO extends BOImpl {
 	protected $dao;
-	private $table;
-	
-	
-	public function __construct($schemaCompany, $queryParameter){
-		$this->dao = new ConstraintDAOImpl($schemaCompany, $queryParameter);
-		$this->table = $queryParameter;
+	protected $estrutura;
+	protected $fase;
+	public function __construct($dbCompany, $schemaParameter, $tableParameter, $fase) {
+		$this->dao = new ConstraintDAOImpl ( $dbCompany, $schemaParameter, $tableParameter, $fase );
+		$this->estrutura [EstruturaQuery::TABELA] = $tableParameter;
+		$this->estrutura [EstruturaQuery::SCHEMA] = $schemaParameter;
+		$this->estrutura [EstruturaQuery::COMPANY] = $dbCompany;
+		$this->fase = $fase;
 	}
-	
-	public function dropConstraintHomolog(){ 
-		if (isset ( $this->dao->arrayHomolog ) && isset ( $this->dao->arrayDev )) {
-			$array = array_diff_assoc ( $this->dao->arrayHomolog, $this->dao->arrayDev );
-			ksort ( $array );
-			$array = array_keys ( $array );
-			$string = "\n\n------ DROP DE CONSTRAINTS ------";
-			foreach ( $array as  $value ) {
-				$string .= "\nALTER TABLE {$this->table} DROP CONSTRAINT $value;";
+	public function createConstraint() {
+		$fase = FaseQuery::CREATE;
+		$tabela = $this->estrutura [EstruturaQuery::TABELA];
+		$schema = $this->estrutura [EstruturaQuery::SCHEMA];
+		$empresa = $this->estrutura [EstruturaQuery::COMPANY];
+		$constraints = $this->dao->restricao ( SchemaType::HOMOLOG );
+		$string = "";
+		if (! empty ( $constraints )) {
+			foreach ( $constraints as $nameConstraint => $constraint ) {
+				$restricao = new RestricaoBO ( $constraint, $fase );
+				$string .= "CONSTRAINT $nameConstraint " . $restricao->constructConstraint () . ",\n";
 			}
-			return $string;
 		}
+		// return $constraints;
+		return $string;
 	}
-	
-	public function addConstraintHomolog(){
-		if (isset ( $this->dao->arrayHomolog ) && isset ( $this->dao->arrayDev )) {
-			$array = array_diff_assoc ( $this->dao->arrayDev, $this->dao->arrayHomolog );
-			ksort ( $array );
-			$array = array_keys ( $array );
-			$string = "\n\n------ ADD DE CONSTRAINTS ------";
-			foreach ( $array as  $value ) {
-				$string .= "\nALTER TABLE {$this->table} ADD CONSTRAINT $value;";
-			}
-			return $string;
-		}
-	}
-	
-	public function arrayHomolog(){
-		return $this->dao->arrayHomolog;
-	}
-	
-	public function arrayDev(){
-		return $this->dao->arrayDev;
+	public function homolog() {
+		return $this->dao->restricao ( SchemaType::HOMOLOG );
 	}
 }
+
+

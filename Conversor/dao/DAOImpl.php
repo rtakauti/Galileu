@@ -6,8 +6,8 @@ class DAOImpl implements IDAO {
 	protected $conns;
 	protected $query;
 	
-	public function __construct($schemaCompany) {
-		$this->conns = Connection::getInstances ( $schemaCompany );
+	public function __construct($dbCompany) {
+		$this->conns = Connection::getInstances ( $dbCompany );
 	}
 	
 	/**
@@ -53,6 +53,7 @@ class DAOImpl implements IDAO {
 	public function queryAllAssoc($schemaType) {
 		$find = $this->conns [$schemaType]->prepare ( $this->query );
 		$find->execute ();
+		$resultado = array();
 		while ($rst = $find->fetch ( PDO::FETCH_ASSOC )){
 			$resultado[]=$rst;
 		}

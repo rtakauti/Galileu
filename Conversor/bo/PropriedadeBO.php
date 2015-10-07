@@ -4,18 +4,18 @@ include_once realpath (__DIR__ . '/../enum/SchemasCompany.php');
 include_once realpath (__DIR__ . '/../enum/SchemaType.php');
 include_once realpath (__DIR__ . '/../enum/FaseQuery.php');
 include_once realpath (__DIR__ . '/../enum/EstruturaQuery.php');
-include_once 'BOImpl.php';
 include_once realpath (__DIR__ .'/../to/GeradorPropriedades.php');
-include_once realpath (__DIR__ .'/../to/MaximoCharTO.php');
-include_once realpath (__DIR__ .'/../to/NomeUdtTO.php');
-include_once realpath (__DIR__ .'/../to/NuloTO.php');
-include_once realpath (__DIR__ .'/../to/PadraoTO.php');
-include_once realpath (__DIR__ .'/../to/PrecisaoMantissaTO.php');
-include_once realpath (__DIR__ .'/../to/PrecisaoNumericaTO.php');
-include_once realpath (__DIR__ .'/../to/PrecisaoDataTO.php');
-include_once realpath (__DIR__ .'/../to/TipoDadoTO.php');
-include_once realpath (__DIR__ .'/../to/TipoIntervaloTO.php');
-include_once '/sequence/GerenciadorSequence.php';
+include_once realpath (__DIR__ .'/../to/propriedade/MaximoCharTO.php');
+include_once realpath (__DIR__ .'/../to/propriedade/NomeUdtTO.php');
+include_once realpath (__DIR__ .'/../to/propriedade/NuloTO.php');
+include_once realpath (__DIR__ .'/../to/propriedade/PadraoTO.php');
+include_once realpath (__DIR__ .'/../to/propriedade/PrecisaoMantissaTO.php');
+include_once realpath (__DIR__ .'/../to/propriedade/PrecisaoNumericaTO.php');
+include_once realpath (__DIR__ .'/../to/propriedade/PrecisaoDataTO.php');
+include_once realpath (__DIR__ .'/../to/propriedade/TipoDadoTO.php');
+include_once realpath (__DIR__ .'/../to/propriedade/TipoIntervaloTO.php');
+include_once 'sequence/GerenciadorSequence.php';
+include_once 'BOImpl.php';
 
 class PropriedadeBO extends BOImpl{
 
@@ -24,8 +24,8 @@ class PropriedadeBO extends BOImpl{
 	private $estrutura;
 	private $fase;
 	
-	public function __construct($schemaCompany, $schemaParameter, $tableParameter, $columnParameter,$sequenceParameter, $fase){
-		$this->dao = new PropriedadeDAOImpl($schemaCompany, $schemaParameter, $tableParameter, $columnParameter, $fase);
+	public function __construct($dbCompany, $schemaParameter, $tableParameter, $columnParameter,$sequenceParameter, $fase){
+		$this->dao = new PropriedadeDAOImpl($dbCompany, $schemaParameter, $tableParameter, $columnParameter, $fase);
 		$this->estrutura[EstruturaQuery::SEQUENCE] = $sequenceParameter;
 		$this->estrutura[EstruturaQuery::COLUNA] = $columnParameter;
 		$this->estrutura[EstruturaQuery::TABELA] = $tableParameter;
@@ -43,14 +43,13 @@ class PropriedadeBO extends BOImpl{
 		$this->objetos['interval_type'] = new TipoIntervaloTO();
 	}
 
-	public function createProperty() {
+	public function constructProperty() {
 		$coluna = $this->estrutura[EstruturaQuery::COLUNA];
 		$tabela = $this->estrutura[EstruturaQuery::TABELA];
 		$propriedadesBO = $this->objetos;
 		$fase = $this->fase;
 		$estrutura = $this->estrutura;
 		$stringResult ="";
-		
 		$propriedades = $this->arrayDevAssoc();
 		$condicao = $propriedades;
 		foreach ($propriedades as $key => $valor) {

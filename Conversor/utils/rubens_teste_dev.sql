@@ -77,22 +77,36 @@ create table tabela3
 );
 
 
-SELECT KCU.CONSTRAINT_NAME, tc.constraint_type, KCU.COLUMN_NAME, RC.MATCH_OPTION, RC.UPDATE_RULE, RC.DELETE_RULE, KCU.ORDINAL_POSITION
-FROM information_schema.table_constraints tc
-LEFT JOIN information_schema.key_column_usage kcu
-ON tc.constraint_catalog = kcu.constraint_catalog
-AND tc.constraint_schema = kcu.constraint_schema
-AND tc.constraint_name = kcu.constraint_name
-LEFT JOIN information_schema.referential_constraints rc
-ON tc.constraint_catalog = rc.constraint_catalog
-AND tc.constraint_schema = rc.constraint_schema
-AND tc.constraint_name = rc.constraint_name
-LEFT JOIN information_schema.constraint_column_usage ccu
-ON rc.unique_constraint_catalog = ccu.constraint_catalog
-AND rc.unique_constraint_schema = ccu.constraint_schema
-AND rc.unique_constraint_name = ccu.constraint_name
---WHERE tc.table_name = 'tabela1'
-;
+select distinct 
+tc.table_name, 
+tc.constraint_name,  
+tc.constraint_type,  
+kcu.column_name,  
+rc.match_option,  
+rc.update_rule,  
+rc.delete_rule,  
+c.consrc, 
+ccu.table_name as foreign_table_name, 
+ccu.column_name as foreign_column_name 
+from information_schema.table_constraints tc 
+left join information_schema.key_column_usage kcu 
+on tc.constraint_catalog = kcu.constraint_catalog 
+and tc.constraint_schema = kcu.constraint_schema 
+and tc.constraint_name = kcu.constraint_name 
+left join information_schema.referential_constraints rc 
+on tc.constraint_catalog = rc.constraint_catalog 
+and tc.constraint_schema = rc.constraint_schema 
+and tc.constraint_name = rc.constraint_name 
+left join information_schema.constraint_column_usage ccu 
+on rc.unique_constraint_catalog = ccu.constraint_catalog 
+and rc.unique_constraint_schema = ccu.constraint_schema 
+and rc.unique_constraint_name = ccu.constraint_name 
+left join pg_constraint c 
+on tc.constraint_name = c.conname 
+where upper(tc.constraint_name) not like '%NOT_NULL%'
+and tc.table_schema = 'public'
+and tc.table_name = 'tabela3'
+
 
 select constraint_name, column_name, ordinal_position  from information_schema.key_column_usage where table_name = 'tabela3'
 
@@ -177,35 +191,6 @@ alter table tabela3 alter column id2_identity set default nextval('tabela3_id2_s
 select relname  from pg_class  where relkind = 'S'
 
 
-
-select
-tc.table_name, 
-tc.constraint_name,  
-tc.constraint_type,  
-kcu.column_name,  
-rc.match_option,  
-rc.update_rule,  
-rc.delete_rule,  
-c.consrc, 
-ccu.table_name as foreign_table_name, 
-ccu.column_name as foreign_column_name 
-from information_schema.table_constraints tc 
-left join information_schema.key_column_usage kcu 
-on tc.constraint_catalog = kcu.constraint_catalog 
-and tc.constraint_schema = kcu.constraint_schema 
-and tc.constraint_name = kcu.constraint_name 
-left join information_schema.referential_constraints rc 
-on tc.constraint_catalog = rc.constraint_catalog 
-and tc.constraint_schema = rc.constraint_schema 
-and tc.constraint_name = rc.constraint_name 
-left join information_schema.constraint_column_usage ccu 
-on rc.unique_constraint_catalog = ccu.constraint_catalog 
-and rc.unique_constraint_schema = ccu.constraint_schema 
-and rc.unique_constraint_name = ccu.constraint_name 
-left join pg_constraint c 
-on tc.constraint_name = c.conname 
-where tc.table_name = 'tabela3'
-order by 1,2
 
 /*
 
@@ -390,17 +375,6 @@ select * from sal_emp;
 */
 
 
-CREATE TABLE bid_hist_201509
-(
-	codbid integer NOT NULL  ,
-	codbidtransp integer NOT NULL  ,
-	dta date NOT NULL  ,
-	dtavigencia date NOT NULL  ,
-	embarques integer ARRAY   DEFAULT '{}'::integer[],
-	qtdofertado numeric NOT NULL   DEFAULT 0,
-	qtdrealizado numeric NOT NULL   DEFAULT 0,
-	qtdrecusado numeric NOT NULL   DEFAULT 0
-);
 
 
 CREATE TABLE tictactoe (
@@ -474,51 +448,4 @@ WHERE pg_class.relkind ='r'
 ORDER BY pg_class.relname;
 
 
-CREATE SEQUENCE log_alteracoes_codlog_seq;
-CREATE TABLE log_alteracoes_20150803_0809_w32
-(
-	codlog integer NOT NULL DEFAULT nextval('log_alteracoes_codlog_seq'::regclass),
-	codusr integer,
-	data_alteracao timestamp with time zone,
-	nome_chave character varying (255) NOT NULL,
-	tabela character varying (100) NOT NULL,
-	tipo integer,
-	valor_chave character varying (255) NOT NULL
-);
-
-
-
-CREATE TABLE sal_emp (
-    name            text,
-    pay_by_quarter  integer[],
-    schedule        text[][]
-);
-
-
-
-CREATE TABLE bid_hist
-(
-  dta date NOT NULL,
-  dtavigencia date NOT NULL,
-  codbid integer NOT NULL,
-  codbidtransp integer NOT NULL,
-  qtdofertado numeric NOT NULL DEFAULT 0,
-  qtdrecusado numeric NOT NULL DEFAULT 0,
-  qtdrealizado numeric NOT NULL DEFAULT 0,
-  ofertas integer[] DEFAULT '{}'::integer[],
-  embarques integer[] DEFAULT '{}'::integer[]
-)
-
-CREATE TABLE bid_hist_20150
-(
-	codbid integer NOT NULL,
-	codbidtransp integer NOT NULL,
-	dta date NOT NULL,
-	dtavigencia date NOT NULL,
-	embarques  integer ARRAY DEFAULT '{}'::integer[],
-	ofertas  integer ARRAY DEFAULT '{}'::integer[],
-	qtdofertado numeric NOT NULL DEFAULT 0,
-	qtdrealizado numeric NOT NULL DEFAULT 0,
-	qtdrecusado numeric NOT NULL DEFAULT 0
-);
 
