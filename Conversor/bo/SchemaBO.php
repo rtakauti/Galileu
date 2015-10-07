@@ -2,7 +2,7 @@
 include_once realpath(__DIR__.'/../dao/daoImpl/SchemaDAOImpl.php');
 include_once realpath(__DIR__.'/../enum/SchemasCompany.php');
 include_once realpath(__DIR__.'/../enum/SchemaType.php');
-include_once __DIR__.'/../enum/EstruturaQuery.php';
+include_once realpath(__DIR__.'/../enum/EstruturaQuery.php');
 include_once 'BOImpl.php';
 include_once 'TabelaBO.php';
 
@@ -11,9 +11,9 @@ class SchemaBO extends BOImpl{
 	protected  $dao;
 	private $estrutura;
 	
-	public function __construct($dbCompany){
-		$this->dao = new SchemaDAOImpl($dbCompany);
-		$this->estrutura[EstruturaQuery::COMPANY] = $dbCompany;
+	public function __construct($empresa, $estrutura){
+		$this->estrutura = $estrutura;
+		$this->dao = new SchemaDAOImpl($empresa);
 	}
 	
 	
@@ -55,11 +55,13 @@ class SchemaBO extends BOImpl{
 	}
 	
 	public function createSchema() {
-		$empresa = $this->estrutura [EstruturaQuery::COMPANY];
+		$estrutura = $this->estrutura;
+		$empresa = $estrutura[EstruturaQuery::COMPANY];
 		$schemas = $this->diff_dev_homologQuery ();
 		$string = "";
 		if (! empty ( $schemas ))
 			foreach ( $schemas as $schema ) {
+				$estrutura = $this->estrutura;
 				$string .= "\n\n\n\n-------------------- CREATE SCHEMA --------------------";
 				$string .= "\nCREATE SCHEMA $schema;";
 				$string .= $this->setSchema ( $schema );
@@ -67,7 +69,7 @@ class SchemaBO extends BOImpl{
 				$string .= $sequence->dropSequence ();
 				$sequenceParameter = $sequence->diff_dev_homologQuery();
 				$string .= $sequence->createSequence ();
-				$tabela = new TabelaBO ( $empresa, $schema,$sequenceParameter );
+				$tabela = new TabelaBO ( $empresa, $schema,$sequenceParameter, $estrutura );
 				$string .= $tabela->createTable ();
 			}
 		return $string;
@@ -85,12 +87,11 @@ class SchemaBO extends BOImpl{
 				$string .= $sequence->dropSequence ();
 				$sequenceParameter = $sequence->diff_dev_homologQuery();
 				$string .= $sequence->createSequence ();
-				$tabela = new TabelaBO ( $empresa, $schema,$sequenceParameter );
+				$tabela = new TabelaBO ( $empresa, $schema,$sequenceParameter, $this->estrutura );
 				$string .= $tabela->createTable ();
 			}
 		return $string;
 	}
-	
 	
 	/*
 	public function createSchemaHomolog(){

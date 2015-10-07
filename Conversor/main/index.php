@@ -22,23 +22,21 @@ If (isset ( $argv [1] )) {
 
 $saida = new Saida ( $empresa, $cmd );
 $saida->open ();
-
-//$propriedades = array(new Padrao($array), new Nulo($array));
-$schema = new SchemaBO ( $empresa );
+$estrutura = $saida->estrutura();
+$schema = new SchemaBO ( $empresa, $estrutura );
 $saida->gravarDataBase ();
 
 $saida->gravar ( $schema->listarDev () );
 $saida->gravar ( $schema->listarHomolog () );
 $saida->gravar ( $schema->dropSchema () );
-//$saida->gravar ( $schema->createSchemaHomolog () );
-//$schemasCreateTableArray = $schema->createSchemaArray();
-$saida->gravar($schema->createSchema());
-$saida->gravar($schema->alterSchema());
+$saida->gravar ( $schema->createSchema () );
+$saida->gravar ( $schema->alterSchema () );
 
-$constraint = new ConstraintBO(SchemasCompany::TESTE, 'public', 'tabela3', FaseQuery::CREATE);
+$indice = new IndiceBO(SchemasCompany::TESTE, 'public', 'tabela3');
 
 echo "<pre>";
-//print_r ( $constraint->createConstraint() );
+//print_r ( $indice->dropIndice() );
+//print_r ( $indice->retornahomolog() );
 //print_r($schema->intersect_homolog_devQuery());
 echo "</pre>";
 

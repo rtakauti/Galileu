@@ -1,8 +1,7 @@
 <?php
 include_once realpath(__DIR__.'/../DAOImpl.php');
+
 class SequenceDAOImpl extends DAOImpl {
-	
-	
 	
 	public function __construct($dbCompany, $schemaParameter) {
 		parent::__construct ( $dbCompany );
@@ -10,16 +9,9 @@ class SequenceDAOImpl extends DAOImpl {
 	}
 	
 	
-	/**
-	 *
-	 * @param string $query
-	 *        	- Recebe uma query opcional 
-	 *        	
-	 */
 	public function setQuery($schemaParameter) {
 			// Retorna os nomes das SEQUENCE
 			$query = "select distinct ";
-			//$query .= " nsp.nspname as schema, ";
 			$query .= " nsp.nspname ||'.'|| cls.relname as sequence ";
 			$query .= " from pg_class cls ";
 			$query .= " join pg_namespace nsp ";

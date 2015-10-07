@@ -13,21 +13,32 @@ class TabelaBO extends BOImpl{
 	protected  $dao;
 	private $estrutura;
 	
-	public function __construct($dbCompany, $schemaParameter, $sequenceParameter){
+	public function __construct($dbCompany, $schemaParameter, $sequenceParameter, $estrutura){
+		$this->estrutura = $estrutura;
 		$this->dao = new TableDAOImpl($dbCompany, $schemaParameter);
 		$this->estrutura[EstruturaQuery::SEQUENCE] = $sequenceParameter;
 		$this->estrutura[EstruturaQuery::SCHEMA] = $schemaParameter;
 		$this->estrutura[EstruturaQuery::COMPANY] = $dbCompany;
 	}
 	
-	public function createTableDev(){
-		return $this->arrayDev();
+	
+	public function dropTable(){
+		$tabelas = $this->diff_homolog_devQuery();
+		$string = "";
+		if(!empty($tabelas)){
+			$stringResult = "\n\n-------------------- DROP TABLE --------------------";
+			foreach ($tabelas as $tabela) {
+				$string = "\nDROP TABLE $tabela CASCADE;";
+			}
+		}
+		return $string;
 	}
 	
 	public function createTable(){
 		$empresa = $this->estrutura[EstruturaQuery::COMPANY];
 		$schema= $this->estrutura[EstruturaQuery::SCHEMA];
 		$sequence = $this->estrutura[EstruturaQuery::SEQUENCE];
+		$user = $this->estrutura[EstruturaQuery::USER];
 		$tabelas = $this->diff_dev_homologQuery();
 		$fase = FaseQuery::CREATE;
 		$colunas = array();
@@ -43,14 +54,20 @@ class TabelaBO extends BOImpl{
 				$constraintBO = new ConstraintBO($empresa, $schema, $tabela, $fase);
 				$string .= $constraintBO->createConstraint();
 				$string = substr ( $string, 0, - 2 );
+				$string .= "\n)";
+				$string .= "\nWITH (";
+				$string .= "\n\tOIDS=FALSE";
 				$string .= "\n);";
+				$string .= "\nALTER TABLE $tabela";
+				$string .= "\n\tOWNER TO $user;";
+				$indiceBO = new IndiceBO($empresa, $schema, $tabela);
+				$string .= $indiceBO->createIndex();
 				$stringResult .= GerenciadorSequence::getQueryCriado().$string.GerenciadorSequence::getQuerySetado();
 				$string = "";
 			}
 			return $stringResult;
 		}
 	}
-	
 	
 	
 }

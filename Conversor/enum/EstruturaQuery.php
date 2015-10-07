@@ -13,4 +13,10 @@ abstract class EstruturaQuery{
 	
 	const SEQUENCE = "sequence";
 	
+	const USER = "user";
+	
+	const DBHOMOLOG = "homolog";
+	
+	const DBDEV = "dev";
+	
 }

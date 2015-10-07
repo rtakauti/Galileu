@@ -18,26 +18,26 @@ protected  $dao;
 	
 	public function dropSequence() {
 		$sequences = $this->diff_homolog_devQuery ();
-		if (!empty ( $sequences )) {
+		$string = "";
+		if (! empty ( $sequences )) {
 			$string = "\n\n--------------------  DROP DE SEQUENCES -------------------- ";
 			foreach ( $sequences as $sequence ) {
-				$string .= "\nDROP SEQUENCE $sequence CASCADE;";
+				$string .= "\nDROP SEQUENCE $sequence ;";
 			}
-			return $string;
 		}
-		return;
+		return $string;
 	}
 	
 	public function createSequence() {
 		$sequences = $this->diff_dev_homologQuery ();
-		if (!empty ( $sequences )) {
+		$string = "";
+		if (! empty ( $sequences )) {
 			$string = "\n\n--------------------  CREATE DE SEQUENCES -------------------- ";
 			foreach ( $sequences as $sequence ) {
 				$string .= "\nCREATE SEQUENCE $sequence;";
 			}
-			return $string;
 		}
-		return;
+		return $string;
 	}
 	
 	public function cargaSeqGerenciamento() {

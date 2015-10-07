@@ -448,4 +448,138 @@ WHERE pg_class.relkind ='r'
 ORDER BY pg_class.relname;
 
 
+drop table tabela3 cascade;
 
+
+CREATE TABLE tabela3
+(
+  cd_codigo bigserial NOT NULL,
+  id_identity bigserial NOT NULL,
+  ds_descricao text,
+  cd1_codigo bigint NOT NULL,
+  cd2_codigo bigint,
+  id1_identity bigint,
+  nm_nome text,
+  cod1_codigo bigint,
+  mais1 smallint,
+  mais2 smallint,
+  mais3 smallint,
+  mais4 smallint,
+  mais5 smallint,
+  mais6 smallint,
+  mais7 smallint,
+  CONSTRAINT pk_tabela3 PRIMARY KEY (cd_codigo, cd1_codigo),
+  CONSTRAINT cd1_id1_fk FOREIGN KEY (id1_identity)
+      REFERENCES tabela1 (cd_codigo) MATCH FULL
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_tabela1 FOREIGN KEY (cd1_codigo)
+      REFERENCES tabela1 (cd_codigo) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_tabela2 FOREIGN KEY (cd2_codigo)
+      REFERENCES tabela2 (cd_codigo) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT uq_descricao UNIQUE (ds_descricao),
+  CONSTRAINT uq_mais UNIQUE (mais1, mais2, mais3),
+  CONSTRAINT ck_igual CHECK (cd_codigo = id_identity)
+)
+
+
+
+
+create sequence tabela3_cd_codigo_seq;
+create sequence tabela3_id_identity_seq;
+
+drop table tabela3 cascade;
+CREATE TABLE tabela3
+(
+cd1_codigo bigint NOT NULL,
+cd2_codigo bigint,
+cd_codigo bigint NOT NULL DEFAULT nextval('tabela3_cd_codigo_seq'::regclass),
+cod1_codigo bigint,
+ds_descricao text,
+id1_identity bigint,
+id_identity bigint NOT NULL DEFAULT nextval('tabela3_id_identity_seq'::regclass),
+nm_nome text,
+CONSTRAINT cd1_id1_fk FOREIGN KEY (id1_identity)
+REFERENCES tabela1 (cd_codigo) MATCH FULL
+ON UPDATE NO ACTION ON DELETE NO ACTION ,
+CONSTRAINT ck_igual CHECK (cd_codigo = id_identity) ,
+CONSTRAINT fk_tabela1 FOREIGN KEY (cd1_codigo)
+REFERENCES tabela1 (cd_codigo) MATCH SIMPLE
+ON UPDATE CASCADE ON DELETE CASCADE ,
+CONSTRAINT fk_tabela2 FOREIGN KEY (cd2_codigo)
+REFERENCES tabela2 (cd_codigo) MATCH SIMPLE
+ON UPDATE NO ACTION ON DELETE NO ACTION ,
+CONSTRAINT pk_tabela3 PRIMARY KEY (cd1_codigo, cd_codigo) ,
+CONSTRAINT uq_descricao UNIQUE (ds_descricao)
+);
+
+CREATE INDEX tabela3_descricao_IDX ON tabela3(ds_descricao);
+
+CREATE INDEX tabela3_nome_IDX ON tabela3(nm_nome);
+
+SELECT *
+FROM pg_class
+WHERE oid IN (
+SELECT indexrelid
+FROM pg_index, pg_class
+WHERE pg_class.relname='tabela3'
+AND pg_class.oid=pg_index.indrelid
+AND indisunique != 't'
+AND indisprimary != 't'
+);
+
+
+
+SELECT
+*
+FROM
+pg_class AS a
+JOIN pg_index AS b ON (a.oid = b.indrelid)
+JOIN pg_class AS c ON (c.oid = b.indexrelid)
+WHERE
+a.relname = 'tabela3';
+
+
+SELECT n.nspname as "Schema",
+  c.relname as "Name",
+  CASE c.relkind WHEN 'r' THEN 'table' WHEN 'v' THEN 'view' WHEN 'i' 
+THEN 'index' WHEN 'S' THEN 'sequence' WHEN 's' THEN 'special' END as "Type",
+  u.usename as "Owner",
+ c2.relname as "Table"
+ select *
+FROM pg_catalog.pg_class c
+     JOIN pg_catalog.pg_index i ON i.indexrelid = c.oid
+     JOIN pg_catalog.pg_class c2 ON i.indrelid = c2.oid
+     LEFT JOIN pg_catalog.pg_user u ON u.usesysid = c.relowner
+     LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+WHERE c.relkind IN ('i','')
+      AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
+      AND pg_catalog.pg_table_is_visible(c.oid)
+ORDER BY 1,2;
+
+
+
+select
+    t.relname as table_name,
+    i.relname as index_name,
+    a.attname as column_name
+--select *
+from
+    pg_class t,
+    pg_class i,
+    pg_index ix,
+    pg_attribute a
+where
+    t.oid = ix.indrelid
+    and i.oid = ix.indexrelid
+    and a.attrelid = t.oid
+    and a.attnum = ANY(ix.indkey)
+    and t.relkind = 'r'
+    AND indisunique != 't'
+AND indisprimary != 't'
+    and t.relname = 'tabela3'
+   -- and t.relname like 'tabela3%'
+order by
+    t.relname,
+    i.relname;
