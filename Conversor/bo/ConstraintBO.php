@@ -10,14 +10,14 @@ include_once 'RestricaoBO.php';
 class ConstraintBO extends BOImpl {
 	
 	protected $dao;
-	protected $fase;
+	private $fase;
 	
 	public function __construct($dbCompany, $schemaParameter, $tableParameter, $fase) {
 		$this->dao = new ConstraintDAOImpl ( $dbCompany, $schemaParameter, $tableParameter, $fase );
 		$this->fase = $fase;
 	}
 	public function createConstraint() {
-		$fase = FaseQuery::CREATE;
+		$fase = $this->fase;
 		$constraints = $this->dao->restricao ( SchemaType::DEV );
 		$string = "";
 		if (isset ( $constraints )) {
@@ -26,9 +26,9 @@ class ConstraintBO extends BOImpl {
 				$string .= "\tCONSTRAINT $nameConstraint " . $restricao->constructConstraint () . ",\n";
 			}
 		}
-		// return $constraints;
 		return $string;
 	}
+	
 	public function homolog() {
 		return $this->dao->restricao ( SchemaType::HOMOLOG );
 	}

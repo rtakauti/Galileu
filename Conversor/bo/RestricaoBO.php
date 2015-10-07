@@ -19,7 +19,7 @@ class RestricaoBO {
 
 	private $arrayConstraint;
 	private $objetos;
-	protected  $fase;
+	private  $fase;
 
 	public function __construct($arrayConstraint, $fase){
 		$this->arrayConstraint = $arrayConstraint;
@@ -38,12 +38,12 @@ class RestricaoBO {
 	}
 
 	public function constructConstraint(){
-		$fase = FaseQuery::CREATE;
+		$fase = $this->fase;
 		$restricoesBO = $this->objetos;
 		$constraints = $this->arrayConstraint;
 		$stringResult ="";
 		foreach ($constraints as $key => $constraint) {
-			$string = GeradorRestricoes::gerarRestricao($restricoesBO[$key], $constraint, $fase);
+			$string = GeradorRestricoes::gerarRestricao($restricoesBO[$key], $constraint, $fase, $constraint);
 			$stringResult .= $string;
 		}
 		return $stringResult;
