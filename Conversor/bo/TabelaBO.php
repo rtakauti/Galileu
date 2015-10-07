@@ -36,11 +36,12 @@ class TabelaBO extends BOImpl{
 			foreach ($tabelas as $tabela) {
 				$string = "\n\nCREATE TABLE $tabela";
 				$string .="\n(\n";
+				$stringColuna = "";
+				$stringConstraint = "";
 				$colunaBO = new ColunaBO($empresa, $schema , $tabela, $sequence, $fase);
 				$string .= $colunaBO->createColumn();
 				$constraintBO = new ConstraintBO($empresa, $schema, $tabela, $fase);
 				$string .= $constraintBO->createConstraint();
-				return  $constraintBO->createConstraint();
 				$string = substr ( $string, 0, - 2 );
 				$string .= "\n);";
 				$stringResult .= GerenciadorSequence::getQueryCriado().$string.GerenciadorSequence::getQuerySetado();

@@ -35,7 +35,7 @@ $saida->gravar ( $schema->dropSchema () );
 $saida->gravar($schema->createSchema());
 $saida->gravar($schema->alterSchema());
 
-//$constraint = new ConstraintBO(SchemasCompany::TESTE, 'public', 'tabela3', FaseQuery::CREATE);
+$constraint = new ConstraintBO(SchemasCompany::TESTE, 'public', 'tabela3', FaseQuery::CREATE);
 
 echo "<pre>";
 //print_r ( $constraint->createConstraint() );

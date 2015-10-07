@@ -1,22 +1,19 @@
 <?php
-include_once __DIR__ . '/../enum/FaseQuery.php';
-include_once __DIR__ . '/../enum/EstruturaQuery.php';
-include_once '../IRestricao.php';
-
+include_once realpath ( __DIR__ . '/../../enum/FaseQuery.php' );
+include_once realpath ( __DIR__ . '/../../enum/EstruturaQuery.php' );
+include_once realpath ( __DIR__ . '/../IRestricao.php' );
 class CombinacaoTO implements IRestricao {
-	
 	public function __construct($valor = NULL, $fase = NULL) {
-		$this->retorna ( $valor, $fase);
+		$this->retorna ( $valor, $fase );
 	}
-	
 	public function retorna($valor, $fase) {
 		$string = "";
 		if (isset ( $valor )) {
 			switch ($fase) {
 				case FaseQuery::CREATE :
-					if ($valor == "NONE"){
+					if ($valor == "NONE") {
 						$string = " MATCH SIMPLE ";
-					}elseif ($valor == "FULL"){
+					} elseif ($valor == "FULL") {
 						$string = " MATCH FULL ";
 					}
 					break;

@@ -38,7 +38,7 @@ class RestricaoBO {
 	}
 
 	public function constructConstraint(){
-		$fase = $this->fase;
+		$fase = FaseQuery::CREATE;
 		$restricoesBO = $this->objetos;
 		$constraints = $this->arrayConstraint;
 		$stringResult ="";
