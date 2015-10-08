@@ -199,7 +199,7 @@ select relname  from pg_class  where relkind = 'S'
  
 select * from information_schema.columns 
 where table_schema = 'public'
-and table_name = 'sal_emp'
+and table_name = 'newtable'
 order by 4
 
 select * from pg_attribute order by 2;
@@ -608,7 +608,114 @@ CREATE INDEX ind_product ON vintage_unit USING btree (product COLLATE pg_catalog
 
 --- function
 
-SELECT *
+ 
+SELECT routine_name
+FROM information_schema.routines
+WHERE specific_schema NOT IN
+('pg_catalog', 'information_schema')
+AND type_udt_name != 'trigger';
+
+
+
+select distinct 
+tc.constraint_name ,  
+tc.constraint_type ,  
+kcu.column_name ,  
+ccu.table_name as foreign_table , 
+ccu.column_name as foreign_column , 
+rc.match_option ,  
+rc.update_rule ,  
+rc.delete_rule ,  
+c.consrc , 
+case when tc.constraint_type = 'PRIMARY KEY' then 1
+ when tc.constraint_type = 'FOREIGN KEY' then 2
+ when tc.constraint_type = 'CHECK' then 3
+ when tc.constraint_type = 'UNIQUE' then 4
+end as ordem 
+from information_schema.table_constraints tc 
+left join information_schema.key_column_usage kcu 
+on tc.constraint_catalog = kcu.constraint_catalog 
+and tc.constraint_schema = kcu.constraint_schema 
+and tc.constraint_name = kcu.constraint_name 
+left join information_schema.referential_constraints rc 
+on tc.constraint_catalog = rc.constraint_catalog 
+and tc.constraint_schema = rc.constraint_schema 
+and tc.constraint_name = rc.constraint_name 
+left join information_schema.constraint_column_usage ccu 
+on rc.unique_constraint_catalog = ccu.constraint_catalog 
+and rc.unique_constraint_schema = ccu.constraint_schema 
+and rc.unique_constraint_name = ccu.constraint_name 
+left join pg_constraint c 
+on tc.constraint_name = c.conname 
+where upper(tc.constraint_name) not like '%NOT_NULL%'
+and tc.table_schema = 'public'
+and tc.table_name = 'tabela3'
+order by ordem
+
+
+alter table cities add column city varchar;
+alter table cities add column states varchar;
+
+  CREATE OR REPLACE FUNCTION add_city(city VARCHAR(70), states CHAR(2)) 
+    RETURNS void AS $$
+    BEGIN
+      INSERT INTO cities VALUES (city, states);
+    END;
+    $$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION increment(i INT) RETURNS INT AS $$
+    BEGIN
+      RETURN i + 1;
+    END;
+    $$ LANGUAGE plpgsql;
+
+
+
+CREATE FUNCTION one() RETURNS integer AS $$
+    SELECT 1 AS result;
+$$ LANGUAGE SQL;
+
+
+------------------------function
+
+SELECT n.nspname as "Schema",
+  p.proname as "Name",
+  pg_catalog.pg_get_function_result(p.oid) as "Result data type",
+  pg_catalog.pg_get_functiondef(p.oid) as "Argument data types",
+ CASE
+  WHEN p.proisagg THEN 'agg'
+  WHEN p.proiswindow THEN 'window'
+  WHEN p.prorettype = 'pg_catalog.trigger'::pg_catalog.regtype THEN 'trigger'
+  ELSE 'normal'
+END as "Type",
+	p.prosrc
+FROM pg_catalog.pg_proc p
+     LEFT JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace
+ where pg_catalog.pg_function_is_visible(p.oid)    
+  AND pg_catalog.pg_function_is_visible(p.oid)
+  and n.nspname ='public'
+ORDER BY 1, 2, 4;
+
+select * from pg_catalog.pg_index
+
+
+
+
+SELECT distinct n.nspname as schema_name,
+p.proname as function_name,
+pg_catalog.pg_get_function_result(p.oid) as return,
+pg_catalog.pg_get_function_arguments(p.oid) as parameter,
+p.prosrc as body
+FROM pg_catalog.pg_proc p
+LEFT JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace
+where pg_catalog.pg_function_is_visible(p.oid)    
+AND pg_catalog.pg_function_is_visible(p.oid)
+and n.nspname ='public'
+ORDER BY 1, 2, 4;
+------------------------------------
+
+SELECT pr.prosrc
 FROM pg_proc pr,
 pg_type tp
 WHERE tp.oid = pr.prorettype
@@ -621,9 +728,62 @@ WHERE nspname NOT LIKE 'pg_%'
 AND nspname != 'information_schema'
 );
 
+
+SELECT proisagg
+FROM pg_proc
+
+
+---- trigger
+
+CREATE TABLE NEWTABLE (
+ID INT DEFAULT 0 NOT NULL,
+SOMENAME VARCHAR (12),
+SOMEDATE TIMESTAMP NOT NULL
+);
+ALTER TABLE NEWTABLE ADD CONSTRAINT PKINDEX_IDX PRIMARY KEY (ID);
+CREATE SEQUENCE NEWTABLE_SEQ INCREMENT 1 START 1;
+
+CREATE FUNCTION add_stamp() RETURNS OPAQUE AS '
+BEGIN
+IF (NEW.somedate IS NULL OR NEW.somedate = 0) THEN
+NEW.somedate := CURRENT_TIMESTAMP;
+RETURN NEW;
+END IF;
+END;
+' LANGUAGE 'plpgsql';
  
-SELECT routine_name
-FROM information_schema.routines
-WHERE specific_schema NOT IN
-('pg_catalog', 'information_schema')
-AND type_udt_name != 'trigger';
+CREATE TRIGGER ADDCURRENTDATE
+BEFORE INSERT OR UPDATE
+ON newtable FOR EACH ROW
+EXECUTE PROCEDURE add_stamp();
+
+
+-----------------------------------------------SELECT trg.tgname AS trigger_name
+
+
+select *
+FROM pg_trigger trg, pg_class tbl, pg_namespace nm, information_schema.triggers itg
+WHERE trg.tgrelid = tbl.oid
+and tbl.relnamespace = nm.oid
+and trg.tgname = itg.trigger_name
+AND itg.trigger_schema = 'public'
+and itg.event_object_table = 'newtable'
+
+----------------------------------------------------
+
+select * from information_schema.triggers
+
+select * from information_schema.tABLES
+
+select * from information_schema.attributes
+
+select * from information_schema.triggered_update_columns
+
+select * from information_schema.constraint_column_usage
+
+select * from information_schema.sequences
+
+select * from pg_catalog.pg_trigger
+
+
+DROP FUNCTION add_stamp() cascade;

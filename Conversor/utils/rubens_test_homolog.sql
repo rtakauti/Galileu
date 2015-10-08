@@ -73,7 +73,7 @@ ON      p.pronamespace = n.oid
 WHERE   n.nspname = 'public'
 
 /*
-CREATE OR REPLACE FUNCTION increment(i INT) RETURNS INT AS $$
+CREATE OR REPLACE FUNCTION increment1(i INT) RETURNS INT AS $$
     BEGIN
       RETURN i + 1;
     END;
@@ -81,7 +81,7 @@ CREATE OR REPLACE FUNCTION increment(i INT) RETURNS INT AS $$
 */
 
 /*
-CREATE FUNCTION one() RETURNS integer AS $$
+CREATE FUNCTION one1() RETURNS integer AS $$
     SELECT 1 AS result;
 $$ LANGUAGE SQL;
 */
@@ -431,7 +431,7 @@ WHERE specific_schema NOT IN
 ('pg_catalog', 'information_schema')
 AND type_udt_name != 'trigger';
 
-
+---function
 
 SELECT n.nspname as "Schema",
   p.proname as "Name",
@@ -445,6 +445,34 @@ SELECT n.nspname as "Schema",
 END as "Type"
 FROM pg_catalog.pg_proc p
      LEFT JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace
-WHERE p.proname ~ '^(increment)$'
+ where pg_catalog.pg_function_is_visible(p.oid)    
+--WHERE p.proname ~ '^(increment)$'
   AND pg_catalog.pg_function_is_visible(p.oid)
 ORDER BY 1, 2, 4;
+
+
+
+
+drop table tabela3 cascade
+
+CREATE TABLE tabela3
+(
+  cd1_codigo bigint NOT NULL,
+  cd2_codigo bigint,
+  cd_codigo bigint NOT NULL ,
+  cod1_codigo bigint,
+  dt_data date,
+  nr_numero2 integer,
+  CONSTRAINT pk_tabela3 PRIMARY KEY (cd1_codigo, cd_codigo)
+)
+
+select pg_catalog.pg_get_constraintdef(oid) as "Argument data types"
+from pg_catalog.pg_constraint
+
+
+
+select pg_catalog.pg_get_indexdef(oid) as "Argument data types"
+from pg_catalog.pg_namespace
+
+
+

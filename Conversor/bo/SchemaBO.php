@@ -71,6 +71,8 @@ class SchemaBO extends BOImpl{
 				$string .= $sequence->createSequence ();
 				$tabela = new TabelaBO ( $empresa, $schema,$sequenceParameter, $estrutura );
 				$string .= $tabela->createTable ();
+				$funcao = new FuncaoBO($empresa, $schema);
+				$string .= $funcao->createFuncao();
 			}
 		return $string;
 	}
@@ -89,6 +91,8 @@ class SchemaBO extends BOImpl{
 				$string .= $sequence->createSequence ();
 				$tabela = new TabelaBO ( $empresa, $schema,$sequenceParameter, $this->estrutura );
 				$string .= $tabela->createTable ();
+				$funcao = new FuncaoBO($empresa, $schema);
+				$string .= $funcao->createFuncao();
 			}
 		return $string;
 	}

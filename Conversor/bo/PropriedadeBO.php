@@ -1,5 +1,4 @@
 <?php
-include_once realpath (__DIR__ . '/../dao/daoImpl/PropriedadeDAOImpl.php');
 include_once realpath (__DIR__ . '/../enum/SchemasCompany.php');
 include_once realpath (__DIR__ . '/../enum/SchemaType.php');
 include_once realpath (__DIR__ . '/../enum/FaseQuery.php');
@@ -15,6 +14,7 @@ include_once realpath (__DIR__ .'/../to/propriedade/PrecisaoDataTO.php');
 include_once realpath (__DIR__ .'/../to/propriedade/TipoDadoTO.php');
 include_once realpath (__DIR__ .'/../to/propriedade/TipoIntervaloTO.php');
 include_once 'sequence/GerenciadorSequence.php';
+//include_once realpath (__DIR__ . '/../dao/daoImpl/PropriedadeDAOImpl.php');
 //include_once 'BOImpl.php';
 
 class PropriedadeBO {
@@ -44,26 +44,21 @@ class PropriedadeBO {
 		$this->objetos['udt_name'] = new NomeUdtTO();
 		$this->objetos['interval_type'] = new TipoIntervaloTO();
 	}
-
 	public function constructProperty() {
-		$coluna = $this->estrutura[EstruturaQuery::COLUNA];
-		$tabela = $this->estrutura[EstruturaQuery::TABELA];
+		$coluna = $this->estrutura [EstruturaQuery::COLUNA];
+		$tabela = $this->estrutura [EstruturaQuery::TABELA];
 		$propriedadesBO = $this->objetos;
 		$fase = $this->fase;
 		$estrutura = $this->estrutura;
-		$stringResult ="";
-		//$propriedades = $this->arrayDevAssoc();
-		$propriedades =  $this->arrayColuna;
+		$stringResult = "";
+		// $propriedades = $this->arrayDevAssoc();
+		$propriedades = $this->arrayColuna;
 		$condicao = $propriedades;
-		foreach ($propriedades as $key => $valor) {
-			$string = GeradorPropriedades::gerarPropriedade($propriedadesBO[$key], $valor, $fase, $condicao, $estrutura);
+		foreach ( $propriedades as $key => $valor ) {
+			$string = GeradorPropriedades::gerarPropriedade ( $propriedadesBO [$key], $valor, $fase, $condicao, $estrutura );
 			$stringResult .= $string;
 		}
 		return $stringResult;
-	}
-	
-	public function addProperty(){
-		
 	}
 
 

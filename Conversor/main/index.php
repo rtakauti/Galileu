@@ -32,10 +32,9 @@ $saida->gravar ( $schema->dropSchema () );
 $saida->gravar ( $schema->createSchema () );
 $saida->gravar ( $schema->alterSchema () );
 
-$indice = new IndiceBO(SchemasCompany::TESTE, 'public', 'tabela3');
-$coluna = new ColunaBO(SchemasCompany::TESTE, 'public', 'tabela3', NULL, FaseQuery::CREATE);
+$funcao = new FuncaoBO(SchemasCompany::TESTE, 'public');
 echo "<pre>";
-//print_r ( $coluna->createColumn());
+//print_r ( $funcao->createFuncao());
 //print_r ( $indice->retornahomolog() );
 //print_r($schema->intersect_homolog_devQuery());
 echo "</pre>";
