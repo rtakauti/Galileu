@@ -328,6 +328,8 @@ select distinct * from information_schema.columns
  order by 1
 
 
+
+
 select distinct 
 tc.table_name, 
 tc.constraint_name,  
@@ -357,7 +359,8 @@ on tc.constraint_name = c.conname
 where upper(tc.constraint_name) not like '%NOT_NULL%'
 and tc.table_schema = 'public'
 and tc.table_name = 'tabela3'
-
+--and tc.constraint_name = 'pk_tabela3'
+order by 2
 
  
 
@@ -375,3 +378,73 @@ SELECT oid
 FROM pg_namespace
 WHERE nspname NOT LIKE 'pg_%'
 AND nspname != 'information_schema');
+
+
+drop table tabela3 cascade
+create sequence tabela3_cd2_codigo_sq;
+create sequence tabela3_id2_sq;
+
+
+
+
+CREATE TABLE tabela3
+(
+  cd_codigo bigserial NOT NULL,
+  id_identity bigserial NOT NULL,
+  ds_descricao text,
+  cd2_codigo bigint DEFAULT nextval('tabela3_cd2_codigo_sq'::regclass),
+  nr_numero numeric(8,0) NOT NULL DEFAULT nextval('tabela3_id_identity_seq'::regclass),
+  nm_nome character varying(100) NOT NULL DEFAULT 'teste'::character varying,
+  nm_sobrenome character varying(100) NOT NULL DEFAULT 'teste'::character varying,
+  nr_cardinal bigint,
+  id2_identity bigint DEFAULT nextval('tabela3_id2_sq'::regclass),
+  CONSTRAINT pk_tabela3 PRIMARY KEY (cd_codigo),
+  CONSTRAINT fk_tabela2 FOREIGN KEY (cd2_codigo)
+      REFERENCES tabela2 (cd_codigo) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT ck_igual CHECK (cd_codigo = id_identity)
+)
+
+CREATE INDEX tabela3_descricao_IDX ON tabela3(ds_descricao);
+
+
+SELECT *
+FROM pg_proc pr,
+pg_type tp
+WHERE tp.oid = pr.prorettype
+AND pr.proisagg = FALSE
+AND tp.typname <> 'trigger'
+AND pr.pronamespace IN (
+SELECT oid
+FROM pg_namespace
+where nspname = 'public')
+
+WHERE nspname NOT LIKE 'pg_%'
+AND nspname != 'information_schema'
+);
+
+
+SELECT *
+FROM information_schema.routines
+where specific_schema = 'public'
+WHERE specific_schema NOT IN
+('pg_catalog', 'information_schema')
+AND type_udt_name != 'trigger';
+
+
+
+SELECT n.nspname as "Schema",
+  p.proname as "Name",
+  pg_catalog.pg_get_function_result(p.oid) as "Result data type",
+  pg_catalog.pg_get_function_arguments(p.oid) as "Argument data types",
+ CASE
+  WHEN p.proisagg THEN 'agg'
+  WHEN p.proiswindow THEN 'window'
+  WHEN p.prorettype = 'pg_catalog.trigger'::pg_catalog.regtype THEN 'trigger'
+  ELSE 'normal'
+END as "Type"
+FROM pg_catalog.pg_proc p
+     LEFT JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace
+WHERE p.proname ~ '^(increment)$'
+  AND pg_catalog.pg_function_is_visible(p.oid)
+ORDER BY 1, 2, 4;

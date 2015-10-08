@@ -36,7 +36,7 @@ class SchemaBO extends BOImpl{
 	}
 	
 	public function setSchema($schemaName){
-		$string = "\n\n-------------------- SET SCHEMAS --------------------";
+		$string = "\n\n-------------------- SET SCHEMA $schemaName --------------------";
 		$string .= "\nSET SEARCH_PATH TO $schemaName;";
 		return $string;
 	

@@ -14,7 +14,7 @@ class ColunaBO extends BOImpl{
 	private $fase;
 	
 	public function __construct($dbCompany, $schemaParameter, $tableParameter, $sequenceParameter, $fase) {
-		$this->dao = new ColunaDAOImpl($dbCompany, $schemaParameter, $tableParameter);
+		$this->dao = new ColunaDAOImpl($dbCompany, $schemaParameter, $tableParameter, $fase);
 		$this->estrutura[EstruturaQuery::SEQUENCE] = $sequenceParameter;
 		$this->estrutura[EstruturaQuery::TABELA] = $tableParameter;
 		$this->estrutura[EstruturaQuery::SCHEMA] = $schemaParameter;
@@ -24,7 +24,9 @@ class ColunaBO extends BOImpl{
 
 	public function dropColumn(){
 		$tabela = $this->estrutura [EstruturaQuery::TABELA];
-		$colunas = $this->diff_homolog_devQuery();
+		$dev = array_keys($this->dao->propriedade(SchemaType::DEV));
+		$homolog = array_keys($this->dao->propriedade(SchemaType::HOMOLOG));
+		$colunas = array_diff($homolog, $dev);
 		$string = "";
 		if (! empty ( $colunas )) {
 			foreach ( $colunas as $coluna ) {
@@ -40,12 +42,15 @@ class ColunaBO extends BOImpl{
 		$schema = $this->estrutura [EstruturaQuery::SCHEMA];
 		$empresa = $this->estrutura [EstruturaQuery::COMPANY];
 		$fase = $this->fase;
-		$colunas = $this->diff_dev_homologQuery ();
+		//$colunas = $this->diff_dev_homologQuery ();
+		$dev = $this->dao->propriedade(SchemaType::DEV);
+		$homolog = $this->dao->propriedade(SchemaType::HOMOLOG);
+		$colunas = array_diff_assoc($dev, $homolog);
 		$string = "";
 		if (! empty ( $colunas )) {
-			foreach ( $colunas as $coluna ) {
-				$propriedade = new PropriedadeBO ( $empresa, $schema, $tabela, $coluna, $sequence, $fase );
-				$string .= "\t" . $coluna . " " . $propriedade->constructProperty () . ",\n";
+			foreach ( $colunas as $nameColuna => $coluna ) {
+				$propriedade = new PropriedadeBO ( $empresa, $schema, $tabela, $nameColuna, $sequence, $fase, $coluna );
+				$string .= "\t" . $nameColuna . " " . $propriedade->constructProperty () . ",\n";
 			}
 		}
 		return $string;

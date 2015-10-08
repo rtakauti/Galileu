@@ -33,9 +33,9 @@ $saida->gravar ( $schema->createSchema () );
 $saida->gravar ( $schema->alterSchema () );
 
 $indice = new IndiceBO(SchemasCompany::TESTE, 'public', 'tabela3');
-
+$coluna = new ColunaBO(SchemasCompany::TESTE, 'public', 'tabela3', NULL, FaseQuery::CREATE);
 echo "<pre>";
-//print_r ( $indice->dropIndice() );
+//print_r ( $coluna->createColumn());
 //print_r ( $indice->retornahomolog() );
 //print_r($schema->intersect_homolog_devQuery());
 echo "</pre>";

@@ -15,17 +15,19 @@ include_once realpath (__DIR__ .'/../to/propriedade/PrecisaoDataTO.php');
 include_once realpath (__DIR__ .'/../to/propriedade/TipoDadoTO.php');
 include_once realpath (__DIR__ .'/../to/propriedade/TipoIntervaloTO.php');
 include_once 'sequence/GerenciadorSequence.php';
-include_once 'BOImpl.php';
+//include_once 'BOImpl.php';
 
-class PropriedadeBO extends BOImpl{
+class PropriedadeBO {
 
-	protected  $dao;
+	//protected  $dao;
+	private $arrayColuna;
 	private $objetos;
 	private $estrutura;
 	private $fase;
 	
-	public function __construct($dbCompany, $schemaParameter, $tableParameter, $columnParameter,$sequenceParameter, $fase){
-		$this->dao = new PropriedadeDAOImpl($dbCompany, $schemaParameter, $tableParameter, $columnParameter, $fase);
+	public function __construct($dbCompany, $schemaParameter, $tableParameter, $columnParameter, $sequenceParameter, $fase, $arrayColuna){
+		//$this->dao = new PropriedadeDAOImpl($dbCompany, $schemaParameter, $tableParameter, $columnParameter, $fase);
+		$this->arrayColuna = $arrayColuna;
 		$this->estrutura[EstruturaQuery::SEQUENCE] = $sequenceParameter;
 		$this->estrutura[EstruturaQuery::COLUNA] = $columnParameter;
 		$this->estrutura[EstruturaQuery::TABELA] = $tableParameter;
@@ -50,7 +52,8 @@ class PropriedadeBO extends BOImpl{
 		$fase = $this->fase;
 		$estrutura = $this->estrutura;
 		$stringResult ="";
-		$propriedades = $this->arrayDevAssoc();
+		//$propriedades = $this->arrayDevAssoc();
+		$propriedades =  $this->arrayColuna;
 		$condicao = $propriedades;
 		foreach ($propriedades as $key => $valor) {
 			$string = GeradorPropriedades::gerarPropriedade($propriedadesBO[$key], $valor, $fase, $condicao, $estrutura);

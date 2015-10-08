@@ -23,7 +23,13 @@ class ConstraintDAOImpl extends DAOImpl {
 		$query .= " rc.match_option ,  ";
 		$query .= " rc.update_rule ,  ";
 		$query .= " rc.delete_rule ,  ";
-		$query .= " c.consrc  ";
+		$query .= " c.consrc , ";
+		$query .= " case "; 
+		$query .= "  when tc.constraint_type = 'PRIMARY KEY' then 1";
+		$query .= "  when tc.constraint_type = 'UNIQUE' then 2";
+		$query .= "  when tc.constraint_type = 'FOREIGN KEY' then 3";
+		$query .= "  when tc.constraint_type = 'CHECK' then 4";
+		$query .= " end as ordem ";
 		$query .= " from information_schema.table_constraints tc ";
 		$query .= " left join information_schema.key_column_usage kcu ";
 		$query .= " on tc.constraint_catalog = kcu.constraint_catalog ";
@@ -42,7 +48,7 @@ class ConstraintDAOImpl extends DAOImpl {
 		$query .= " where upper(tc.constraint_name) not like '%NOT_NULL%'";
 		$query .= " and tc.table_schema = '{$schemaParameter}'";
 		$query .= " and tc.table_name = '{$tableParameter}'";
-		$query .= " order by 1";
+		$query .= " order by ordem";
 		$this->query = $query;
 	}
 	public function restricao($schemaType) {

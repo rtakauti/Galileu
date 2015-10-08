@@ -516,7 +516,7 @@ CONSTRAINT uq_descricao UNIQUE (ds_descricao)
 
 CREATE INDEX tabela3_descricao_IDX ON tabela3(ds_descricao);
 
-CREATE INDEX tabela3_nome_IDX ON tabela3(nm_nome);
+CREATE INDEX tabela3_nome_IDX2 ON tabela3(nm_nome, ds_descricao);
 
 SELECT *
 FROM pg_class
@@ -563,23 +563,67 @@ ORDER BY 1,2;
 select
     t.relname as table_name,
     i.relname as index_name,
-    a.attname as column_name
+    a.attname as column_name,
+    n.nspname as schema_name
 --select *
 from
     pg_class t,
     pg_class i,
     pg_index ix,
-    pg_attribute a
+    pg_attribute a,
+    pg_namespace n
 where
     t.oid = ix.indrelid
     and i.oid = ix.indexrelid
     and a.attrelid = t.oid
     and a.attnum = ANY(ix.indkey)
+    and n.oid = t.relnamespace
     and t.relkind = 'r'
     AND indisunique != 't'
 AND indisprimary != 't'
     and t.relname = 'tabela3'
+    and n.nspname = 'public'
    -- and t.relname like 'tabela3%'
 order by
     t.relname,
     i.relname;
+
+CREATE INDEX tabela3_unit_cod  ON tabela3 USING btree (nm_nome, ds_descricao, cd_codigo);
+
+CREATE TABLE vintage_unit
+(
+  id integer NOT NULL,
+  vintage_unit_date date,
+  origination_month timestamp with time zone,
+  product character varying,
+  customer_type character varying,
+  balance numeric,
+  CONSTRAINT pk_id_loan PRIMARY KEY (id)
+);
+
+CREATE INDEX id_vintage_unit_date  ON vintage_unit USING btree (vintage_unit_date);   
+CREATE INDEX ind_customer_type ON vintage_unit USING btree (customer_type COLLATE pg_catalog."default");
+CREATE INDEX ind_origination_month ON vintage_unit USING btree  (origination_month);    
+CREATE INDEX ind_product ON vintage_unit USING btree (product COLLATE pg_catalog."default");
+
+--- function
+
+SELECT *
+FROM pg_proc pr,
+pg_type tp
+WHERE tp.oid = pr.prorettype
+AND pr.proisagg = FALSE
+AND tp.typname <> 'trigger'
+AND pr.pronamespace IN (
+SELECT oid
+FROM pg_namespace
+WHERE nspname NOT LIKE 'pg_%'
+AND nspname != 'information_schema'
+);
+
+ 
+SELECT routine_name
+FROM information_schema.routines
+WHERE specific_schema NOT IN
+('pg_catalog', 'information_schema')
+AND type_udt_name != 'trigger';

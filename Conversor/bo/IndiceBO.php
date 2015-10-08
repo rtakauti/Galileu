@@ -39,7 +39,7 @@ private $estrutura;
 		if (! empty ( $indices )) {
 			$string = "\n\n\n--------------------  CREATE DE INDICES $tabela -------------------- ";
 			foreach ( $indices as $key => $indice ) {
-				$string .= "\n\nCREATE INDEX $indice";
+				$string .= "\n\nCREATE INDEX $key";
 				$string .= "\n\tON $tabela";
 				$string .= "\n\tUSING btree";
 				$string .= "\n\t(".implode(", ", $indice).");";
