@@ -785,5 +785,21 @@ select * from information_schema.sequences
 
 select * from pg_catalog.pg_trigger
 
+select pg_catalog.pg_get_function_identity_arguments(oid) from pg_catalog.pg_proc
 
 DROP FUNCTION add_stamp() cascade;
+
+
+SET SEARCH_PATH TO teste2;
+
+
+
+select distinct 
+trigger_name , 
+action_timing ,
+event_manipulation ,
+event_object_table as table_name , 
+action_orientation as trigger_scope,
+action_statement
+from information_schema.triggers
+where event_object_schema = 'public'

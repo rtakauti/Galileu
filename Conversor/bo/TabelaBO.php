@@ -60,6 +60,8 @@ class TabelaBO extends BOImpl{
 				$string .= "\n);";
 				$string .= "\nALTER TABLE $tabela";
 				$string .= "\n\tOWNER TO $user;";
+				$triggerBO = new TriggerBO($empresa, $schema, $tabela, $fase);
+				$string .= $triggerBO->createTrigger();
 				$indiceBO = new IndiceBO($empresa, $schema, $tabela);
 				$string .= $indiceBO->createIndex();
 				$stringResult .= GerenciadorSequence::getQueryCriado().$string.GerenciadorSequence::getQuerySetado();

@@ -474,5 +474,10 @@ from pg_catalog.pg_constraint
 select pg_catalog.pg_get_indexdef(oid) as "Argument data types"
 from pg_catalog.pg_namespace
 
-
+CREATE OR REPLACE FUNCTION public.one()
+RETURNS integer
+LANGUAGE sql
+AS $function$
+SELECT 1 AS result;
+$function$
 

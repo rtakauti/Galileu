@@ -33,9 +33,10 @@ $saida->gravar ( $schema->createSchema () );
 $saida->gravar ( $schema->alterSchema () );
 
 $funcao = new FuncaoBO(SchemasCompany::TESTE, 'public');
+$trigger = new TriggerBO(SchemasCompany::TESTE, 'public', 'newtable', FaseQuery::CREATE);
 echo "<pre>";
 //print_r ( $funcao->createFuncao());
-//print_r ( $indice->retornahomolog() );
+//print_r ( $trigger->createTrigger() );
 //print_r($schema->intersect_homolog_devQuery());
 echo "</pre>";
 
