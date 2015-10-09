@@ -24,7 +24,7 @@ private $estrutura;
 		$objetos =  array_diff_assoc($homolog, $dev);
 		$string = "";
 		if (! empty ( $objetos )) {
-			$string = "\n\n--------------------  DROP DE FUNCTION, PROCEDURE, TRIGGER $schema -------------------- ";
+			$string = "\n\n\n--------------------  DROP DE FUNCTION, PROCEDURE, TRIGGER $schema -------------------- ";
 			foreach ( $objetos as $nomeObjeto => $objeto ) {
 				$parameter = $objeto['parameter'];
 				$arrayParameter = explode(", ", $parameter);
@@ -36,9 +36,9 @@ private $estrutura;
 				$stringParameter = substr($stringParameter,0,-2);
 				$tipo = "";
 				if($objeto['return'] == "void") $tipo = "-- PROCEDURE";
-				elseif ($objeto['return'] == "trigger") $tipo = "-- TRIGGER";
+				//elseif ($objeto['return'] == "trigger") $tipo = "-- TRIGGER";
 				else $tipo = "-- FUNCTION";
-				$string .= "\nDROP FUNCTION $nomeObjeto ($stringParameter); $tipo";
+				if($objeto['return'] != "trigger") $string .= "\nDROP FUNCTION $nomeObjeto ($stringParameter); 	$tipo";
 			}
 		}
 		return $string;
@@ -51,7 +51,7 @@ private $estrutura;
 		$funcoes =  array_diff_assoc($dev, $homolog);
 		$string = "";
 		if (! empty ( $funcoes )) {
-			$string = "\n\n--------------------  CREATE DE FUNCTION, PROCEDURE, TRIGGER $schema -------------------- ";
+			$string = "\n\n\n--------------------  CREATE DE FUNCTION, PROCEDURE, TRIGGER $schema -------------------- ";
 			foreach ( $funcoes as $nomeFuncao => $funcao ) {
 			$string .= "\n{$funcao['create']}";
 			}

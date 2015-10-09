@@ -9,25 +9,40 @@ include_once 'BOImpl.php';
 class TriggerBO extends BOImpl {
 	
 	protected $dao;
-	private $fase;
 	private $estrutura;
 	
-	public function __construct($dbCompany, $schemaParameter, $tableParameter, $fase) {
-		$this->dao = new TriggerDAOImpl ( $dbCompany, $schemaParameter, $tableParameter, $fase );
+	public function __construct($dbCompany, $schemaParameter, $tableParameter) {
+		$this->dao = new TriggerDAOImpl ( $dbCompany, $schemaParameter, $tableParameter );
 		$this->estrutura[EstruturaQuery::COMPANY] = $dbCompany; 
 		$this->estrutura[EstruturaQuery::SCHEMA] = $schemaParameter;
 		$this->estrutura[EstruturaQuery::TABELA] = $tableParameter;
-		$this->fase = $fase;
 	}
+	
+	public function dropTrigger(){
+		$tabela = $this->estrutura[EstruturaQuery::TABELA];
+		$dev = $this->dao->trigger( SchemaType::DEV );
+		$homolog = $this->dao->trigger( SchemaType::HOMOLOG );
+		$triggers = array_diff_assoc($homolog, $dev);
+		$string = "";
+		if (!empty ( $triggers )) {
+			$string .= "\n\n\n-------------------- DROP TRIGGER --------------------";
+			foreach ( $triggers as $nameTrigger => $trigger ) {
+				$function = substr($trigger['action_statement'], 18);
+				$string .= "\nDROP TRIGGER $nameTrigger ON $tabela;";
+				$string .= "\nDROP FUNCTION $function;";
+			}
+		}
+		return $string;
+	}
+	
 	public function createTrigger() {
-		$fase = $this->fase;
 		$tabela = $this->estrutura[EstruturaQuery::TABELA];
 		$dev = $this->dao->trigger( SchemaType::DEV );
 		$homolog = $this->dao->trigger( SchemaType::HOMOLOG );
 		$triggers = array_diff_assoc($dev, $homolog);
 		$string = "";
 		if (!empty ( $triggers )) {
-			$string .= "\n\n-------------------- CREATE TRIGGER --------------------";
+			$string .= "\n\n\n-------------------- CREATE TRIGGER --------------------";
 			foreach ( $triggers as $nameTrigger => $trigger ) {
 				$string .= "\nCREATE TRIGGER $nameTrigger ";
 				$eventos = implode ( " OR ", $trigger ['event_manipulation'] );

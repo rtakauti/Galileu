@@ -44,14 +44,14 @@ class SchemaBO extends BOImpl{
 	
 	public function dropSchema() {
 		$array = $this->diff_homolog_devQuery ();
-		if (!empty ( $array )) {
-		$string = "\n\n-------------------- DROP DE SCHEMAS --------------------";
+		$string = "";
+		if (! empty ( $array )) {
+			$string = "\n\n\n\n-------------------- DROP DE SCHEMAS --------------------";
 			foreach ( $array as $schema ) {
 				$string .= "\nDROP SCHEMA IF EXISTS $schema CASCADE;";
 			}
-		return $string;
 		}
-		return ;
+		return $string;
 	}
 	
 	public function createSchema() {
@@ -90,25 +90,15 @@ class SchemaBO extends BOImpl{
 				$sequenceParameter = $sequence->diff_dev_homologQuery();
 				$string .= $sequence->createSequence ();
 				$tabela = new TabelaBO ( $empresa, $schema,$sequenceParameter, $this->estrutura );
+				$string .= $tabela->dropTable();
 				$string .= $tabela->createTable ();
+				$string .= $tabela->alterTable();
 				$funcao = new FuncaoBO($empresa, $schema);
+				$string .= $funcao->dropFuncao();
 				$string .= $funcao->createFuncao();
 			}
 		return $string;
 	}
 	
-	/*
-	public function createSchemaHomolog(){
-		$array = $this->diff_dev_homologQuery();
-		if (!empty ( $array )) {
-		$string = "\n\n------ CREATE DE SCHEMAS ------";
-			foreach ( $array as $schema ) {
-				$string .= "\nCREATE SCHEMA $schema;";
-			}
-		return $string;
-		}
-		return ;
-	}
-	*/
 	
 }

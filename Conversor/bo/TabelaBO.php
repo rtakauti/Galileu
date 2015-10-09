@@ -26,9 +26,9 @@ class TabelaBO extends BOImpl{
 		$tabelas = $this->diff_homolog_devQuery();
 		$string = "";
 		if(!empty($tabelas)){
-			$stringResult = "\n\n-------------------- DROP TABLE --------------------";
+			$string = "\n\n\n-------------------- DROP TABLE --------------------";
 			foreach ($tabelas as $tabela) {
-				$string = "\nDROP TABLE $tabela CASCADE;";
+				$string .= "\nDROP TABLE $tabela CASCADE;";
 			}
 		}
 		return $string;
@@ -42,7 +42,7 @@ class TabelaBO extends BOImpl{
 		$tabelas = $this->diff_dev_homologQuery();
 		$fase = FaseQuery::CREATE;
 		$colunas = array();
-		$stringResult = "\n\n-------------------- CREATE TABLE --------------------";
+		$stringResult = "\n\n\n-------------------- CREATE TABLE --------------------";
 		if(!empty($tabelas)){
 			foreach ($tabelas as $tabela) {
 				$string = "\n\nCREATE TABLE $tabela";
@@ -60,7 +60,7 @@ class TabelaBO extends BOImpl{
 				$string .= "\n);";
 				$string .= "\nALTER TABLE $tabela";
 				$string .= "\n\tOWNER TO $user;";
-				$triggerBO = new TriggerBO($empresa, $schema, $tabela, $fase);
+				$triggerBO = new TriggerBO($empresa, $schema, $tabela);
 				$string .= $triggerBO->createTrigger();
 				$indiceBO = new IndiceBO($empresa, $schema, $tabela);
 				$string .= $indiceBO->createIndex();
@@ -71,5 +71,27 @@ class TabelaBO extends BOImpl{
 		}
 	}
 	
+	public function alterTable(){
+		$empresa = $this->estrutura[EstruturaQuery::COMPANY];
+		$schema= $this->estrutura[EstruturaQuery::SCHEMA];
+		$sequence = $this->estrutura[EstruturaQuery::SEQUENCE];
+		//$user = $this->estrutura[EstruturaQuery::USER];
+		$tabelas = $this->intersect_homolog_devQuery();
+		$fase = FaseQuery::ALTER;
+		$colunas = array();
+		$stringResult = "\n\n\n-------------------- ALTER TABLE --------------------";
+		$string = "";
+		if(!empty($tabelas)){
+			foreach ($tabelas as $tabela) {
+				$constraintBO = new ConstraintBO($empresa, $schema, $tabela, $fase);
+				//$string .= $constraintBO->dr
+				$colunaBO = new ColunaBO($empresa, $schema , $tabela, $sequence, $fase);
+				$string .= $colunaBO->dropColumn();
+				$triggerBO = new TriggerBO($empresa, $schema, $tabela);
+				$string .= $triggerBO->dropTrigger();
+			}
+			return $stringResult.$string;
+		}
+	}
 	
 }

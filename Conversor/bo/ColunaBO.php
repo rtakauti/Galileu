@@ -27,10 +27,10 @@ class ColunaBO extends BOImpl{
 		$dev = array_keys($this->dao->propriedade(SchemaType::DEV));
 		$homolog = array_keys($this->dao->propriedade(SchemaType::HOMOLOG));
 		$colunas = array_diff($homolog, $dev);
-		$string = "";
+		$string .= "\n\n\n-------------------- DROP COLUMN --------------------";
 		if (! empty ( $colunas )) {
 			foreach ( $colunas as $coluna ) {
-				$string .= "ALTER TABLE $tabela DROP COLUMN $coluna;\n";
+				$string .= "\nALTER TABLE $tabela DROP COLUMN $coluna;";
 			}
 		}
 		return $string;
@@ -42,7 +42,6 @@ class ColunaBO extends BOImpl{
 		$schema = $this->estrutura [EstruturaQuery::SCHEMA];
 		$empresa = $this->estrutura [EstruturaQuery::COMPANY];
 		$fase = $this->fase;
-		//$colunas = $this->diff_dev_homologQuery ();
 		$dev = $this->dao->propriedade(SchemaType::DEV);
 		$homolog = $this->dao->propriedade(SchemaType::HOMOLOG);
 		$colunas = array_diff_assoc($dev, $homolog);
@@ -54,6 +53,17 @@ class ColunaBO extends BOImpl{
 			}
 		}
 		return $string;
+	}
+	
+	public function addColumn(){
+		$sequence = $this->estrutura [EstruturaQuery::SEQUENCE];
+		$tabela = $this->estrutura [EstruturaQuery::TABELA];
+		$schema = $this->estrutura [EstruturaQuery::SCHEMA];
+		$empresa = $this->estrutura [EstruturaQuery::COMPANY];
+		$fase = $this->fase;
+		$dev = $this->dao->propriedade(SchemaType::DEV);
+		$homolog = $this->dao->propriedade(SchemaType::HOMOLOG);
+		$colunas = array_intersect_key($dev, $homolog);
 	}
 	
 	

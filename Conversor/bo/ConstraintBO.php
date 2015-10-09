@@ -16,9 +16,26 @@ class ConstraintBO extends BOImpl {
 		$this->dao = new ConstraintDAOImpl ( $dbCompany, $schemaParameter, $tableParameter, $fase );
 		$this->fase = $fase;
 	}
+	
+	public function dropConstraint(){
+		$homolog = $this->dao->restricao(SchemaType::HOMOLOG);
+		$dev = $this->dao->restricao ( SchemaType::DEV );
+		$constraints = array_diff_assoc($homolog, $dev);
+		$string .= "\n\n\n-------------------- DROP CONSTRAINT --------------------";
+		if (isset ( $constraints )) {
+			foreach ( $constraints as $nameConstraint => $constraint ) {
+				$string .= "\nCONSTRAINT $nameConstraint " . $restricao->constructConstraint () . ",\n";
+			}
+		}
+		return $string;
+		
+	}
+	
 	public function createConstraint() {
 		$fase = $this->fase;
-		$constraints = $this->dao->restricao ( SchemaType::DEV );
+		$homolog = $this->dao->restricao(SchemaType::HOMOLOG);
+		$dev = $this->dao->restricao ( SchemaType::DEV );
+		$constraints = array_diff_assoc($dev, $homolog);
 		$string = "";
 		if (isset ( $constraints )) {
 			foreach ( $constraints as $nameConstraint => $constraint ) {
@@ -29,9 +46,6 @@ class ConstraintBO extends BOImpl {
 		return $string;
 	}
 	
-	public function homolog() {
-		return $this->dao->restricao ( SchemaType::HOMOLOG );
-	}
 }
 
 

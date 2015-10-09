@@ -21,7 +21,7 @@ private $estrutura;
 		$tabela = $this->estrutura[EstruturaQuery::TABELA];
 		$homolog = array_keys($this->dao->index(SchemaType::HOMOLOG));
 		$dev = array_keys($this->dao->index(SchemaType::DEV));
-		$indices = array_diff($homolog, $dev);
+		$indices = array_diff_assoc($homolog, $dev);
 		$string = "";
 		if (! empty ( $indices )) {
 			$string = "\n\n--------------------  DROP DE INDICES $tabela -------------------- ";

@@ -34,9 +34,11 @@ $saida->gravar ( $schema->alterSchema () );
 
 $funcao = new FuncaoBO(SchemasCompany::TESTE, 'public');
 $trigger = new TriggerBO(SchemasCompany::TESTE, 'public', 'newtable', FaseQuery::CREATE);
+$tabela = new TabelaBO(SchemasCompany::TESTE, 'public', NULL, NULL);
+$coluna = new ColunaBO(SchemasCompany::TESTE, 'public', 'tabela3', NULL, FaseQuery::ALTER);
 echo "<pre>";
-//print_r ( $funcao->createFuncao());
-//print_r ( $trigger->createTrigger() );
+//print_r ( $tabela->alterTable());
+//print_r ( $coluna->dropColumn() );
 //print_r($schema->intersect_homolog_devQuery());
 echo "</pre>";
 

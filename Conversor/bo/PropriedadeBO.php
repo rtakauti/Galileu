@@ -51,7 +51,6 @@ class PropriedadeBO {
 		$fase = $this->fase;
 		$estrutura = $this->estrutura;
 		$stringResult = "";
-		// $propriedades = $this->arrayDevAssoc();
 		$propriedades = $this->arrayColuna;
 		$condicao = $propriedades;
 		foreach ( $propriedades as $key => $valor ) {

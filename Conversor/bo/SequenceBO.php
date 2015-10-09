@@ -25,7 +25,7 @@ private $estrutura;
 		$sequences = $this->diff_homolog_devQuery ();
 		$string = "";
 		if (! empty ( $sequences )) {
-			$string = "\n\n--------------------  DROP DE SEQUENCES $schema -------------------- ";
+			$string = "\n\n\n--------------------  DROP DE SEQUENCES $schema -------------------- ";
 			foreach ( $sequences as $sequence ) {
 				$string .= "\nDROP SEQUENCE $sequence ;";
 			}
@@ -38,7 +38,7 @@ private $estrutura;
 		$sequences = $this->diff_dev_homologQuery ();
 		$string = "";
 		if (! empty ( $sequences )) {
-			$string = "\n\n--------------------  CREATE DE SEQUENCES $schema -------------------- ";
+			$string = "\n\n\n--------------------  CREATE DE SEQUENCES $schema -------------------- ";
 			foreach ( $sequences as $sequence ) {
 				$string .= "\nCREATE SEQUENCE $sequence;";
 			}
