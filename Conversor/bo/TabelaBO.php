@@ -26,7 +26,7 @@ class TabelaBO extends BOImpl{
 		$tabelas = $this->diff_homolog_devQuery();
 		$string = "";
 		if(!empty($tabelas)){
-			$string = "\n\n\n-------------------- DROP TABLE --------------------";
+			$string = "\n\n\n------------------------------ DROP TABLE ------------------------------";
 			foreach ($tabelas as $tabela) {
 				$string .= "\nDROP TABLE $tabela CASCADE;";
 			}
@@ -42,7 +42,7 @@ class TabelaBO extends BOImpl{
 		$tabelas = $this->diff_dev_homologQuery();
 		$fase = FaseQuery::CREATE;
 		$colunas = array();
-		$stringResult = "\n\n\n-------------------- CREATE TABLE --------------------";
+		$stringResult = "\n\n\n------------------------------ CREATE TABLE ------------------------------";
 		if(!empty($tabelas)){
 			foreach ($tabelas as $tabela) {
 				$string = "\n\nCREATE TABLE $tabela";
@@ -79,14 +79,17 @@ class TabelaBO extends BOImpl{
 		$tabelas = $this->intersect_homolog_devQuery();
 		$fase = FaseQuery::ALTER;
 		$colunas = array();
-		$stringResult = "\n\n\n-------------------- ALTER TABLE --------------------";
+		$stringResult = "\n\n\n------------------------------ ALTER TABLE ------------------------------";
 		$string = "";
 		if(!empty($tabelas)){
 			foreach ($tabelas as $tabela) {
 				$constraintBO = new ConstraintBO($empresa, $schema, $tabela, $fase);
-				//$string .= $constraintBO->dr
+				$string .= $constraintBO->dropConstraint();
+				// add constraint
 				$colunaBO = new ColunaBO($empresa, $schema , $tabela, $sequence, $fase);
 				$string .= $colunaBO->dropColumn();
+				// add column
+				// alter column
 				$triggerBO = new TriggerBO($empresa, $schema, $tabela);
 				$string .= $triggerBO->dropTrigger();
 			}

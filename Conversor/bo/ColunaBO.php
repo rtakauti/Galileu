@@ -27,8 +27,9 @@ class ColunaBO extends BOImpl{
 		$dev = array_keys($this->dao->propriedade(SchemaType::DEV));
 		$homolog = array_keys($this->dao->propriedade(SchemaType::HOMOLOG));
 		$colunas = array_diff($homolog, $dev);
-		$string .= "\n\n\n-------------------- DROP COLUMN --------------------";
+		$string = "";
 		if (! empty ( $colunas )) {
+		$string = "\n\n\n-------------------- DROP COLUMN --------------------";
 			foreach ( $colunas as $coluna ) {
 				$string .= "\nALTER TABLE $tabela DROP COLUMN $coluna;";
 			}
@@ -66,5 +67,6 @@ class ColunaBO extends BOImpl{
 		$colunas = array_intersect_key($dev, $homolog);
 	}
 	
+	//ALTER COLUMN
 	
 }
