@@ -23,7 +23,8 @@ class PadraoTO extends GerenciadorSequence implements IPropriedade {
 				$sequence = substr ( $valor, strlen ( "nextval('" ), $fimSequence );
 				if ($schema == "public")
 					$sequence = "public." . $sequence;
-				if (! in_array ( $sequence, $sequences )) {
+				if(isset($sequences))
+				if (! in_array ( $sequence, $sequences ) ) {
 					GerenciadorSequence::adicionaCriados ( $sequence );
 					$createSequence = "\n\n-------------------- CREATE DA SEQUENCE --------------------";
 					$createSequence .= "\nCREATE SEQUENCE $sequence;";
@@ -46,8 +47,8 @@ class PadraoTO extends GerenciadorSequence implements IPropriedade {
 					$string = "\n\tDEFAULT $valor ";
 					break;
 				case FaseQuery::ALTER :
-					$string = "\n\tALTER COLUMN $coluna DROP DEFAULT,";
-					$string .= "\n\tALTER COLUMN $coluna SET DEFAULT $valor,";
+					$string = "\nALTER TABLE $tabela ALTER COLUMN $coluna DROP DEFAULT;";
+					$string .= "\nALTER TABLE $tabela ALTER COLUMN $coluna SET DEFAULT $valor,";
 					break;
 				
 				default :

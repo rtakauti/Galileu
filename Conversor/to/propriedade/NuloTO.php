@@ -25,9 +25,9 @@ class NuloTO implements IPropriedade {
 					break;
 				case FaseQuery::ALTER :
 					if ($valor == "NO") {
-						$string = "\n\tALTER COLUMN $coluna SET NOT NULL";
+						$string = "\nALTER TABLE $tabela ALTER COLUMN $coluna SET NOT NULL;";
 					} else {
-						$string = "\n\tALTER COLUMN $coluna DROP NOT NULL";
+						$string = "\nALTER TABLE $tabela ALTER COLUMN $coluna DROP NOT NULL;";
 					}
 					
 					break;

@@ -48,9 +48,9 @@ class ColunaBO extends BOImpl{
 		$colunas = array_diff_assoc($dev, $homolog);
 		$string = "";
 		if (! empty ( $colunas )) {
-			foreach ( $colunas as $nameColuna => $coluna ) {
-				$propriedade = new PropriedadeBO ( $empresa, $schema, $tabela, $nameColuna, $sequence, $fase, $coluna );
-				$string .= "\t" . $nameColuna . " " . $propriedade->constructProperty () . ",\n";
+			foreach ( $colunas as $nomeColuna => $coluna ) {
+				$propriedade = new PropriedadeBO ( $empresa, $schema, $tabela, $nomeColuna, $sequence, $fase, $coluna );
+				$string .= "\t" . $nomeColuna . " " . $propriedade->constructProperty () . ",\n";
 			}
 		}
 		return $string;
@@ -61,12 +61,46 @@ class ColunaBO extends BOImpl{
 		$tabela = $this->estrutura [EstruturaQuery::TABELA];
 		$schema = $this->estrutura [EstruturaQuery::SCHEMA];
 		$empresa = $this->estrutura [EstruturaQuery::COMPANY];
-		$fase = $this->fase;
+		$fase = FaseQuery::ADD;
 		$dev = $this->dao->propriedade(SchemaType::DEV);
 		$homolog = $this->dao->propriedade(SchemaType::HOMOLOG);
-		$colunas = array_intersect_key($dev, $homolog);
+		$colunas = array_diff_assoc($dev, $homolog);
+		$string ="";
+		if (! empty ( $colunas )) {
+			foreach ( $colunas as $nomeColuna => $coluna ) {
+				$string .= "\n\nALTER TABLE $tabela ADD COLUMN $nomeColuna ";
+				$propriedade = new PropriedadeBO ( $empresa, $schema, $tabela, $nomeColuna, $sequence, $fase, $coluna );
+				$string .= $propriedade->constructProperty () . "\n";
+			}
+		}
+		return $string;
 	}
 	
-	//ALTER COLUMN
+public function alterColumn(){
+		$sequence = $this->estrutura [EstruturaQuery::SEQUENCE];
+		$tabela = $this->estrutura [EstruturaQuery::TABELA];
+		$schema = $this->estrutura [EstruturaQuery::SCHEMA];
+		$empresa = $this->estrutura [EstruturaQuery::COMPANY];
+		$fase = FaseQuery::ALTER;
+		$devArray = $this->dao->propriedade(SchemaType::DEV);
+		$homologArray = $this->dao->propriedade(SchemaType::HOMOLOG);
+		$diffArray = array_intersect_key($devArray, $homologArray);
+		$colunas = array();
+		foreach ($diffArray as $nomeColuna => $valor) {
+			$colunas[$nomeColuna] =  array_diff_assoc($devArray[$nomeColuna], $homologArray[$nomeColuna]);
+			$input[$nomeColuna] =  array_diff_assoc($homologArray[$nomeColuna], $devArray[$nomeColuna]);
+		}
+		$string ="";
+		if (! empty ( $colunas )) {
+			foreach ( $colunas as $nomeColuna => $coluna ) {
+				$string .= "\n---- CAMPO $nomeColuna TABELA $tabela ----";
+				$output = implode(', ', array_map(function ($v, $k) { return $k . " = " . (!isset($v)?'NULO':$v); }, $input[$nomeColuna], array_keys($input[$nomeColuna])));
+				$string .= "\n---- ESTADO ANTERIOR $output ----";
+				$propriedade = new PropriedadeBO ( $empresa, $schema, $tabela, $nomeColuna, $sequence, $fase, $coluna );
+				$string .= $propriedade->constructProperty () . "\n";
+			}
+		}
+		return $string;
+	}
 	
 }

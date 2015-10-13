@@ -138,10 +138,6 @@ class NomeUdtTO implements IPropriedade {
 					
 					break;
 				
-				case FaseQuery::ADD :
-					$string = "\n\t$valor ";
-					break;
-				
 				default :
 					break;
 			}

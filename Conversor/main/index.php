@@ -38,7 +38,7 @@ $tabela = new TabelaBO(SchemasCompany::TESTE, 'public', NULL, NULL);
 $coluna = new ColunaBO(SchemasCompany::TESTE, 'public', 'tabela3', NULL, FaseQuery::ALTER);
 echo "<pre>";
 //print_r ( $tabela->alterTable());
-//print_r ( $coluna->dropColumn() );
+//print_r ( $coluna->alterColumn());
 //print_r($schema->intersect_homolog_devQuery());
 echo "</pre>";
 

@@ -11,7 +11,11 @@ public function __construct($valor= NULL, $fase = NULL, $condicao=NULL, $estrutu
 	}
 
 	public function retorna($valor, $fase, $condicao, $estrutura) {
-		if (isset ( $valor ) && $condicao['udt_name'] == "numeric") {
+		$schema = $estrutura [EstruturaQuery::SCHEMA];
+		$tabela = $estrutura [EstruturaQuery::TABELA];
+		$coluna = $estrutura [EstruturaQuery::COLUNA];
+		$string = "";
+		if (isset ( $valor ) && $condicao ['udt_name'] == "numeric") {
 			switch ($fase) {
 				case FaseQuery::CREATE :
 					$string = "$valor) ";
@@ -23,9 +27,8 @@ public function __construct($valor= NULL, $fase = NULL, $condicao=NULL, $estrutu
 				default :
 					break;
 			}
-			return $string;
 		}
-		return "";
+		return $string;
 	}
 	
 	

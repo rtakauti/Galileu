@@ -76,22 +76,28 @@ class TabelaBO extends BOImpl{
 		$schema= $this->estrutura[EstruturaQuery::SCHEMA];
 		$sequence = $this->estrutura[EstruturaQuery::SEQUENCE];
 		//$user = $this->estrutura[EstruturaQuery::USER];
-		$tabelas = $this->intersect_homolog_devQuery();
 		$fase = FaseQuery::ALTER;
+		$tabelas = $this->intersect_homolog_devQuery();
 		$colunas = array();
 		$stringResult = "\n\n\n------------------------------ ALTER TABLE ------------------------------";
 		$string = "";
 		if(!empty($tabelas)){
 			foreach ($tabelas as $tabela) {
+				$colunaBO = new ColunaBO($empresa, $schema , $tabela, $sequence, $fase);
+				$string .= $colunaBO->dropColumn();
+				$string .= $colunaBO->addColumn();
+				$string .= $colunaBO->alterColumn();
+				$indiceBO = new IndiceBO($empresa, $schema, $tabela);
+				$string .= $indiceBO->dropIndice();
+				$string .= $indiceBO->createIndex();
 				$constraintBO = new ConstraintBO($empresa, $schema, $tabela, $fase);
 				$string .= $constraintBO->dropConstraint();
 				// add constraint
-				$colunaBO = new ColunaBO($empresa, $schema , $tabela, $sequence, $fase);
 				$string .= $colunaBO->dropColumn();
-				// add column
-				// alter column
 				$triggerBO = new TriggerBO($empresa, $schema, $tabela);
 				$string .= $triggerBO->dropTrigger();
+				$stringResult .= GerenciadorSequence::getQueryCriado().$string.GerenciadorSequence::getQuerySetado();
+				$string = "";
 			}
 			return $stringResult.$string;
 		}

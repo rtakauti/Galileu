@@ -7,13 +7,16 @@ include_once realpath(__DIR__.'/../IPropriedade.php');
 
 class TipoDadoTO implements IPropriedade{
 
-	public function __construct($valor= NULL, $fase = NULL, $condicao=NULL, $coluna = NULL){
-		$this->retorna($valor, $fase, $condicao, $coluna);
+	public function __construct($valor= NULL, $fase = NULL, $condicao=NULL, $estrutura = NULL){
+		$this->retorna($valor, $fase, $condicao, $estrutura);
 	}
 	
 
 
 	public function retorna($valor, $fase, $condicao, $estrutura) {
+		$schema = $estrutura [EstruturaQuery::SCHEMA];
+		$tabela = $estrutura [EstruturaQuery::TABELA];
+		$coluna = $estrutura [EstruturaQuery::COLUNA];
 		$string = "";
 		if (isset ( $valor )) {
 			switch ($fase) {
@@ -48,6 +51,10 @@ class TipoDadoTO implements IPropriedade{
 					$string = "\n\t$valor ";
 					break;
 				
+				case FaseQuery::ALTER :
+					$string = "\nALTER TABLE $tabela ALTER COLUMN $coluna TYPE $valor USING $coluna::$valor;";
+					break;
+					
 				default :
 					break;
 			}

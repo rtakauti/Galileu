@@ -34,11 +34,7 @@ private $estrutura;
 					$stringParameter .= substr($parameter, strpos($parameter, " ")+1).", ";
 				}
 				$stringParameter = substr($stringParameter,0,-2);
-				$tipo = "";
-				if($objeto['return'] == "void") $tipo = "-- PROCEDURE";
-				//elseif ($objeto['return'] == "trigger") $tipo = "-- TRIGGER";
-				else $tipo = "-- FUNCTION";
-				if($objeto['return'] != "trigger") $string .= "\nDROP FUNCTION $nomeObjeto ($stringParameter); 	$tipo";
+				if($objeto['return'] != "trigger") $string .= "\nDROP FUNCTION $nomeObjeto ($stringParameter);";
 			}
 		}
 		return $string;

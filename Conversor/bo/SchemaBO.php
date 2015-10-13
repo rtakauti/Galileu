@@ -46,7 +46,7 @@ class SchemaBO extends BOImpl{
 		$array = $this->diff_homolog_devQuery ();
 		$string = "";
 		if (! empty ( $array )) {
-			$string = "\n\n\n\n-------------------- DROP DE SCHEMAS --------------------";
+			$string = "\n\n\n\n------------------------------ DROP DE SCHEMAS ------------------------------";
 			foreach ( $array as $schema ) {
 				$string .= "\nDROP SCHEMA IF EXISTS $schema CASCADE;";
 			}
@@ -62,7 +62,7 @@ class SchemaBO extends BOImpl{
 		if (! empty ( $schemas ))
 			foreach ( $schemas as $schema ) {
 				$estrutura = $this->estrutura;
-				$string .= "\n\n\n\n-------------------- CREATE SCHEMA --------------------";
+				$string .= "\n\n\n\n------------------------------ CREATE SCHEMA ------------------------------";
 				$string .= "\nCREATE SCHEMA $schema;";
 				$string .= $this->setSchema ( $schema );
 				$sequence = new SequenceBO ( $empresa, $schema );
@@ -83,7 +83,7 @@ class SchemaBO extends BOImpl{
 		$string = "";
 		if (! empty ( $schemas ))
 			foreach ( $schemas as $schema ) {
-				$string .= "\n\n\n\n-------------------- ALTER SCHEMA --------------------";
+				$string .= "\n\n\n\n------------------------------ ALTER SCHEMA ------------------------------";
 				$string .= $this->setSchema ( $schema );
 				$sequence = new SequenceBO ( $empresa, $schema );
 				$string .= $sequence->dropSequence ();

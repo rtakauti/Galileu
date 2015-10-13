@@ -27,7 +27,7 @@ class ConstraintBO extends BOImpl {
 		$dev = $this->dao->restricao ( SchemaType::DEV );
 		$constraints = array_diff_assoc($homolog, $dev);
 		$string = "";
-		if (isset ( $constraints )) {
+		if (!empty ( $constraints )) {
 		$string = "\n\n\n-------------------- DROP CONSTRAINT --------------------";
 			foreach ( $constraints as $nameConstraint => $constraint ) {
 				$string .= "\nALTER TABLE $tabela DROP CONSTRAINT $nameConstraint;" ;
