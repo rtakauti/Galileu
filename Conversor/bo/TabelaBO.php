@@ -89,9 +89,9 @@ class TabelaBO extends BOImpl{
 				$constraintBO = new ConstraintBO($empresa, $schema, $tabela, $fase);
 				$string .= $constraintBO->dropConstraint();
 				$string .= $constraintBO->addConstraint();
-				$string .= $colunaBO->dropColumn();
 				$triggerBO = new TriggerBO($empresa, $schema, $tabela);
 				$string .= $triggerBO->dropTrigger();
+				$string .= $triggerBO->createTrigger();
 				$stringResult .= GerenciadorSequence::getQueryCriado().$string.GerenciadorSequence::getQuerySetado();
 				$string = "";
 			}
