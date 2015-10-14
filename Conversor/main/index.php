@@ -36,51 +36,12 @@ $funcao = new FuncaoBO(SchemasCompany::TESTE, 'public');
 $trigger = new TriggerBO(SchemasCompany::TESTE, 'public', 'newtable', FaseQuery::CREATE);
 $tabela = new TabelaBO(SchemasCompany::TESTE, 'public', NULL, NULL);
 $coluna = new ColunaBO(SchemasCompany::TESTE, 'public', 'tabela3', NULL, FaseQuery::ALTER);
+$constraint = new ConstraintBO(SchemasCompany::TESTE, 'public', 'tabela3', FaseQuery::ADD);
 echo "<pre>";
 //print_r ( $tabela->alterTable());
 //print_r ( $coluna->alterColumn());
-//print_r($schema->intersect_homolog_devQuery());
+//print_r($constraint->addConstraint());
+//print_r($constraint->dropConstraint());
 echo "</pre>";
 
-
-/*
-foreach ( $schemasCreateTableArray as $schemaNome ) {
-	$sequence = new SequenceBO ( $empresa, $schemaNome );
-	$saida->gravar ( $sequence->dropSequenceHomolog () );
-	$saida->gravar ( $sequence->createSequenceHomolog());
-	$saida->gravar ( $schema->setSchema ( $schemaNome ) );
-	$tabela = new TabelaBO ( $empresa, $schemaNome );
-	$saida->gravar($tabela->createTable());
-	$tabelasAddColumnArray = $tabela->createTableDev();
-	echo "<pre>";
-	//print_r ( $tabelasAddColumnArray );
-	//print_r($schemaNome."Schema");
-	echo "</pre>";
-	/*
-	foreach ($tabelasAddColumnArray as $tabelaNome) {
-		$coluna = new ColunaBO($empresa, $schemaNome, $tabelaNome);
-		$colunasAddPropriedadeArray = $coluna->createColumn();
-		echo "<pre>";
-		//print_r ( $colunasAddPropriedadeArray );
-		//print_r($tabelaNome."Tabela");
-		echo "</pre>";
-		$saida->gravar($coluna->createColumn());
-		
-		foreach ($colunasAddPropriedadeArray as $colunaNome) {
-			$propriedade = new PropriedadeBO($empresa, $schemaNome, $tabelaNome, $colunaNome);
-			$saida->gravar($propriedade->createProperty());
-			echo "<pre>";
-			//print_r ( $propriedadeAddArray );
-			//print_r($colunaNome."Coluna");
-			echo "</pre>";
-			//$geradorPropriedade = new GeradorPropriedade($propriedade, $array);
-			
-		}
-		
-		
-	}
-	
-	
-}
-*/
 $saida->fecha ();

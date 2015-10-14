@@ -1,18 +1,12 @@
 <?php
-
-include_once realpath(__DIR__ .'/../../enum/FaseQuery.php');
-include_once realpath(__DIR__.'/../../enum/EstruturaQuery.php');
-include_once realpath(__DIR__ .'/../../bo/sequence/GerenciadorSequence.php');
-include_once realpath(__DIR__.'/../IPropriedade.php');
-
-class TipoDadoTO implements IPropriedade{
-
-	public function __construct($valor= NULL, $fase = NULL, $condicao=NULL, $estrutura = NULL){
-		$this->retorna($valor, $fase, $condicao, $estrutura);
+include_once realpath ( __DIR__ . '/../../enum/FaseQuery.php' );
+include_once realpath ( __DIR__ . '/../../enum/EstruturaQuery.php' );
+include_once realpath ( __DIR__ . '/../../bo/sequence/GerenciadorSequence.php' );
+include_once realpath ( __DIR__ . '/../IPropriedade.php' );
+class TipoDadoTO implements IPropriedade {
+	public function __construct($valor = NULL, $fase = NULL, $condicao = NULL, $estrutura = NULL) {
+		$this->retorna ( $valor, $fase, $condicao, $estrutura );
 	}
-	
-
-
 	public function retorna($valor, $fase, $condicao, $estrutura) {
 		$schema = $estrutura [EstruturaQuery::SCHEMA];
 		$tabela = $estrutura [EstruturaQuery::TABELA];
@@ -28,10 +22,10 @@ class TipoDadoTO implements IPropriedade{
 							break;
 						case "time without time zone" :
 							$string = "";
-							break;	
+							break;
 						case "time with time zone" :
 							$string = "";
-							break;	
+							break;
 						case "timestamp without time zone" :
 							$string = "";
 							break;
@@ -40,7 +34,7 @@ class TipoDadoTO implements IPropriedade{
 							break;
 						case "USER-DEFINED" :
 							$string = "";
-							break;	
+							break;
 						default :
 							$string = $valor;
 							break;
@@ -48,18 +42,39 @@ class TipoDadoTO implements IPropriedade{
 					
 					break;
 				case FaseQuery::ADD :
-					$string = "\n\t$valor ";
+					switch ($valor) {
+						case "ARRAY" :
+							$string = "[] ";
+							break;
+						case "time without time zone" :
+							$string = "";
+							break;
+						case "time with time zone" :
+							$string = "";
+							break;
+						case "timestamp without time zone" :
+							$string = "";
+							break;
+						case "timestamp with time zone" :
+							$string = "";
+							break;
+						case "USER-DEFINED" :
+							$string = "";
+							break;
+						default :
+							$string = "\n\t$valor";
+							break;
+					}
 					break;
 				
 				case FaseQuery::ALTER :
 					$string = "\nALTER TABLE $tabela ALTER COLUMN $coluna TYPE $valor USING $coluna::$valor;";
 					break;
-					
+				
 				default :
 					break;
 			}
 		}
 		return $string;
 	}
-	
 }

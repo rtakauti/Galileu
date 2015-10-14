@@ -25,20 +25,25 @@ class ConstraintBO extends BOImpl {
 		$tabela = $this->estrutura[EstruturaQuery::TABELA];
 		$homolog = $this->dao->restricao(SchemaType::HOMOLOG);
 		$dev = $this->dao->restricao ( SchemaType::DEV );
-		$constraints = array_diff_assoc($homolog, $dev);
+		$constraintsDiff = array_diff(array_keys($homolog), array_keys($dev));
+		$constraintsIntersect = array_intersect(array_keys($homolog), array_keys($dev));
 		$string = "";
-		if (!empty ( $constraints )) {
+		if (!empty ( $constraintsDiff ) || !empty($constraintsIntersect)) {
 		$string = "\n\n\n-------------------- DROP CONSTRAINT --------------------";
-			foreach ( $constraints as $nameConstraint => $constraint ) {
+			foreach ( $constraintsDiff as $nameConstraint ) {
 				$string .= "\nALTER TABLE $tabela DROP CONSTRAINT $nameConstraint;" ;
+			}
+			foreach ($constraintsIntersect as $nameConstraint) {
+				if($homolog[$nameConstraint] != $dev[$nameConstraint]){
+					$string .= "\nALTER TABLE $tabela DROP CONSTRAINT $nameConstraint;" ;
+				}
 			}
 		}
 		return $string;
-		
 	}
 	
 	public function createConstraint() {
-		$fase = $this->fase;
+		$fase = FaseQuery::CREATE;
 		$homolog = $this->dao->restricao(SchemaType::HOMOLOG);
 		$dev = $this->dao->restricao ( SchemaType::DEV );
 		$constraints = array_diff_assoc($dev, $homolog);
@@ -52,7 +57,29 @@ class ConstraintBO extends BOImpl {
 		return $string;
 	}
 	
-	// ADD CONSTRAINT
+	
+	public function addConstraint() {
+		$fase = FaseQuery::ADD;
+		$tabela = $this->estrutura [EstruturaQuery::TABELA];
+		$homolog = $this->dao->restricao ( SchemaType::HOMOLOG );
+		$dev = $this->dao->restricao ( SchemaType::DEV );
+		$constraints = array_diff_assoc ( $dev, $homolog );
+		$constraintsIntersect = array_intersect(array_keys($homolog), array_keys($dev));
+		$string = "";
+		if (!empty($constraints )) {
+			$string = "\n\n\n-------------------- ADD CONSTRAINT --------------------";
+			foreach ( $constraints as $nameConstraint => $constraint ) {
+				$restricao = new RestricaoBO ( $constraint, $fase );
+				$string .= "\nALTER TABLE $tabela\n\tADD CONSTRAINT $nameConstraint " . $restricao->constructConstraint () . ";\n";
+			}
+			foreach ($constraintsIntersect as $nameConstraint) {
+				if($homolog[$nameConstraint] != $dev[$nameConstraint]){
+					$string .= "\nALTER TABLE $tabela\n\tADD CONSTRAINT $nameConstraint " . $restricao->constructConstraint () . ";\n";
+				}
+			}
+		}
+		return $string;
+	}
 }
 
 

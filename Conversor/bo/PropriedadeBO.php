@@ -57,8 +57,8 @@ class PropriedadeBO {
 			$string = GeradorPropriedades::gerarPropriedade ( $propriedadesBO [$key], $valor, $fase, $condicao, $estrutura );
 			$stringResult .= $string;
 		}
-		$stringResult = substr ( $stringResult, 0, - 1 );
-		return $stringResult.";";
+		//$stringResult = substr ( $stringResult, 0, - 1 );
+		return $stringResult;
 	}
 
 

@@ -50,7 +50,9 @@ class ColunaBO extends BOImpl{
 		if (! empty ( $colunas )) {
 			foreach ( $colunas as $nomeColuna => $coluna ) {
 				$propriedade = new PropriedadeBO ( $empresa, $schema, $tabela, $nomeColuna, $sequence, $fase, $coluna );
-				$string .= "\t" . $nomeColuna . " " . $propriedade->constructProperty () . ",\n";
+				//$propriedades = substr($propriedade->constructProperty (), 0, -1);
+				$propriedades = $propriedade->constructProperty ();
+				$string .= "\t$nomeColuna $propriedades ,\n";
 			}
 		}
 		return $string;
@@ -70,9 +72,10 @@ class ColunaBO extends BOImpl{
 			foreach ( $colunas as $nomeColuna => $coluna ) {
 				$string .= "\n\nALTER TABLE $tabela ADD COLUMN $nomeColuna ";
 				$propriedade = new PropriedadeBO ( $empresa, $schema, $tabela, $nomeColuna, $sequence, $fase, $coluna );
-				$string .= $propriedade->constructProperty () . "\n";
+				$string .= $propriedade->constructProperty () . ";\n";
 			}
 		}
+		//$string = substr($string, 0, -1);
 		return $string;
 	}
 	
@@ -93,14 +96,16 @@ public function alterColumn(){
 		$string ="";
 		if (! empty ( $colunas )) {
 			foreach ( $colunas as $nomeColuna => $coluna ) {
-				$string .= "\n---- CAMPO $nomeColuna TABELA $tabela ----";
+				if(!empty($coluna)){
+				$string .= "\n\n---- CAMPO $nomeColuna TABELA $tabela ----";
 				$output = implode(', ', array_map(function ($v, $k) { return $k . " = " . (!isset($v)?'NULO':$v); }, $input[$nomeColuna], array_keys($input[$nomeColuna])));
 				$string .= "\n---- ESTADO ANTERIOR $output ----";
 				$propriedade = new PropriedadeBO ( $empresa, $schema, $tabela, $nomeColuna, $sequence, $fase, $coluna );
 				$string .= $propriedade->constructProperty () . "\n";
+				}
 			}
-		}
 		return $string;
+		}
 	}
 	
 }

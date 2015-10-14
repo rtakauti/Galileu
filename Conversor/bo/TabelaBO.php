@@ -54,12 +54,8 @@ class TabelaBO extends BOImpl{
 				$constraintBO = new ConstraintBO($empresa, $schema, $tabela, $fase);
 				$string .= $constraintBO->createConstraint();
 				$string = substr ( $string, 0, - 2 );
-				$string .= "\n)";
-				$string .= "\nWITH (";
-				$string .= "\n\tOIDS=FALSE";
 				$string .= "\n);";
-				$string .= "\nALTER TABLE $tabela";
-				$string .= "\n\tOWNER TO $user;";
+				$string .= "\nALTER TABLE $tabela OWNER TO $user;";
 				$triggerBO = new TriggerBO($empresa, $schema, $tabela);
 				$string .= $triggerBO->createTrigger();
 				$indiceBO = new IndiceBO($empresa, $schema, $tabela);
@@ -92,7 +88,7 @@ class TabelaBO extends BOImpl{
 				$string .= $indiceBO->createIndex();
 				$constraintBO = new ConstraintBO($empresa, $schema, $tabela, $fase);
 				$string .= $constraintBO->dropConstraint();
-				// add constraint
+				$string .= $constraintBO->addConstraint();
 				$string .= $colunaBO->dropColumn();
 				$triggerBO = new TriggerBO($empresa, $schema, $tabela);
 				$string .= $triggerBO->dropTrigger();

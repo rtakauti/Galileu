@@ -51,50 +51,20 @@ class ConstraintDAOImpl extends DAOImpl {
 		$query .= " order by ordem";
 		$this->query = $query;
 	}
+	
+	
 	public function restricao($schemaType) {
-		$fase = $this->fase;
 		$arrayResult = array ();
 		$array = $this->queryAllAssoc ( $schemaType );
-		switch ($fase) {
-			case FaseQuery::CREATE :
-				for($i = 0; $i < count ( $array ); $i ++) {
-					$arrayResult [$array [$i] ['constraint_name']] ['constraint_type'] = $array [$i] ['constraint_type'];
-					$arrayResult [$array [$i] ['constraint_name']] ['column_name'] [] = $array [$i] ['column_name'];
-					$arrayResult [$array [$i] ['constraint_name']] ['foreign_table'] = $array [$i] ['foreign_table'];
-					$arrayResult [$array [$i] ['constraint_name']] ['foreign_column'] = $array [$i] ['foreign_column'];
-					$arrayResult [$array [$i] ['constraint_name']] ['match_option'] = $array [$i] ['match_option'];
-					$arrayResult [$array [$i] ['constraint_name']] ['update_rule'] = $array [$i] ['update_rule'];
-					$arrayResult [$array [$i] ['constraint_name']] ['delete_rule'] = $array [$i] ['delete_rule'];
-					$arrayResult [$array [$i] ['constraint_name']] ['consrc'] = $array [$i] ['consrc'];
-				}
-				break;
-			case FaseQuery::ADD :
-				for($i = 0; $i < count ( $array ); $i ++) {
-					$arrayResult [$array [$i] ['constraint_name']] ['constraint_type'] = $array [$i] ['constraint_type'];
-					$arrayResult [$array [$i] ['constraint_name']] ['column_name'] [] = $array [$i] ['column_name'];
-					$arrayResult [$array [$i] ['constraint_name']] ['foreign_table'] = $array [$i] ['foreign_table'];
-					$arrayResult [$array [$i] ['constraint_name']] ['foreign_column'] = $array [$i] ['foreign_column'];
-					$arrayResult [$array [$i] ['constraint_name']] ['match_option'] = $array [$i] ['match_option'];
-					$arrayResult [$array [$i] ['constraint_name']] ['update_rule'] = $array [$i] ['update_rule'];
-					$arrayResult [$array [$i] ['constraint_name']] ['delete_rule'] = $array [$i] ['delete_rule'];
-					$arrayResult [$array [$i] ['constraint_name']] ['consrc'] = $array [$i] ['consrc'];
-				}
-				break;
-			case FaseQuery::ALTER :
-				for($i = 0; $i < count ( $array ); $i ++) {
-					$arrayResult [$array [$i] ['constraint_name']] ['constraint_type'] = $array [$i] ['constraint_type'];
-					$arrayResult [$array [$i] ['constraint_name']] ['column_name'] [] = $array [$i] ['column_name'];
-					$arrayResult [$array [$i] ['constraint_name']] ['foreign_table'] = $array [$i] ['foreign_table'];
-					$arrayResult [$array [$i] ['constraint_name']] ['foreign_column'] = $array [$i] ['foreign_column'];
-					$arrayResult [$array [$i] ['constraint_name']] ['match_option'] = $array [$i] ['match_option'];
-					$arrayResult [$array [$i] ['constraint_name']] ['update_rule'] = $array [$i] ['update_rule'];
-					$arrayResult [$array [$i] ['constraint_name']] ['delete_rule'] = $array [$i] ['delete_rule'];
-					$arrayResult [$array [$i] ['constraint_name']] ['consrc'] = $array [$i] ['consrc'];
-				}
-				break;
-			default :
-				;
-				break;
+		for($i = 0; $i < count ( $array ); $i ++) {
+			$arrayResult [$array [$i] ['constraint_name']] ['constraint_type'] = $array [$i] ['constraint_type'];
+			$arrayResult [$array [$i] ['constraint_name']] ['column_name'] [] = $array [$i] ['column_name'];
+			$arrayResult [$array [$i] ['constraint_name']] ['foreign_table'] = $array [$i] ['foreign_table'];
+			$arrayResult [$array [$i] ['constraint_name']] ['foreign_column'] = $array [$i] ['foreign_column'];
+			$arrayResult [$array [$i] ['constraint_name']] ['match_option'] = $array [$i] ['match_option'];
+			$arrayResult [$array [$i] ['constraint_name']] ['update_rule'] = $array [$i] ['update_rule'];
+			$arrayResult [$array [$i] ['constraint_name']] ['delete_rule'] = $array [$i] ['delete_rule'];
+			$arrayResult [$array [$i] ['constraint_name']] ['consrc'] = $array [$i] ['consrc'];
 		}
 		return $arrayResult;
 	}
