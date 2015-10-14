@@ -25,9 +25,11 @@ private $estrutura;
 		$string = "";
 		if (! empty ( $indices )) {
 			$string = "\n\n--------------------  DROP DE INDICES $tabela -------------------- ";
+			$string .= "\n/*";
 			foreach ( $indices as $indice ) {
 				$string .= "\nDROP INDEX $indice;";
 			}
+			$string .= "\n*/";
 		}
 		return $string;
 	}

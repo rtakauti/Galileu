@@ -30,9 +30,11 @@ class ColunaBO extends BOImpl{
 		$string = "";
 		if (! empty ( $colunas )) {
 		$string = "\n\n\n-------------------- DROP COLUMN --------------------";
+		$string .= "\n/*";
 			foreach ( $colunas as $coluna ) {
 				$string .= "\nALTER TABLE $tabela DROP COLUMN $coluna;";
 			}
+			$string .= "\n*/";
 		}
 		return $string;
 	}

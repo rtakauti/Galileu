@@ -30,14 +30,16 @@ class ConstraintBO extends BOImpl {
 		$string = "";
 		if (!empty ( $constraintsDiff ) || !empty($constraintsIntersect)) {
 		$string = "\n\n\n-------------------- DROP CONSTRAINT --------------------";
+		$string .= "\n/*";
 			foreach ( $constraintsDiff as $nameConstraint ) {
-				$string .= "\nALTER TABLE $tabela DROP CONSTRAINT $nameConstraint;" ;
+				$string .= "\nALTER TABLE $tabela DROP CONSTRAINT $nameConstraint CASCADE;" ;
 			}
 			foreach ($constraintsIntersect as $nameConstraint) {
 				if($homolog[$nameConstraint] != $dev[$nameConstraint]){
-					$string .= "\nALTER TABLE $tabela DROP CONSTRAINT $nameConstraint;" ;
+					$string .= "\nALTER TABLE $tabela DROP CONSTRAINT $nameConstraint CASCADE;" ;
 				}
 			}
+			$string .= "\n*/";
 		}
 		return $string;
 	}

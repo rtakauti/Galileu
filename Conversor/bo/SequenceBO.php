@@ -26,9 +26,11 @@ private $estrutura;
 		$string = "";
 		if (! empty ( $sequences )) {
 			$string = "\n\n\n--------------------  DROP DE SEQUENCES $schema -------------------- ";
+			$string .= "\n/*";
 			foreach ( $sequences as $sequence ) {
-				$string .= "\nDROP SEQUENCE $sequence ;";
+				$string .= "\nDROP SEQUENCE $sequence CASCADE;";
 			}
+			$string .= "\n*/";
 		}
 		return $string;
 	}

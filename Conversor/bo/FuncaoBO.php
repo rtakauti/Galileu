@@ -25,6 +25,7 @@ private $estrutura;
 		$string = "";
 		if (! empty ( $objetos )) {
 			$string = "\n\n\n--------------------  DROP DE FUNCTION, PROCEDURE, TRIGGER $schema -------------------- ";
+			$string .= "\n/*";
 			foreach ( $objetos as $nomeObjeto => $objeto ) {
 				$parameter = $objeto['parameter'];
 				$arrayParameter = explode(", ", $parameter);
@@ -36,6 +37,7 @@ private $estrutura;
 				$stringParameter = substr($stringParameter,0,-2);
 				if($objeto['return'] != "trigger") $string .= "\nDROP FUNCTION $nomeObjeto ($stringParameter);";
 			}
+			$string .= "\n*/";
 		}
 		return $string;
 	}

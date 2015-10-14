@@ -32,16 +32,4 @@ $saida->gravar ( $schema->dropSchema () );
 $saida->gravar ( $schema->createSchema () );
 $saida->gravar ( $schema->alterSchema () );
 
-$funcao = new FuncaoBO(SchemasCompany::TESTE, 'public');
-$trigger = new TriggerBO(SchemasCompany::TESTE, 'public', 'newtable', FaseQuery::CREATE);
-$tabela = new TabelaBO(SchemasCompany::TESTE, 'public', NULL, NULL);
-$coluna = new ColunaBO(SchemasCompany::TESTE, 'public', 'tabela3', NULL, FaseQuery::ALTER);
-$constraint = new ConstraintBO(SchemasCompany::TESTE, 'public', 'tabela3', FaseQuery::ADD);
-echo "<pre>";
-//print_r ( $tabela->alterTable());
-//print_r ( $coluna->alterColumn());
-//print_r($constraint->addConstraint());
-//print_r($constraint->dropConstraint());
-echo "</pre>";
-
 $saida->fecha ();

@@ -27,9 +27,11 @@ class TabelaBO extends BOImpl{
 		$string = "";
 		if(!empty($tabelas)){
 			$string = "\n\n\n------------------------------ DROP TABLE ------------------------------";
+			$string .= "\n/*";
 			foreach ($tabelas as $tabela) {
-				$string .= "\nDROP TABLE $tabela CASCADE;";
+				$string .= "\n--DROP TABLE $tabela CASCADE;";
 			}
+			$string .= "\n*/";
 		}
 		return $string;
 	}

@@ -26,11 +26,13 @@ class TriggerBO extends BOImpl {
 		$string = "";
 		if (!empty ( $triggers )) {
 			$string .= "\n\n\n-------------------- DROP TRIGGER --------------------";
+			$string .= "\n/*";
 			foreach ( $triggers as $nameTrigger => $trigger ) {
 				$function = substr($trigger['action_statement'], 18);
 				$string .= "\nDROP TRIGGER $nameTrigger ON $tabela;";
 				$string .= "\nDROP FUNCTION $function;";
 			}
+			$string .= "\n*/";
 		}
 		return $string;
 	}

@@ -47,9 +47,11 @@ class SchemaBO extends BOImpl{
 		$string = "";
 		if (! empty ( $array )) {
 			$string = "\n\n\n\n------------------------------ DROP DE SCHEMAS ------------------------------";
+			$string .= "\n/*";
 			foreach ( $array as $schema ) {
 				$string .= "\nDROP SCHEMA IF EXISTS $schema CASCADE;";
 			}
+			$string .= "\n*/";
 		}
 		return $string;
 	}
