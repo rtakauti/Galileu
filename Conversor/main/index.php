@@ -16,7 +16,7 @@ If (isset ( $argv [1] )) {
 	$empesa = $_GET ['empresa'];
 	$cmd = false;
 } else {
-	$empresa = "teste";
+	$empresa = "test";
 	$cmd = false;
 }
 

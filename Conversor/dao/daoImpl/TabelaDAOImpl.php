@@ -9,7 +9,7 @@ class TableDAOImpl extends DAOImpl  {
 	}
 	public function setQuery($schemaParameter) {
 		// Retorna as TABELAS das tabelas do schema
-			$query = "select distinct ";
+			$query =  " select distinct ";
 			$query .= " cl.relname as table_name ";
 			$query .= " from pg_namespace nm, pg_class cl ";
 			$query .= " where nm.nspname = '{$schemaParameter}' ";
