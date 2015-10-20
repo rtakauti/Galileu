@@ -1,7 +1,9 @@
 <?php
 include_once realpath(__DIR__.'/../DAOImpl.php');
+include_once realpath(__DIR__.'/../ISequenceDAO.php');
 
-class SequenceDAOImpl extends DAOImpl {
+
+class SequenceDAOImpl extends DAOImpl implements ISequenceDAO{
 	
 	public function __construct($dbCompany) {
 		parent::__construct ( $dbCompany );
@@ -22,5 +24,9 @@ class SequenceDAOImpl extends DAOImpl {
 			$query .= " order by 1 ";
 			
 			$this->query = $query;
+	}
+	
+	public function retorna($schemaType){
+		return $this->queryAllAssoc($schemaType);
 	}
 }

@@ -1,5 +1,4 @@
 <?php
-include_once realpath (__DIR__.'/../dao/daoImpl/ColunaDAOImpl.php');
 include_once realpath (__DIR__.'/../enum/SchemasCompany.php');
 include_once realpath (__DIR__.'/../enum/SchemaType.php');
 include_once realpath (__DIR__.'/../enum/EstruturaQuery.php');

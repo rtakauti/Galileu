@@ -1,6 +1,9 @@
 <?php
 include_once realpath ( __DIR__ . '/../DAOImpl.php' );
-class FuncaoDAOImpl extends DAOImpl  {
+include_once realpath ( __DIR__ . '/../IFuncaoDAO.php' );
+
+
+class FuncaoDAOImpl extends DAOImpl implements IFuncaoDAO {
 	
 	
 	public function __construct($dbCompany ) {
@@ -11,26 +14,26 @@ class FuncaoDAOImpl extends DAOImpl  {
 	public function setQuery() {
 		// Retorna as FUNCOES dos schemas
 		$query = "  select distinct ";
-		$query .= " p.proname as function_name, ";
-		$query .= " pg_get_function_result(p.oid) as return, ";
-		$query .= " pg_get_function_arguments(p.oid) as parameter, ";
-		$query .= " pg_get_functiondef(p.oid) as create, ";
-		$query .= " n.nspname as schema_name ";
-		//$query .= " p.prosrc as body ";
-		$query .= " from pg_proc p ";
-		$query .= " left join pg_namespace n on n.oid = p.pronamespace ";
-		$query .= " where pg_function_is_visible(p.oid) ";
-		$query .= " and pg_function_is_visible(p.oid) ";
-		$query .= " and n.nspname NOT LIKE 'pg_%' ";
-		$query .= " and n.nspname != 'information_schema' ";
-		//$query .= " and n.nspname = '{$schemaParameter}' ";
-		//$query .= " order by 2 ";
+		$query .= " pp.proname as function_name, ";
+		$query .= " pn.nspname as schema_name, ";
+		$query .= " pg_get_function_result(pp.oid) as return, ";
+		$query .= " pg_get_function_arguments(pp.oid) as parameter, ";
+		//$query .= " pp.prosrc as body, ";
+		$query .= " pg_get_functiondef(pp.oid) as create ";
+		$query .= " from pg_proc pp ";
+		$query .= " inner join pg_namespace pn on (pp.pronamespace = pn.oid) ";
+		$query .= " inner join pg_language pl on (pp.prolang = pl.oid) ";
+		$query .= " where pl.lanname NOT IN ('c','internal') ";
+		$query .= " and pn.nspname NOT LIKE 'pg_%' ";
+		$query .= " and pn.nspname <> 'information_schema' ";
+		$query .= " and (pp.proname like 'f_%' or pp.proname like 'tf_%') ";
+		$query .= " order by 2 ";
 		$this->query = $query;
 		
 	}
 	
 	
-	public function funcao($schemaType) {
+	public function retorna($schemaType) {
 		$arrayResult = array ();
 		$array = $this->queryAllAssoc ( $schemaType );
 		for($i = 0; $i < count ( $array ); $i ++) {

@@ -1,80 +1,46 @@
 <?php
-include_once realpath(__DIR__.'/../DAOImpl.php');
-include_once realpath(__DIR__.'/../ISchemaDAO.php');
-include_once 'SequenceDAOImpl.php';
-include_once 'FuncaoDAOImpl.php';
-include_once 'IndiceDAOImpl.php';
+include_once realpath ( __DIR__ . '/../IAssemblerDAO.php' );
 
 
-class SchemaDAOImpl extends DAOImpl implements ISchemaDAO{
+class AssemblerDAOImpl implements IAssemblerDAO{
 	
-	private $dbCompany;
-	
-	public function __construct($dbCompany) {
-		parent::__construct ( $dbCompany );
-		$this->setQuery ();
-		$this->dbCompany = $dbCompany;
-	}
-	
-	public function setQuery() {
-		// Retorna os SCHEMAS do schema selecionado
-		$query =  " select distinct ";
-		$query .= " i.table_schema 					as schema_name, ";
-		$query .= " i.table_name 					as table_name, ";
-		$query .= " i.column_name                   as column_name ,  ";
-		$query .= " i.udt_name                      as udt_name ,  ";
-		$query .= " i.data_type                     as data_type ,  ";
-		$query .= " i.numeric_precision	            as numeric_precision ,  ";
-		$query .= " i.numeric_scale	                as numeric_scale ,  ";
-		$query .= " i.character_maximum_length	    as character_maximum_length	,  ";
-		$query .= " i.datetime_precision	        as datetime_precision	,  ";
-		$query .= " i.interval_type	                as interval_type	,  ";
-		$query .= " i.is_nullable	                as is_nullable	,  ";
-		$query .= " i.column_default	            as column_default ";
-		$query .= " from ";
-		$query .= " pg_namespace nm , ";
-		$query .= " pg_class cl , ";
-		$query .= " information_schema.columns i ";
-		$query .= " where nm.nspname != 'information_schema' ";
-		$query .= " and nm.nspname not like 'pg_%' ";
-		$query .= " and cl.relkind ='r' ";
-		$query .= " and cl.relname = i.table_name ";
-		$query .= " and i.table_schema = nm.nspname ";
-		$query .= " and cl.relnamespace = nm.oid ";
-		$query .= " and cl.oid not in (select inhrelid from pg_inherits  ) ";
-		$query .= " order by 1	 ";
-		$this->query = $query;
-	}
-	
+	private $funcao;
+	private $schema;
+	private $sequence;
+	private $trigger;
+	private $constraint;
+	private $indice;
 
-	public function retorna($schemaType) {
-		return $array = $this->queryAllAssoc ( $schemaType );
+	public function __construct($dbCompany){
+		$this->funcao = new FuncaoDAOImpl($dbCompany);
+		$this->schema = new SchemaDAOImpl($dbCompany);
+		$this->sequence = new SequenceDAOImpl($dbCompany);
+		$this->trigger = new TriggerDAOImpl($dbCompany);
+		$this->constraint = new ConstraintDAOImpl($dbCompany);
+		$this->indice = new IndiceDAOImpl($dbCompany);
 	}
 	
-	/*
-	public function retorna1($schemaType) {
-		$dbCompany = $this->dbCompany;
-		$arrayResult = array ();
-		$array = $this->queryAllAssoc ( $schemaType );
-		$sequence = new SequenceDAOImpl ( $dbCompany );
-		$arrayResult ['sequences'] = $sequence->query ( $schemaType ) ;
+	public function retorna($schemaType){
+		$arraResult = array();
 		
-		$indice = new IndiceDAOImpl($dbCompany);
-		$arrayIndice = $indice->retorna($schemaType);
-		$arrayResult ['indices'] = @$arrayIndice['indices'];
-		
-		$funcao = new FuncaoDAOImpl($dbCompany);
-		$arrayFuncao = $funcao->funcao($schemaType);
+		$arrayFuncao = $this->funcao->retorna($schemaType);
 		$arrayResult['funcoes'] = @$arrayFuncao['funcoes'];
-		$trigger = new TriggerDAOImpl($dbCompany);
-		$arrayTrigger = $trigger->retorna($schemaType);
+		
+		$arraResult['sequences'] = $this->sequence->retorna($schemaType);
+		
+		$arrayIndice = $this->indice->retorna($schemaType);
+		$arraResult['indices'] = @$arrayIndice['indices'];
+		
+		$arrayTrigger = $this->trigger->retorna($schemaType);
 		$arrayResult['triggers'] = @$arrayTrigger['triggers'];
 		
-		$constraint = new ConstraintDAOImpl($dbCompany);
-		$arrayConstraint = $constraint->retorna($schemaType);
+		$arrayConstraint = $this->constraint->retorna($schemaType);
 		$arrayResult['constraints'] = @$arrayConstraint['constraints'];
+		
+		$array = $this->schema->retorna($schemaType);
+		
 		for($i = 0; $i < count ( $array ); $i ++) {
-			
+				
 			$default = $array [$i] ['column_default'];
 			$valida = "nextval('";
 			if (substr ( $default, 0, strlen ( $valida ) ) == $valida) {
@@ -84,7 +50,7 @@ class SchemaDAOImpl extends DAOImpl implements ISchemaDAO{
 					$sequence = "public." . $sequence;
 				$arrayResult ['sequences'] [] = $sequence;
 			}
-			
+				
 			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['coluna'] [$array [$i] ['column_name']] ['udt_name'] = $array [$i] ['udt_name'];
 			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['coluna'] [$array [$i] ['column_name']] ['data_type'] = $array [$i] ['data_type'];
 			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['coluna'] [$array [$i] ['column_name']] ['numeric_precision'] = $array [$i] ['numeric_precision'];
@@ -105,9 +71,9 @@ class SchemaDAOImpl extends DAOImpl implements ISchemaDAO{
 		
 		$arrayResult ['sequences'] = array_unique ( $arrayResult ['sequences'] );
 		sort ( $arrayResult ['sequences'] );
-
 		
 		return $arrayResult;
 	}
-	*/
+	
+	
 }

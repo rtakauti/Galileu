@@ -830,3 +830,466 @@ where  cl.relkind = 'S'
 and cl.relnamespace = nm.oid
 and cl.oid not in (select inhrelid from pg_inherits  )
 order by 1,2
+
+
+
+
+SELECT routine_name
+FROM information_schema.routines
+WHERE specific_schema != 'information_schema'
+and specific_schema not like 'pg_%'
+AND type_udt_name != 'trigger';
+
+
+
+SELECT proname
+FROM pg_proc pr,
+pg_type tp
+WHERE tp.oid = pr.prorettype
+AND pr.proisagg = FALSE
+AND tp.typname <> 'trigger'
+AND pr.pronamespace IN (
+SELECT oid
+FROM pg_namespace
+WHERE nspname NOT LIKE 'pg_%'
+AND nspname != 'information_schema'
+);
+
+
+ select distinct 
+ p.proname as function_name, 
+ pg_get_function_result(p.oid) as return, 
+ pg_get_function_arguments(p.oid) as parameter, 
+ pg_get_functiondef(p.oid) as create, 
+ n.nspname as schema_name 
+ from pg_proc p 
+ left join pg_namespace n 
+ on n.oid = p.pronamespace 
+ where pg_function_is_visible(p.oid) 
+ and pg_function_is_visible(p.oid) 
+ and n.nspname NOT LIKE 'pg_%' 
+ and n.nspname != 'information_schema' 
+
+
+
+
+select distinct
+    pp.proname as function_name,
+    pn.nspname as schema_name,
+    pg_get_function_result(pp.oid) as return, 
+    pg_get_function_arguments(pp.oid) as parameter, 
+    pp.prosrc as body,
+    pg_get_functiondef(pp.oid) as create
+from pg_proc pp
+inner join pg_namespace pn on (pp.pronamespace = pn.oid)
+inner join pg_language pl on (pp.prolang = pl.oid)
+where pl.lanname NOT IN ('c','internal') 
+  and pn.nspname NOT LIKE 'pg_%'
+  and pn.nspname <> 'information_schema'
+  and (pp.proname like 'f_%' or pp.proname like 'tf_%')
+order by 2;
+  
+
+
+
+
+
+-- First drop old aggregates
+DROP AGGREGATE IF EXISTS memgeomunion(geometry);
+DROP AGGREGATE IF EXISTS geomunion(geometry);
+DROP AGGREGATE IF EXISTS polygonize(geometry); -- Deprecated in 1.2.3, Dropped in 2.0.0
+DROP AGGREGATE IF EXISTS collect(geometry); -- Deprecated in 1.2.3, Dropped in 2.0.0
+DROP AGGREGATE IF EXISTS st_geomunion(geometry);
+DROP AGGREGATE IF EXISTS accum_old(geometry);
+DROP AGGREGATE IF EXISTS st_accum_old(geometry);
+DROP AGGREGATE IF EXISTS st_accum(geometry);
+DROP AGGREGATE IF EXISTS st_collect(geometry);
+DROP AGGREGATE IF EXISTS st_extent(geometry);
+
+
+-- BEGIN Management functions that now have default param for typmod --
+DROP FUNCTION IF EXISTS AddGeometryColumn(varchar,varchar,varchar,varchar,integer,varchar,integer);
+DROP FUNCTION IF EXISTS AddGeometryColumn(varchar,varchar,varchar,integer,varchar,integer);
+DROP FUNCTION IF EXISTS AddGeometryColumn(varchar,varchar,integer,varchar,integer);
+DROP FUNCTION IF EXISTS populate_geometry_columns();
+DROP FUNCTION IF EXISTS populate_geometry_columns(oid);
+
+-- END Management functions now have default parameter for typmod --
+-- Then drop old functions
+DROP FUNCTION IF EXISTS box2d_overleft(box2d, box2d);
+DROP FUNCTION IF EXISTS box2d_overright(box2d, box2d);
+DROP FUNCTION IF EXISTS box2d_left(box2d, box2d);
+DROP FUNCTION IF EXISTS box2d_right(box2d, box2d);
+DROP FUNCTION IF EXISTS box2d_contain(box2d, box2d);
+DROP FUNCTION IF EXISTS box2d_contained(box2d, box2d);
+DROP FUNCTION IF EXISTS box2d_overlap(box2d, box2d);
+DROP FUNCTION IF EXISTS box2d_same(box2d, box2d);
+DROP FUNCTION IF EXISTS box2d_intersects(box2d, box2d);
+DROP FUNCTION IF EXISTS st_area(geography); -- this one changed to use default parameters
+DROP FUNCTION IF EXISTS ST_AsGeoJson(geometry); -- this one changed to use default args 
+DROP FUNCTION IF EXISTS ST_AsGeoJson(geography); -- this one changed to use default args 
+DROP FUNCTION IF EXISTS ST_AsGeoJson(geometry,int4); -- this one changed to use default args 
+DROP FUNCTION IF EXISTS ST_AsGeoJson(geography,int4); -- this one changed to use default args 
+DROP FUNCTION IF EXISTS ST_AsGeoJson(int4,geometry); -- this one changed to use default args
+DROP FUNCTION IF EXISTS ST_AsGeoJson(int4,geography); -- this one changed to use default args
+DROP FUNCTION IF EXISTS ST_AsGeoJson(int4,geometry,int4); -- this one changed to use default args
+DROP FUNCTION IF EXISTS ST_AsGeoJson(int4,geography,int4); -- this one changed to use default args
+DROP FUNCTION IF EXISTS st_asgml(geometry); -- changed to use default args
+DROP FUNCTION IF EXISTS st_asgml(geometry, int4);  -- changed to use default args
+DROP FUNCTION IF EXISTS st_asgml(int4, geometry);  -- changed to use default args
+DROP FUNCTION IF EXISTS st_asgml(int4, geometry, int4);  -- changed to use default args
+DROP FUNCTION IF EXISTS st_asgml(int4, geometry, int4,int4);  -- changed to use default args
+DROP FUNCTION IF EXISTS st_asgml(geography); -- changed to use default args
+DROP FUNCTION IF EXISTS st_asgml(geography, int4);  -- changed to use default args
+DROP FUNCTION IF EXISTS st_asgml(int4, geography);  -- changed to use default args
+DROP FUNCTION IF EXISTS st_asgml(int4, geography, int4);  -- changed to use default args
+DROP FUNCTION IF EXISTS st_asgml(int4, geography, int4,int4);  -- changed to use default args
+DROP FUNCTION IF EXISTS ST_AsKML(geometry); -- changed to use default args
+DROP FUNCTION IF EXISTS ST_AsKML(geography); -- changed to use default args
+DROP FUNCTION IF EXISTS ST_AsKML(int4, geometry, int4); -- changed to use default args
+DROP FUNCTION IF EXISTS ST_AsKML(int4, geography, int4); -- changed to use default args
+DROP FUNCTION IF EXISTS st_asx3d(geometry); -- this one changed to use default parameters so full function deals with it
+DROP FUNCTION IF EXISTS st_asx3d(geometry, int4); -- introduce variant with opts so get rid of other without ops
+DROP FUNCTION IF EXISTS st_assvg(geometry); -- changed to use default args
+DROP FUNCTION IF EXISTS st_assvg(geometry,int4); -- changed to use default args
+DROP FUNCTION IF EXISTS st_assvg(geography); -- changed to use default args
+DROP FUNCTION IF EXISTS st_assvg(geography,int4); -- changed to use default args
+DROP FUNCTION IF EXISTS st_box2d_overleft(box2d, box2d);
+DROP FUNCTION IF EXISTS st_box2d_overright(box2d, box2d);
+DROP FUNCTION IF EXISTS st_box2d_left(box2d, box2d);
+DROP FUNCTION IF EXISTS st_box2d_right(box2d, box2d);
+DROP FUNCTION IF EXISTS st_box2d_contain(box2d, box2d);
+DROP FUNCTION IF EXISTS st_box2d_contained(box2d, box2d);
+DROP FUNCTION IF EXISTS st_box2d_overlap(box2d, box2d);
+DROP FUNCTION IF EXISTS st_box2d_same(box2d, box2d);
+DROP FUNCTION IF EXISTS st_box2d_intersects(box2d, box2d);
+DROP FUNCTION IF EXISTS st_box2d_in(cstring);
+DROP FUNCTION IF EXISTS st_box2d_out(box2d);
+DROP FUNCTION IF EXISTS st_box2d(geometry);
+DROP FUNCTION IF EXISTS st_box2d(box3d);
+DROP FUNCTION IF EXISTS st_box3d(box2d);
+DROP FUNCTION IF EXISTS st_box(box3d);
+DROP FUNCTION IF EXISTS st_box3d(geometry);
+DROP FUNCTION IF EXISTS st_box(geometry);
+DROP FUNCTION IF EXISTS ST_ConcaveHull(geometry,float); -- this one changed to use default parameters
+DROP FUNCTION IF EXISTS st_text(geometry);
+DROP FUNCTION IF EXISTS st_geometry(box2d);
+DROP FUNCTION IF EXISTS st_geometry(box3d);
+DROP FUNCTION IF EXISTS st_geometry(text);
+DROP FUNCTION IF EXISTS st_geometry(bytea);
+DROP FUNCTION IF EXISTS st_bytea(geometry);
+DROP FUNCTION IF EXISTS st_addbbox(geometry);
+DROP FUNCTION IF EXISTS st_dropbbox(geometry); 
+DROP FUNCTION IF EXISTS st_hasbbox(geometry); 
+DROP FUNCTION IF EXISTS cache_bbox();
+DROP FUNCTION IF EXISTS st_cache_bbox();
+DROP FUNCTION IF EXISTS ST_GeoHash(geometry); -- changed to use default args
+DROP FUNCTION IF EXISTS st_length(geography); -- this one changed to use default parameters
+DROP FUNCTION IF EXISTS st_perimeter(geography); -- this one changed to use default parameters
+DROP FUNCTION IF EXISTS transform_geometry(geometry,text,text,int);
+DROP FUNCTION IF EXISTS collector(geometry, geometry);
+DROP FUNCTION IF EXISTS st_collector(geometry, geometry);
+DROP FUNCTION IF EXISTS geom_accum (geometry[],geometry);
+DROP FUNCTION IF EXISTS st_geom_accum (geometry[],geometry);
+DROP FUNCTION IF EXISTS collect_garray (geometry[]);
+DROP FUNCTION IF EXISTS st_collect_garray (geometry[]);
+DROP FUNCTION IF EXISTS geosnoop(geometry);
+DROP FUNCTION IF EXISTS jtsnoop(geometry);
+DROP FUNCTION IF EXISTS st_noop(geometry);
+DROP FUNCTION IF EXISTS st_max_distance(geometry, geometry);
+DROP FUNCTION IF EXISTS  ST_MinimumBoundingCircle(geometry); --changed to use default parameters
+-- Drop internals that should never have existed --
+DROP FUNCTION IF EXISTS st_geometry_analyze(internal);
+DROP FUNCTION IF EXISTS st_geometry_in(cstring);
+DROP FUNCTION IF EXISTS st_geometry_out(geometry);
+DROP FUNCTION IF EXISTS st_geometry_recv(internal);
+DROP FUNCTION IF EXISTS st_geometry_send(geometry);
+DROP FUNCTION IF EXISTS st_spheroid_in(cstring);
+DROP FUNCTION IF EXISTS st_spheroid_out(spheroid);
+DROP FUNCTION IF EXISTS st_geometry_lt(geometry, geometry);
+DROP FUNCTION IF EXISTS st_geometry_gt(geometry, geometry);
+DROP FUNCTION IF EXISTS st_geometry_ge(geometry, geometry);
+DROP FUNCTION IF EXISTS st_geometry_eq(geometry, geometry);
+DROP FUNCTION IF EXISTS st_geometry_cmp(geometry, geometry);
+DROP FUNCTION IF EXISTS SnapToGrid(geometry, float8, float8);
+
+DROP FUNCTION IF EXISTS geometry_gist_sel_2d (internal, oid, internal, int4);
+DROP FUNCTION IF EXISTS geometry_gist_joinsel_2d(internal, oid, internal, smallint);
+DROP FUNCTION IF EXISTS geography_gist_selectivity (internal, oid, internal, int4);
+DROP FUNCTION IF EXISTS geography_gist_join_selectivity(internal, oid, internal, smallint);
+
+DROP FUNCTION IF EXISTS ST_AsBinary(text); -- deprecated in 2.0
+DROP FUNCTION IF EXISTS postgis_uses_stats(); -- deprecated in 2.0
+
+
+-- Drop all views.
+-- Drop all tables.
+-- Drop all aggregates.
+DROP AGGREGATE IF EXISTS Extent (geometry);
+DROP AGGREGATE IF EXISTS makeline (geometry);
+DROP AGGREGATE IF EXISTS accum (geometry);
+DROP AGGREGATE IF EXISTS Extent3d (geometry);
+DROP AGGREGATE IF EXISTS memcollect (geometry);
+DROP AGGREGATE IF EXISTS MemGeomUnion (geometry);
+DROP AGGREGATE IF EXISTS ST_Extent3D (geometry);
+-- Drop all operators classes and families.
+-- Drop all operators.
+-- Drop all casts.
+-- Drop all functions except 0 needed for type definition.
+DROP FUNCTION IF EXISTS AsBinary (geometry);
+DROP FUNCTION IF EXISTS AsBinary (geometry,text);
+DROP FUNCTION IF EXISTS AsText (geometry);
+DROP FUNCTION IF EXISTS Estimated_Extent (text,text,text);
+DROP FUNCTION IF EXISTS Estimated_Extent (text,text);
+DROP FUNCTION IF EXISTS GeomFromText (text, int4);
+DROP FUNCTION IF EXISTS GeomFromText (text);
+DROP FUNCTION IF EXISTS ndims (geometry);
+DROP FUNCTION IF EXISTS SetSRID (geometry,int4);
+DROP FUNCTION IF EXISTS SRID (geometry);
+DROP FUNCTION IF EXISTS ST_AsBinary (text);
+DROP FUNCTION IF EXISTS ST_AsText (bytea);
+DROP FUNCTION IF EXISTS addbbox (geometry);
+DROP FUNCTION IF EXISTS dropbbox (geometry);
+DROP FUNCTION IF EXISTS hasbbox (geometry);
+DROP FUNCTION IF EXISTS getsrid (geometry);
+DROP FUNCTION IF EXISTS GeometryFromText (text, int4);
+DROP FUNCTION IF EXISTS GeometryFromText (text);
+DROP FUNCTION IF EXISTS GeomFromWKB (bytea);
+DROP FUNCTION IF EXISTS GeomFromWKB (bytea, int);
+DROP FUNCTION IF EXISTS noop (geometry);
+DROP FUNCTION IF EXISTS SE_EnvelopesIntersect (geometry,geometry);
+DROP FUNCTION IF EXISTS SE_Is3D (geometry);
+DROP FUNCTION IF EXISTS SE_IsMeasured (geometry);
+DROP FUNCTION IF EXISTS SE_Z (geometry);
+DROP FUNCTION IF EXISTS SE_M (geometry);
+DROP FUNCTION IF EXISTS SE_LocateBetween (geometry, float8, float8);
+DROP FUNCTION IF EXISTS SE_LocateAlong (geometry, float8);
+DROP FUNCTION IF EXISTS st_box2d (geometry);
+DROP FUNCTION IF EXISTS st_box3d (geometry);
+DROP FUNCTION IF EXISTS st_box (geometry);
+DROP FUNCTION IF EXISTS st_box2d (box3d);
+DROP FUNCTION IF EXISTS st_box3d (box2d);
+DROP FUNCTION IF EXISTS st_box (box3d);
+DROP FUNCTION IF EXISTS st_text (geometry);
+DROP FUNCTION IF EXISTS st_geometry (box2d);
+DROP FUNCTION IF EXISTS st_geometry (box3d);
+DROP FUNCTION IF EXISTS st_geometry (text);
+DROP FUNCTION IF EXISTS st_geometry (bytea);
+DROP FUNCTION IF EXISTS st_bytea (geometry);
+DROP FUNCTION IF EXISTS st_box3d_in (cstring);
+DROP FUNCTION IF EXISTS st_box3d_out (box3d);
+DROP FUNCTION IF EXISTS rename_geometry_table_constraints ();
+DROP FUNCTION IF EXISTS fix_geometry_columns ();
+DROP FUNCTION IF EXISTS probe_geometry_columns ();
+DROP FUNCTION IF EXISTS st_geometry_lt (geometry, geometry);
+DROP FUNCTION IF EXISTS st_geometry_le (geometry, geometry);
+DROP FUNCTION IF EXISTS st_geometry_gt (geometry, geometry);
+DROP FUNCTION IF EXISTS st_geometry_ge (geometry, geometry);
+DROP FUNCTION IF EXISTS st_geometry_eq (geometry, geometry);
+DROP FUNCTION IF EXISTS st_geometry_cmp (geometry, geometry);
+DROP FUNCTION IF EXISTS Affine (geometry,float8,float8,float8,float8,float8,float8,float8,float8,float8,float8,float8,float8);
+DROP FUNCTION IF EXISTS Affine (geometry,float8,float8,float8,float8,float8,float8);
+DROP FUNCTION IF EXISTS RotateZ (geometry,float8);
+DROP FUNCTION IF EXISTS Rotate (geometry,float8);
+DROP FUNCTION IF EXISTS RotateX (geometry,float8);
+DROP FUNCTION IF EXISTS RotateY (geometry,float8);
+DROP FUNCTION IF EXISTS Scale (geometry,float8,float8,float8);
+DROP FUNCTION IF EXISTS Scale (geometry,float8,float8);
+DROP FUNCTION IF EXISTS Translate (geometry,float8,float8,float8);
+DROP FUNCTION IF EXISTS Translate (geometry,float8,float8);
+DROP FUNCTION IF EXISTS TransScale (geometry,float8,float8,float8,float8);
+DROP FUNCTION IF EXISTS AddPoint (geometry, geometry);
+DROP FUNCTION IF EXISTS AddPoint (geometry, geometry, integer);
+DROP FUNCTION IF EXISTS Area (geometry);
+DROP FUNCTION IF EXISTS Area2D (geometry);
+DROP FUNCTION IF EXISTS AsEWKB (geometry);
+DROP FUNCTION IF EXISTS AsEWKB (geometry,text);
+DROP FUNCTION IF EXISTS AsEWKT (geometry);
+DROP FUNCTION IF EXISTS AsGML (geometry);
+DROP FUNCTION IF EXISTS AsGML (geometry, int4);
+DROP FUNCTION IF EXISTS AsKML (geometry, int4);
+DROP FUNCTION IF EXISTS AsKML (geometry);
+DROP FUNCTION IF EXISTS AsKML (int4, geometry, int4);
+DROP FUNCTION IF EXISTS AsHEXEWKB (geometry);
+DROP FUNCTION IF EXISTS AsHEXEWKB (geometry, text);
+DROP FUNCTION IF EXISTS AsSVG (geometry);
+DROP FUNCTION IF EXISTS AsSVG (geometry,int4);
+DROP FUNCTION IF EXISTS AsSVG (geometry,int4,int4);
+DROP FUNCTION IF EXISTS azimuth (geometry,geometry);
+DROP FUNCTION IF EXISTS BdPolyFromText (text, integer);
+DROP FUNCTION IF EXISTS BdMPolyFromText (text, integer);
+DROP FUNCTION IF EXISTS boundary (geometry);
+DROP FUNCTION IF EXISTS buffer (geometry,float8,integer);
+DROP FUNCTION IF EXISTS buffer (geometry,float8);
+DROP FUNCTION IF EXISTS BuildArea (geometry);
+DROP FUNCTION IF EXISTS Centroid (geometry);
+DROP FUNCTION IF EXISTS Contains (geometry,geometry);
+DROP FUNCTION IF EXISTS convexhull (geometry);
+DROP FUNCTION IF EXISTS crosses (geometry,geometry);
+DROP FUNCTION IF EXISTS distance (geometry,geometry);
+DROP FUNCTION IF EXISTS difference (geometry,geometry);
+DROP FUNCTION IF EXISTS Dimension (geometry);
+DROP FUNCTION IF EXISTS disjoint (geometry,geometry);
+DROP FUNCTION IF EXISTS distance_sphere (geometry,geometry);
+DROP FUNCTION IF EXISTS distance_spheroid (geometry,geometry,spheroid);
+DROP FUNCTION IF EXISTS Dump (geometry);
+DROP FUNCTION IF EXISTS DumpRings (geometry);
+DROP FUNCTION IF EXISTS Envelope (geometry);
+DROP FUNCTION IF EXISTS Expand (box2d,float8);
+DROP FUNCTION IF EXISTS Expand (box3d,float8);
+DROP FUNCTION IF EXISTS Expand (geometry,float8);
+DROP FUNCTION IF EXISTS Find_Extent (text,text);
+DROP FUNCTION IF EXISTS Find_Extent (text,text,text);
+DROP FUNCTION IF EXISTS EndPoint (geometry);
+DROP FUNCTION IF EXISTS ExteriorRing (geometry);
+DROP FUNCTION IF EXISTS Force_2d (geometry);
+DROP FUNCTION IF EXISTS Force_3d (geometry);
+DROP FUNCTION IF EXISTS Force_3dm (geometry);
+DROP FUNCTION IF EXISTS Force_3dz (geometry);
+DROP FUNCTION IF EXISTS Force_4d (geometry);
+DROP FUNCTION IF EXISTS Force_Collection (geometry);
+DROP FUNCTION IF EXISTS ForceRHR (geometry);
+DROP FUNCTION IF EXISTS GeomCollFromText (text, int4);
+DROP FUNCTION IF EXISTS GeomCollFromText (text);
+DROP FUNCTION IF EXISTS GeomCollFromWKB (bytea, int);
+DROP FUNCTION IF EXISTS GeomCollFromWKB (bytea);
+DROP FUNCTION IF EXISTS GeometryN (geometry,integer);
+DROP FUNCTION IF EXISTS GeomUnion (geometry,geometry);
+DROP FUNCTION IF EXISTS getbbox (geometry);
+DROP FUNCTION IF EXISTS intersects (geometry,geometry);
+DROP FUNCTION IF EXISTS IsRing (geometry);
+DROP FUNCTION IF EXISTS IsSimple (geometry);
+DROP FUNCTION IF EXISTS length_spheroid (geometry, spheroid);
+DROP FUNCTION IF EXISTS length2d_spheroid (geometry, spheroid);
+DROP FUNCTION IF EXISTS length3d_spheroid (geometry, spheroid);
+DROP FUNCTION IF EXISTS LineMerge (geometry);
+DROP FUNCTION IF EXISTS locate_along_measure (geometry, float8);
+DROP FUNCTION IF EXISTS MakeBox2d (geometry, geometry);
+DROP FUNCTION IF EXISTS MakePolygon (geometry, geometry[]);
+DROP FUNCTION IF EXISTS MakePolygon (geometry);
+DROP FUNCTION IF EXISTS MPolyFromWKB (bytea);
+DROP FUNCTION IF EXISTS multi (geometry);
+DROP FUNCTION IF EXISTS MultiPolyFromWKB (bytea, int);
+DROP FUNCTION IF EXISTS MultiPolyFromWKB (bytea);
+DROP FUNCTION IF EXISTS InteriorRingN (geometry,integer);
+DROP FUNCTION IF EXISTS intersection (geometry,geometry);
+DROP FUNCTION IF EXISTS IsClosed (geometry);
+DROP FUNCTION IF EXISTS IsEmpty (geometry);
+DROP FUNCTION IF EXISTS IsValid (geometry);
+DROP FUNCTION IF EXISTS length3d (geometry);
+DROP FUNCTION IF EXISTS length2d (geometry);
+DROP FUNCTION IF EXISTS length (geometry);
+DROP FUNCTION IF EXISTS line_interpolate_point (geometry, float8);
+DROP FUNCTION IF EXISTS line_locate_point (geometry, geometry);
+DROP FUNCTION IF EXISTS line_substring (geometry, float8, float8);
+DROP FUNCTION IF EXISTS LineFromText (text);
+DROP FUNCTION IF EXISTS LineFromText (text, int4);
+DROP FUNCTION IF EXISTS LineFromMultiPoint (geometry);
+DROP FUNCTION IF EXISTS LineFromWKB (bytea, int);
+DROP FUNCTION IF EXISTS LineFromWKB (bytea);
+DROP FUNCTION IF EXISTS LineStringFromText (text);
+DROP FUNCTION IF EXISTS LineStringFromText (text, int4);
+DROP FUNCTION IF EXISTS LinestringFromWKB (bytea, int);
+DROP FUNCTION IF EXISTS LinestringFromWKB (bytea);
+DROP FUNCTION IF EXISTS locate_between_measures (geometry, float8, float8);
+DROP FUNCTION IF EXISTS M (geometry);
+DROP FUNCTION IF EXISTS MakeBox3d (geometry, geometry);
+DROP FUNCTION IF EXISTS makeline_garray  (geometry[]);
+DROP FUNCTION IF EXISTS MakeLine (geometry, geometry);
+DROP FUNCTION IF EXISTS MakePoint (float8, float8);
+DROP FUNCTION IF EXISTS MakePoint (float8, float8, float8);
+DROP FUNCTION IF EXISTS MakePoint (float8, float8, float8, float8);
+DROP FUNCTION IF EXISTS MakePointM (float8, float8, float8);
+DROP FUNCTION IF EXISTS max_distance (geometry,geometry);
+DROP FUNCTION IF EXISTS mem_size (geometry);
+DROP FUNCTION IF EXISTS MLineFromText (text, int4);
+DROP FUNCTION IF EXISTS MLineFromText (text);
+DROP FUNCTION IF EXISTS MLineFromWKB (bytea, int);
+DROP FUNCTION IF EXISTS MLineFromWKB (bytea);
+DROP FUNCTION IF EXISTS MPointFromText (text, int4);
+DROP FUNCTION IF EXISTS MPointFromText (text);
+DROP FUNCTION IF EXISTS MPointFromWKB (bytea, int);
+DROP FUNCTION IF EXISTS MPointFromWKB (bytea);
+DROP FUNCTION IF EXISTS MPolyFromText (text, int4);
+DROP FUNCTION IF EXISTS MPolyFromText (text);
+DROP FUNCTION IF EXISTS MPolyFromWKB (bytea, int);
+DROP FUNCTION IF EXISTS MultiLineFromWKB (bytea, int);
+DROP FUNCTION IF EXISTS MultiLineFromWKB (bytea, int);
+DROP FUNCTION IF EXISTS MultiLineFromWKB (bytea);
+DROP FUNCTION IF EXISTS MultiLineStringFromText (text);
+DROP FUNCTION IF EXISTS MultiLineStringFromText (text, int4);
+DROP FUNCTION IF EXISTS MultiPointFromText (text);
+DROP FUNCTION IF EXISTS MultiPointFromText (text);
+DROP FUNCTION IF EXISTS MultiPointFromText (text, int4);
+DROP FUNCTION IF EXISTS MultiPointFromWKB (bytea, int);
+DROP FUNCTION IF EXISTS MultiPointFromWKB (bytea);
+DROP FUNCTION IF EXISTS MultiPolygonFromText (text, int4);
+DROP FUNCTION IF EXISTS MultiPolygonFromText (text);
+DROP FUNCTION IF EXISTS NumInteriorRing (geometry);
+DROP FUNCTION IF EXISTS NumInteriorRings (geometry);
+DROP FUNCTION IF EXISTS npoints (geometry);
+DROP FUNCTION IF EXISTS nrings (geometry);
+DROP FUNCTION IF EXISTS NumGeometries (geometry);
+DROP FUNCTION IF EXISTS NumPoints (geometry);
+DROP FUNCTION IF EXISTS overlaps (geometry,geometry);
+DROP FUNCTION IF EXISTS perimeter3d (geometry);
+DROP FUNCTION IF EXISTS perimeter2d (geometry);
+DROP FUNCTION IF EXISTS point_inside_circle (geometry,float8,float8,float8);
+DROP FUNCTION IF EXISTS PointFromText (text);
+DROP FUNCTION IF EXISTS PointFromText (text, int4);
+DROP FUNCTION IF EXISTS PointFromWKB (bytea);
+DROP FUNCTION IF EXISTS PointFromWKB (bytea, int);
+DROP FUNCTION IF EXISTS PointN (geometry,integer);
+DROP FUNCTION IF EXISTS PointOnSurface (geometry);
+DROP FUNCTION IF EXISTS PolyFromText (text);
+DROP FUNCTION IF EXISTS PolyFromText (text, int4);
+DROP FUNCTION IF EXISTS PolyFromWKB (bytea, int);
+DROP FUNCTION IF EXISTS PolyFromWKB (bytea);
+DROP FUNCTION IF EXISTS PolygonFromText (text, int4);
+DROP FUNCTION IF EXISTS PolygonFromText (text);
+DROP FUNCTION IF EXISTS PolygonFromWKB (bytea, int);
+DROP FUNCTION IF EXISTS PolygonFromWKB (bytea);
+DROP FUNCTION IF EXISTS Polygonize_GArray  (geometry[]);
+DROP FUNCTION IF EXISTS relate (geometry,geometry);
+DROP FUNCTION IF EXISTS relate (geometry,geometry,text);
+DROP FUNCTION IF EXISTS RemovePoint (geometry, integer);
+DROP FUNCTION IF EXISTS reverse (geometry);
+DROP FUNCTION IF EXISTS Segmentize (geometry, float8);
+DROP FUNCTION IF EXISTS SetPoint (geometry, integer, geometry);
+DROP FUNCTION IF EXISTS shift_longitude (geometry);
+DROP FUNCTION IF EXISTS Simplify (geometry, float8);
+DROP FUNCTION IF EXISTS SnapToGrid (geometry, float8, float8, float8, float8);
+DROP FUNCTION IF EXISTS SnapToGrid (geometry, float8);
+DROP FUNCTION IF EXISTS SnapToGrid (geometry, geometry, float8, float8, float8, float8);
+DROP FUNCTION IF EXISTS SnapToGrid (geometry, float8, float8);
+DROP FUNCTION IF EXISTS ST_MakeLine_GArray  (geometry[]);
+DROP FUNCTION IF EXISTS StartPoint (geometry);
+DROP FUNCTION IF EXISTS symdifference (geometry,geometry);
+DROP FUNCTION IF EXISTS symmetricdifference (geometry,geometry);
+DROP FUNCTION IF EXISTS summary (geometry);
+DROP FUNCTION IF EXISTS transform (geometry,integer);
+DROP FUNCTION IF EXISTS touches (geometry,geometry);
+DROP FUNCTION IF EXISTS within (geometry,geometry);
+DROP FUNCTION IF EXISTS X (geometry);
+DROP FUNCTION IF EXISTS xmax (box3d);
+DROP FUNCTION IF EXISTS xmin (box3d);
+DROP FUNCTION IF EXISTS Y (geometry);
+DROP FUNCTION IF EXISTS ymax (box3d);
+DROP FUNCTION IF EXISTS ymin (box3d);
+DROP FUNCTION IF EXISTS Z (geometry);
+DROP FUNCTION IF EXISTS zmax (box3d);
+DROP FUNCTION IF EXISTS zmin (box3d);
+DROP FUNCTION IF EXISTS zmflag (geometry);
+DROP FUNCTION IF EXISTS collect (geometry, geometry);
+DROP FUNCTION IF EXISTS combine_bbox (box2d,geometry);
+DROP FUNCTION IF EXISTS combine_bbox (box3d,geometry);
+DROP FUNCTION IF EXISTS ST_Polygonize_GArray  (geometry[]);
+DROP FUNCTION IF EXISTS ST_unite_garray  (geometry[]);
+DROP FUNCTION IF EXISTS unite_garray  (geometry[]);
+DROP FUNCTION IF EXISTS ST_Length3D (geometry);
+DROP FUNCTION IF EXISTS ST_Length_spheroid3D (geometry, spheroid);
+DROP FUNCTION IF EXISTS ST_Perimeter3D (geometry);
+DROP FUNCTION IF EXISTS ST_MakeBox3D (geometry, geometry);
+-- Drop all types.
+-- Drop all functions needed for types definition.
+-- Drop all schemas.

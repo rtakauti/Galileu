@@ -25,12 +25,7 @@ class BOImpl implements IBO {
 	public function arrayDev() {
 		return $this->dao->query ( SchemaType::DEV );
 	}
-	/**
-	 * @return Array simples associa de Dev
-	 */
-	public function arrayDevAssoc() {
-		return $this->dao->queryAssoc ( SchemaType::DEV );
-	}
+
 	/**
 	 * @return Array com profundidade maior que 1 de HOMOLOG
 	 */

@@ -1,8 +1,11 @@
 <?php
 include_once realpath ( __DIR__ . '/../DAOImpl.php' );
+include_once realpath ( __DIR__ . '/../IConstarintDAO.php' );
 include_once realpath ( __DIR__ . '/../../enum/FaseQuery.php' );
 include_once realpath ( __DIR__ . '/../../enum/SchemaType.php' );
-class ConstraintDAOImpl extends DAOImpl {
+
+
+class ConstraintDAOImpl extends DAOImpl implements IConstarintDAO{
 	
 	//private $fase;
 	
@@ -55,7 +58,7 @@ class ConstraintDAOImpl extends DAOImpl {
 	}
 	
 	
-	public function restricao($schemaType) {
+	public function retorna($schemaType) {
 		$arrayResult = array ();
 		$array = $this->queryAllAssoc ( $schemaType );
 		for($i = 0; $i < count ( $array ); $i ++) {

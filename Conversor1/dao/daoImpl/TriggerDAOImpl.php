@@ -1,9 +1,10 @@
 <?php
 include_once realpath ( __DIR__ . '/../DAOImpl.php' );
+include_once realpath ( __DIR__ . '/../ITriggerDAO.php' );
 include_once realpath ( __DIR__ . '/../../enum/FaseQuery.php' );
 include_once realpath ( __DIR__ . '/../../enum/SchemaType.php' );
 
-class TriggerDAOImpl extends DAOImpl {
+class TriggerDAOImpl extends DAOImpl implements ITriggerDAO {
 	
 	
 	
@@ -29,7 +30,7 @@ class TriggerDAOImpl extends DAOImpl {
 		
 		$this->query = $query;
 	}
-	public function trigger($schemaType) {
+	public function retorna($schemaType) {
 		$arrayResult = array ();
 		$array = $this->queryAllAssoc ( $schemaType );
 		for($i = 0; $i < count ( $array ); $i ++) {

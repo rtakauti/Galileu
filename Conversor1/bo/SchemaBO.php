@@ -16,8 +16,8 @@ class SchemaBO extends BOImpl{
 	public function __construct($empresa, $estrutura){
 		$this->estrutura = $estrutura;
 		$this->dao = new SchemaDAOImpl($empresa);
-		$this->devArray = $this->dao->schema(SchemaType::DEV);
-		$this->homologArray = $this->dao->schema(SchemaType::HOMOLOG);
+		$this->devArray = $this->dao->retorna(SchemaType::DEV);
+		$this->homologArray = $this->dao->retorna(SchemaType::HOMOLOG);
 	}
 	
 	

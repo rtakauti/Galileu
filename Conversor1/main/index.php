@@ -26,26 +26,32 @@ $saida->open ();
 $estrutura = $saida->estrutura();
 $schema = new SchemaBO ( $empresa, $estrutura );
 $saida->gravarDataBase ();
-
-$schemaDAO = new SchemaDAOImpl("test");
+$funcao = new FuncaoDAOImpl("test");
+$assembler = new AssemblerBO("test");
+echo "<pre>";
+//print_r($funcao->retorna(SchemaType::DEV));
+print_r($assembler->dev());
+echo "</pre>";
+//$schemaDAO = new SchemaDAOImpl("teste");
 //$schemaBO = new SchemaBO(SchemasCompany::TESTE, $estrutura); 
 //$tabela = new TableDAOImpl(SchemasCompany::TESTE, 'public');
 //$tabelaBO = new TabelaBO(SchemasCompany::TESTE, 'public', NULL, NULL);
+/*
 $indice = new IndiceDAOImpl("teste");
-$funcao = new FuncaoDAOImpl("teste", 'public');
 $trigger = new TriggerDAOImpl("teste");
 $constraint = new ConstraintDAOImpl("teste");
-
+*/
 echo "<pre>";
-print_r($schemaDAO->schema(SchemaType::DEV));
+//print_r($schemaDAO->retorna(SchemaType::DEV));
+//print_r($schemaDAO->retorna1(SchemaType::DEV));
 //print_r($trigger->trigger(SchemaType::DEV));
 //print_r($funcao->funcao(SchemaType::DEV));
 //print_r($indice->index(SchemaType::DEV));
 //print_r($constraint->restricao(SchemaType::DEV));
 echo "</pre>";
 
-$saida->gravar ( $schema->listarSchema () );
-$saida->gravar ( $schema->dropSchema () );
+//$saida->gravar ( $schema->listarSchema () );
+//$saida->gravar ( $schema->dropSchema () );
 /*
 $saida->gravar ( $schema->createSchema () );
 $saida->gravar ( $schema->alterSchema () );

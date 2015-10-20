@@ -1,7 +1,9 @@
 <?php
 include_once realpath(__DIR__.'/../DAOImpl.php');
+include_once realpath(__DIR__.'/../IIndiceDAO.php');
 
-class IndiceDAOImpl extends DAOImpl {
+
+class IndiceDAOImpl extends DAOImpl implements IIndiceDAO{
 	
 	
 	public function __construct($dbCompany) {
@@ -37,7 +39,7 @@ class IndiceDAOImpl extends DAOImpl {
 	}
 	
 	
-	public function index($schemaType) {
+	public function retorna($schemaType) {
 		$arrayResult = array ();
 		$array = $this->queryAllAssoc ( $schemaType );
 		for($i = 0; $i < count ( $array ); $i ++) {
