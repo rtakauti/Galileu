@@ -6,18 +6,16 @@ include_once realpath(__DIR__.'/../enum/EstruturaQuery.php');
 include_once 'BOImpl.php';
 include_once 'TabelaBO.php';
 
-class SchemaBO extends BOImpl{
+class SchemaBO{
 	
-	protected  $dao;
 	private $estrutura;
 	private $devArray;
 	private $homologArray;
 	
-	public function __construct($empresa, $estrutura){
+	public function __construct($devArray, $homologArray, $estrutura){
 		$this->estrutura = $estrutura;
-		$this->dao = new SchemaDAOImpl($empresa);
-		$this->devArray = $this->dao->retorna(SchemaType::DEV);
-		$this->homologArray = $this->dao->retorna(SchemaType::HOMOLOG);
+		$this->devArray = $devArray;
+		$this->homologArray = $homologArray;
 	}
 	
 	
@@ -74,7 +72,7 @@ class SchemaBO extends BOImpl{
 	
 	public function createSchema() {
 		$estrutura = $this->estrutura;
-		$empresa = $estrutura[EstruturaQuery::COMPANY];
+		$dbCompany = $estrutura[EstruturaQuery::COMPANY];
 		//$schemas = $this->diff_dev_homologQuery ();
 		$dev = array_keys($this->devArray['schema']);
 		$homolog = array_keys($this->homologArray['schema']);
@@ -86,35 +84,35 @@ class SchemaBO extends BOImpl{
 				$string .= "\n\n\n\n------------------------------ CREATE SCHEMA ------------------------------";
 				$string .= "\nCREATE SCHEMA $schema;";
 				$string .= $this->setSchema ( $schema );
-				$sequence = new SequenceBO ( $empresa, $schema, $this->devArray['sequence'], $this->homologArray['sequence'] );
+				$sequence = new SequenceBO ( $dbCompany, $schema, $this->devArray['sequence'], $this->homologArray['sequence'] );
 				$string .= $sequence->dropSequence ();
 				$sequenceParameter = $sequence->diff_dev_homologQuery();
 				$string .= $sequence->createSequence ();
-				$tabela = new TabelaBO ( $empresa, $schema,$sequenceParameter, $estrutura );
+				$tabela = new TabelaBO ( $dbCompany, $schema,$sequenceParameter, $estrutura );
 				$string .= $tabela->createTable ();
-				$funcao = new FuncaoBO($empresa, $schema);
+				$funcao = new FuncaoBO($dbCompany, $schema);
 				$string .= $funcao->createFuncao();
 			}
 		return $string;
 	}
 	
 	public function alterSchema(){
-		$empresa = $this->estrutura [EstruturaQuery::COMPANY];
+		$dbCompany = $this->estrutura [EstruturaQuery::COMPANY];
 		$schemas = $this->intersect_homolog_devQuery();
 		$string = "";
 		if (! empty ( $schemas ))
 			foreach ( $schemas as $schema ) {
 				$string .= "\n\n\n\n------------------------------ ALTER SCHEMA ------------------------------";
 				$string .= $this->setSchema ( $schema );
-				$sequence = new SequenceBO ( $empresa, $schema );
+				$sequence = new SequenceBO ( $dbCompany, $schema );
 				$string .= $sequence->dropSequence ();
 				$sequenceParameter = $sequence->diff_dev_homologQuery();
 				$string .= $sequence->createSequence ();
-				$tabela = new TabelaBO ( $empresa, $schema,$sequenceParameter, $this->estrutura );
+				$tabela = new TabelaBO ( $dbCompany, $schema,$sequenceParameter, $this->estrutura );
 				$string .= $tabela->dropTable();
 				$string .= $tabela->createTable ();
 				$string .= $tabela->alterTable();
-				$funcao = new FuncaoBO($empresa, $schema);
+				$funcao = new FuncaoBO($dbCompany, $schema);
 				$string .= $funcao->dropFuncao();
 				$string .= $funcao->createFuncao();
 			}

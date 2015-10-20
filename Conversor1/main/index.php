@@ -11,26 +11,27 @@ function __autoload($classe) {
 }
 
 If (isset ( $argv [1] )) {
-	$empresa = $argv [1];
+	$dbCompany = $argv [1];
 	$cmd = true;
 } elseif (isset ( $_GET ['empresa'] )) {
-	$empesa = $_GET ['empresa'];
+	$dbCompany = $_GET ['empresa'];
 	$cmd = false;
 } else {
-	$empresa = "teste";
+	$dbCompany = "test";
 	$cmd = false;
 }
 
-$saida = new Saida ( $empresa, $cmd );
+$saida = new Saida ( $dbCompany, $cmd );
 $saida->open ();
 $estrutura = $saida->estrutura();
-$schema = new SchemaBO ( $empresa, $estrutura );
+$schema = new SchemaBO ( $dbCompany, $estrutura );
 $saida->gravarDataBase ();
-$funcao = new FuncaoDAOImpl("test");
-$assembler = new AssemblerBO("test");
+//$funcao = new FuncaoDAOImpl($dbCompany);
+$assembler = new AssemblerBO($dbCompany);
 echo "<pre>";
 //print_r($funcao->retorna(SchemaType::DEV));
-print_r($assembler->dev());
+print_r($assembler->schemaDrop());
+//print_r($assembler->dev());
 echo "</pre>";
 //$schemaDAO = new SchemaDAOImpl("teste");
 //$schemaBO = new SchemaBO(SchemasCompany::TESTE, $estrutura); 

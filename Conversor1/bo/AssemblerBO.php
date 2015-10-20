@@ -14,7 +14,14 @@ class AssemblerBO {
 		$this->homolog = $this->dao->retorna(SchemaType::HOMOLOG);
 	}
 	
-	
+	public function schemaDrop(){
+		$dev = $this->dev;
+		$homolog = $this->homolog;
+		return $dev['schemas'];
+		return $schema = array_diff($dev['schemas'], $homolog['schemas']);
+		
+		
+	}
 	
 	public function dev(){
 		return $this->dev;

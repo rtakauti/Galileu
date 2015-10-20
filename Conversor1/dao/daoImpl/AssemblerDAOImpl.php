@@ -60,12 +60,16 @@ class AssemblerDAOImpl implements IAssemblerDAO{
 			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['coluna'] [$array [$i] ['column_name']] ['interval_type'] = $array [$i] ['interval_type'];
 			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['coluna'] [$array [$i] ['column_name']] ['is_nullable'] = $array [$i] ['is_nullable'];
 			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['coluna'] [$array [$i] ['column_name']] ['column_default'] = $array [$i] ['column_default'];
-			$arrayResult ['tabelas'] []  = $array [$i] ['schema_name'].".".$array [$i] ['table_name'];
+			$arrayResult ['schemas'][$array [$i] ['schema_name']] = $array [$i] ['schema_name'];
+			$arrayResult ['tabelas'] [$array [$i] ['schema_name'].".".$array [$i] ['table_name']]  = $array [$i] ['schema_name'].".".$array [$i] ['table_name'];
 			if(isset($arrayIndice['schema'] [$array [$i] ['schema_name']] ['tabela']  [$array [$i] ['table_name']]))$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['indice'] = $arrayIndice['schema']  [$array [$i] ['schema_name']] ['tabela']  [$array [$i] ['table_name']] ['indice'] ;
 			if(isset($arrayFuncao['schema'] [$array [$i] ['schema_name']] ['funcao']  ))$arrayResult ['schema'] [$array [$i] ['schema_name']] ['funcao']  = $arrayFuncao['schema']  [$array [$i] ['schema_name']] ['funcao']  ;
 			if(isset($arrayTrigger['schema'] [$array [$i] ['schema_name']] ['tabela']  [$array [$i] ['table_name']]))$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['trigger'] = $arrayTrigger['schema']  [$array [$i] ['schema_name']] ['tabela']  [$array [$i] ['table_name']] ['trigger'] ;
 			if(isset($arrayConstraint['schema'] [$array [$i] ['schema_name']] ['tabela']  [$array [$i] ['table_name']]))$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['constraint'] = $arrayConstraint['schema']  [$array [$i] ['schema_name']] ['tabela']  [$array [$i] ['table_name']] ['constraint'] ;
 		}
+		$arrayResult ['schemas'] = array_unique($arrayResult ['schemas']);
+		sort($arrayResult ['schemas']);
+		
 		$arrayResult ['tabelas'] = array_unique($arrayResult ['tabelas']);
 		sort($arrayResult ['tabelas']);
 		
