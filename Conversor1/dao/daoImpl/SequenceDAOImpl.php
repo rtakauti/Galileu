@@ -14,7 +14,8 @@ class SequenceDAOImpl extends DAOImpl implements ISequenceDAO{
 	public function setQuery() {
 			// Retorna os nomes das SEQUENCE
 			$query =  " select distinct ";
-			$query .= " nsp.nspname ||'.'|| cls.relname as sequence ";
+			$query .= " nsp.nspname as schema_name, ";
+			$query .= " cls.relname as sequence_name ";
 			$query .= " from pg_class cls ";
 			$query .= " join pg_namespace nsp ";
 			$query .= " on nsp.oid = cls.relnamespace ";
@@ -25,8 +26,23 @@ class SequenceDAOImpl extends DAOImpl implements ISequenceDAO{
 			
 			$this->query = $query;
 	}
+
+	public function retorna($schemaType){
+		$arrayResult = array ();
+		$array = $this->queryAllAssoc ( $schemaType );
+		for($i = 0; $i < count ( $array ); $i ++) {
+			$arrayResult ['sequences'][] = $array [$i] ['schema_name'].".".$array [$i] ['sequence_name'];
+			$arrayResult ['schema'][$array [$i] ['schema_name']]['sequence'][] =  $array [$i] ['schema_name'].".".$array [$i] ['sequence_name'];
+		}
+		return $arrayResult;
+		
+	}
 	
+	
+	/*
 	public function retorna($schemaType){
 		return $this->queryAllAssoc($schemaType);
 	}
+	*/
+	
 }

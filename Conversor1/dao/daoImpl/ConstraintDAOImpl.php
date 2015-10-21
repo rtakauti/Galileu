@@ -62,17 +62,17 @@ class ConstraintDAOImpl extends DAOImpl implements IConstarintDAO{
 		$arrayResult = array ();
 		$array = $this->queryAllAssoc ( $schemaType );
 		for($i = 0; $i < count ( $array ); $i ++) {
-			$arrayResult ['constraints'][]="\nALTER TABLE ".$array [$i] ['schema_name'].".".$array [$i] ['table_name']." DROP CONSTRAINT ". $array [$i] ['constraint_name'].";";
-			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['table_name']]['constraint'][$array [$i] ['constraint_name']] ['constraint_type'] = $array [$i] ['constraint_type'];
-			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['table_name']]['constraint'][$array [$i] ['constraint_name']] ['column_name'] [] = $array [$i] ['column_name'];
-			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['table_name']]['constraint'][$array [$i] ['constraint_name']] ['foreign_table'] = $array [$i] ['foreign_table'];
-			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['table_name']]['constraint'][$array [$i] ['constraint_name']] ['foreign_column'] = $array [$i] ['foreign_column'];
-			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['table_name']]['constraint'][$array [$i] ['constraint_name']] ['match_option'] = $array [$i] ['match_option'];
-			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['table_name']]['constraint'][$array [$i] ['constraint_name']] ['update_rule'] = $array [$i] ['update_rule'];
-			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['table_name']]['constraint'][$array [$i] ['constraint_name']] ['delete_rule'] = $array [$i] ['delete_rule'];
-			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['table_name']]['constraint'][$array [$i] ['constraint_name']] ['consrc'] = $array [$i] ['consrc'];
+			//$arrayResult ['constraints'][]="\nALTER TABLE ".$array [$i] ['schema_name'].".".$array [$i] ['table_name']." DROP CONSTRAINT ". $array [$i] ['constraint_name'].";";
+			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['schema_name'].".".$array [$i] ['table_name']] ['constraint'][$array [$i] ['constraint_name']] ['constraint_type'] = $array [$i] ['constraint_type'];
+			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['schema_name'].".".$array [$i] ['table_name']] ['constraint'][$array [$i] ['constraint_name']] ['column_name'] [] = $array [$i] ['column_name'];
+			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['schema_name'].".".$array [$i] ['table_name']] ['constraint'][$array [$i] ['constraint_name']] ['foreign_table'] = $array [$i] ['foreign_table'];
+			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['schema_name'].".".$array [$i] ['table_name']] ['constraint'][$array [$i] ['constraint_name']] ['foreign_column'] = $array [$i] ['foreign_column'];
+			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['schema_name'].".".$array [$i] ['table_name']] ['constraint'][$array [$i] ['constraint_name']] ['match_option'] = $array [$i] ['match_option'];
+			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['schema_name'].".".$array [$i] ['table_name']] ['constraint'][$array [$i] ['constraint_name']] ['update_rule'] = $array [$i] ['update_rule'];
+			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['schema_name'].".".$array [$i] ['table_name']] ['constraint'][$array [$i] ['constraint_name']] ['delete_rule'] = $array [$i] ['delete_rule'];
+			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['schema_name'].".".$array [$i] ['table_name']] ['constraint'][$array [$i] ['constraint_name']] ['consrc'] = $array [$i] ['consrc'];
 		}
-		sort($arrayResult ['constraints']);
+		//sort($arrayResult ['constraints']);
 		return $arrayResult;
 	}
 }

@@ -24,35 +24,15 @@ If (isset ( $argv [1] )) {
 $saida = new Saida ( $dbCompany, $cmd );
 $saida->open ();
 $estrutura = $saida->estrutura();
-$schema = new SchemaBO ( $dbCompany, $estrutura );
+$schema = new SchemaBO ( $dbCompany, $estrutura,null );
 $saida->gravarDataBase ();
-//$funcao = new FuncaoDAOImpl($dbCompany);
+$funcao = new FuncaoDAOImpl($dbCompany);
 $assembler = new AssemblerBO($dbCompany);
 echo "<pre>";
 //print_r($funcao->retorna(SchemaType::DEV));
-print_r($assembler->schemaDrop());
-//print_r($assembler->dev());
+echo "<hr/>";
+print_r($assembler->dev());
 echo "</pre>";
-//$schemaDAO = new SchemaDAOImpl("teste");
-//$schemaBO = new SchemaBO(SchemasCompany::TESTE, $estrutura); 
-//$tabela = new TableDAOImpl(SchemasCompany::TESTE, 'public');
-//$tabelaBO = new TabelaBO(SchemasCompany::TESTE, 'public', NULL, NULL);
-/*
-$indice = new IndiceDAOImpl("teste");
-$trigger = new TriggerDAOImpl("teste");
-$constraint = new ConstraintDAOImpl("teste");
-*/
-echo "<pre>";
-//print_r($schemaDAO->retorna(SchemaType::DEV));
-//print_r($schemaDAO->retorna1(SchemaType::DEV));
-//print_r($trigger->trigger(SchemaType::DEV));
-//print_r($funcao->funcao(SchemaType::DEV));
-//print_r($indice->index(SchemaType::DEV));
-//print_r($constraint->restricao(SchemaType::DEV));
-echo "</pre>";
-
-//$saida->gravar ( $schema->listarSchema () );
-//$saida->gravar ( $schema->dropSchema () );
 /*
 $saida->gravar ( $schema->createSchema () );
 $saida->gravar ( $schema->alterSchema () );

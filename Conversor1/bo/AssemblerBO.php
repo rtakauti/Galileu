@@ -5,8 +5,8 @@ include_once realpath(__DIR__.'/../dao/daoImpl/AssemblerDAOImpl.php');
 class AssemblerBO {
 	
 	private $dao;
-	private $dev;
-	private $homolog;
+	protected  $dev;
+	protected  $homolog;
 	
 	public function __construct($dbCompany){
 		$this->dao = new AssemblerDAOImpl($dbCompany); 
