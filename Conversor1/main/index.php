@@ -26,16 +26,26 @@ $schema = new SchemaBO ();
 $sequence = new SequenceBO();
 $funcao = new FuncaoBO();
 $tabela = new TabelaBO();
-
+$trigger = new TriggerBO();
+$indice = new IndiceBO();
 $saida->gravar($schema->listar());
 $saida->gravar($sequence->listar());
 $saida->gravar($funcao->listar());
 $saida->gravar($tabela->listar());
+$saida->gravar($trigger->listar());
+$saida->gravar($indice->listar());
+
 $saida->gravar($schema->drop());
 $saida->gravar($sequence->drop());
 $saida->gravar($funcao->drop());
+$saida->gravar($tabela->drop());
+$saida->gravar($trigger->drop());
+$saida->gravar($indice->drop());
 
 echo "<pre>";
+print_r($trigger->listarHomolog());
+print_r($trigger->listarDev());
+print_r($trigger->drop());
 print_r($schema->listar());
 print_r($sequence->listar());
 print_r($funcao->listar());

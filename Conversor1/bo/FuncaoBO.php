@@ -11,23 +11,29 @@ class FuncaoBO extends AssemblerBO{
 	public function __construct(){
 	}
 	
-	public static function dev(){
-		$schemas = array_keys ( parent::$dev['schema'] );
+	public static function dev() {
+		$schemas = array_keys ( parent::$dev ['schema'] );
+		$lista = array();
 		foreach ( $schemas as $schema ) {
-			$funcoes = array_keys (parent::$dev['schema'] [$schema] ['funcao']);
-			foreach ($funcoes as $funcao) {
-				$lista[] = $funcao;
+			if (isset ( parent::$dev ['schema'] [$schema] ['funcao'] )) {
+				$funcoes = array_keys ( parent::$dev ['schema'] [$schema] ['funcao'] );
+				foreach ( $funcoes as $funcao ) {
+					$lista [] = $funcao;
+				}
 			}
 		}
 		return $lista;
 	}
 	
-	public static function homolog(){
-		$schemas = array_keys ( parent::$homolog['schema'] );
+	public static function homolog() {
+		$schemas = array_keys ( parent::$homolog ['schema'] );
+		$lista = array ();
 		foreach ( $schemas as $schema ) {
-			$funcoes = array_keys (parent::$homolog['schema'] [$schema] ['funcao']);
-			foreach ($funcoes as $funcao) {
-				$lista[] = $funcao;
+			if (isset ( parent::$homolog ['schema'] [$schema] ['funcao'] )) {
+				$funcoes = array_keys ( parent::$homolog ['schema'] [$schema] ['funcao'] );
+				foreach ( $funcoes as $funcao ) {
+					$lista [] = $funcao;
+				}
 			}
 		}
 		return $lista;
@@ -71,7 +77,8 @@ class FuncaoBO extends AssemblerBO{
 			$string .= "\n/*";
 			foreach ( $funcoes as $funcao ) {
 				 $string .= "\nDROP FUNCTION IF EXISTS $funcao CASCADE;";
-				 unset ( parent::$homolog ['schema'] [substr($funcao, 0, strpos($funcao, '.'))] ['funcao'] [$funcao] );
+				 $schema = substr($funcao, 0, strpos($funcao, '.'));
+				 unset ( parent::$homolog ['schema'] [$schema] ['funcao'] [$funcao] );
 			}
 			$string .= "\n*/";
 		}

@@ -13,28 +13,37 @@ class TabelaBO extends AssemblerBO{
 	public function __construct(){
 	}
 	
-	public static function dev(){
-		$schemas = array_keys ( parent::$dev['schema'] );
+	public static function dev() {
+		$schemas = array_keys ( parent::$dev ['schema'] );
+		$lista = array ();
 		foreach ( $schemas as $schema ) {
-			$tabelas = array_keys (parent::$dev['schema'] [$schema] ['tabela']);
-			foreach ( $tabelas as $tabela ) {
-				$lista[] = $tabela;
-			}
-		}	
-		return $lista;
-	}
-	
-	
-	public static function homolog(){
-		$schemas = array_keys ( parent::$homolog['schema'] );
-		foreach ( $schemas as $schema ) {
-			$tabelas = array_keys (parent::$homolog['schema'] [$schema] ['tabela']);
-			foreach ( $tabelas as $tabela ) {
-				$lista[] = $tabela;
+			if (isset ( parent::$dev ['schema'] [$schema] ['tabela'] )) {
+				$tabelas = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] );
+				foreach ( $tabelas as $tabela ) {
+					$lista [] = $tabela;
+				}
 			}
 		}
 		return $lista;
 	}
+	
+	
+	public static function homolog() {
+		$schemas = array_keys ( parent::$homolog ['schema'] );
+		$lista = array ();
+		foreach ( $schemas as $schema ) {
+			if (isset ( parent::$homolog ['schema'] [$schema] ['tabela'] )) {
+				$tabelas = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] );
+				foreach ( $tabelas as $tabela ) {
+					$lista [] = $tabela;
+				}
+			}
+		}
+		return $lista;
+	}
+	
+	
+	
 	
 	public function listarDev() {
 		$lista = self::dev();
@@ -74,12 +83,15 @@ class TabelaBO extends AssemblerBO{
 			$string = "\n\n\n------------------------------ DROP TABLE ------------------------------";
 			$string .= "\n/*";
 			foreach ($tabelas as $tabela) {
-				$string .= "\nDROP TABLE $tabela CASCADE;";
+				$string .= "\nDROP TABLE IF EXISTS $tabela CASCADE;";
+				unset ( parent::$homolog ['schema'] [substr($tabela, 0, strpos($tabela, '.'))] ['tabela'] [$tabela] );
 			}
 			$string .= "\n*/";
 		}
 		return $string;
 	}
+	
+	
 	
 	public function createTable(){
 		$empresa = $this->estrutura[EstruturaQuery::COMPANY];

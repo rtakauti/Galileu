@@ -12,24 +12,30 @@ class SequenceBO extends AssemblerBO{
 	public function __construct(){
 	}
 	
-	public static function dev(){
-		$schemas = array_keys ( parent::$dev['schema'] );
+	public static function dev() {
+		$schemas = array_keys ( parent::$dev ['schema'] );
+		$lista = array ();
 		foreach ( $schemas as $schema ) {
-			$sequences = array_keys (parent::$dev['schema'] [$schema] ['sequence']);
-			foreach ( $sequences as $sequence ) {
-				$lista [] = $sequence;
+			if (isset ( parent::$dev ['schema'] [$schema] ['sequence'] )) {
+				$sequences = array_keys ( parent::$dev ['schema'] [$schema] ['sequence'] );
+				foreach ( $sequences as $sequence ) {
+					$lista [] = $sequence;
+				}
 			}
 		}
 		return $lista;
 	}
 	
 	
-	public static function homolog(){
+	public static function homolog() {
 		$schemas = array_keys ( parent::$homolog ['schema'] );
+		$lista = array ();
 		foreach ( $schemas as $schema ) {
-			$sequences = array_keys (parent::$homolog ['schema'] [$schema] ['sequence']);
-			foreach ( $sequences as $sequence ) {
-				$lista [] = $sequence;
+			if (isset ( parent::$homolog ['schema'] [$schema] ['sequence'] )) {
+				$sequences = array_keys ( parent::$homolog ['schema'] [$schema] ['sequence'] );
+				foreach ( $sequences as $sequence ) {
+					$lista [] = $sequence;
+				}
 			}
 		}
 		return $lista;

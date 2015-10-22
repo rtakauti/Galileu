@@ -48,66 +48,7 @@ class SchemaDAOImpl extends DAOImpl implements ISchemaDAO{
 	
 
 	public function retorna($schemaType) {
-		return $array = $this->queryAllAssoc ( $schemaType );
+		return $this->queryAllAssoc ( $schemaType );
 	}
 	
-	/*
-	public function retorna1($schemaType) {
-		$dbCompany = $this->dbCompany;
-		$arrayResult = array ();
-		$array = $this->queryAllAssoc ( $schemaType );
-		$sequence = new SequenceDAOImpl ( $dbCompany );
-		$arrayResult ['sequences'] = $sequence->query ( $schemaType ) ;
-		
-		$indice = new IndiceDAOImpl($dbCompany);
-		$arrayIndice = $indice->retorna($schemaType);
-		$arrayResult ['indices'] = @$arrayIndice['indices'];
-		
-		$funcao = new FuncaoDAOImpl($dbCompany);
-		$arrayFuncao = $funcao->funcao($schemaType);
-		$arrayResult['funcoes'] = @$arrayFuncao['funcoes'];
-		$trigger = new TriggerDAOImpl($dbCompany);
-		$arrayTrigger = $trigger->retorna($schemaType);
-		$arrayResult['triggers'] = @$arrayTrigger['triggers'];
-		
-		$constraint = new ConstraintDAOImpl($dbCompany);
-		$arrayConstraint = $constraint->retorna($schemaType);
-		$arrayResult['constraints'] = @$arrayConstraint['constraints'];
-		for($i = 0; $i < count ( $array ); $i ++) {
-			
-			$default = $array [$i] ['column_default'];
-			$valida = "nextval('";
-			if (substr ( $default, 0, strlen ( $valida ) ) == $valida) {
-				$fimSequence = strpos ( $default, "':" ) - strlen ( $valida );
-				$sequence = substr ( $default, strlen ( $valida ), $fimSequence );
-				if (strpos ( $sequence, "." ) == 0)
-					$sequence = "public." . $sequence;
-				$arrayResult ['sequences'] [] = $sequence;
-			}
-			
-			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['coluna'] [$array [$i] ['column_name']] ['udt_name'] = $array [$i] ['udt_name'];
-			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['coluna'] [$array [$i] ['column_name']] ['data_type'] = $array [$i] ['data_type'];
-			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['coluna'] [$array [$i] ['column_name']] ['numeric_precision'] = $array [$i] ['numeric_precision'];
-			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['coluna'] [$array [$i] ['column_name']] ['numeric_scale'] = $array [$i] ['numeric_scale'];
-			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['coluna'] [$array [$i] ['column_name']] ['character_maximum_length'] = $array [$i] ['character_maximum_length'];
-			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['coluna'] [$array [$i] ['column_name']] ['datetime_precision'] = $array [$i] ['datetime_precision'];
-			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['coluna'] [$array [$i] ['column_name']] ['interval_type'] = $array [$i] ['interval_type'];
-			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['coluna'] [$array [$i] ['column_name']] ['is_nullable'] = $array [$i] ['is_nullable'];
-			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['coluna'] [$array [$i] ['column_name']] ['column_default'] = $array [$i] ['column_default'];
-			$arrayResult ['tabelas'] []  = $array [$i] ['schema_name'].".".$array [$i] ['table_name'];
-			if(isset($arrayIndice['schema'] [$array [$i] ['schema_name']] ['tabela']  [$array [$i] ['table_name']]))$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['indice'] = $arrayIndice['schema']  [$array [$i] ['schema_name']] ['tabela']  [$array [$i] ['table_name']] ['indice'] ;
-			if(isset($arrayFuncao['schema'] [$array [$i] ['schema_name']] ['funcao']  ))$arrayResult ['schema'] [$array [$i] ['schema_name']] ['funcao']  = $arrayFuncao['schema']  [$array [$i] ['schema_name']] ['funcao']  ;
-			if(isset($arrayTrigger['schema'] [$array [$i] ['schema_name']] ['tabela']  [$array [$i] ['table_name']]))$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['trigger'] = $arrayTrigger['schema']  [$array [$i] ['schema_name']] ['tabela']  [$array [$i] ['table_name']] ['trigger'] ;
-			if(isset($arrayConstraint['schema'] [$array [$i] ['schema_name']] ['tabela']  [$array [$i] ['table_name']]))$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['constraint'] = $arrayConstraint['schema']  [$array [$i] ['schema_name']] ['tabela']  [$array [$i] ['table_name']] ['constraint'] ;
-		}
-		$arrayResult ['tabelas'] = array_unique($arrayResult ['tabelas']);
-		sort($arrayResult ['tabelas']);
-		
-		$arrayResult ['sequences'] = array_unique ( $arrayResult ['sequences'] );
-		sort ( $arrayResult ['sequences'] );
-
-		
-		return $arrayResult;
-	}
-	*/
 }
