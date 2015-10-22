@@ -1,38 +1,74 @@
 <?php
-include_once realpath (__DIR__.'/../dao/daoImpl/SequenceDAOImpl.php');
+//include_once realpath (__DIR__.'/../dao/daoImpl/SequenceDAOImpl.php');
 include_once realpath (__DIR__.'/../enum/SchemasCompany.php');
 include_once realpath (__DIR__.'/../enum/SchemaType.php');
 include_once realpath (__DIR__.'/../enum/EstruturaQuery.php');
 include_once 'sequence/GerenciadorSequence.php';
-include_once 'BOImpl.php';
+//include_once 'BOImpl.php';
 
-class SequenceBO extends BOImpl{
+class SequenceBO extends AssemblerBO{
 	
-protected  $dao;
-private $estrutura;
-private $devArray;
-private $homologArray;
 	
-	public function __construct($dbCompany, $schemaParameter, $devArray, $homologArray){
-		$this->dao = new SequenceDAOImpl($dbCompany, $schemaParameter);
-		$this->estrutura[EstruturaQuery::COMPANY] = $dbCompany;
-		$this->estrutura[EstruturaQuery::SCHEMA] = $schemaParameter;
-		$this->devArray = $devArray;
-		$this->homologArray = $homologArray;
-		$this->resetSeqGerenciamento();
-		$this->cargaSeqGerenciamento();
+	public function __construct(){
+	}
+	
+	public static function dev(){
+		$schemas = array_keys ( parent::$dev['schema'] );
+		foreach ( $schemas as $schema ) {
+			$sequences = parent::$dev['schema'] [$schema] ['sequence'];
+			foreach ( $sequences as $sequence ) {
+				$lista [] = $sequence;
+			}
+		}
+		return $lista;
 	}
 	
 	
+	public static function homolog(){
+		$schemas = array_keys ( parent::$homolog ['schema'] );
+		foreach ( $schemas as $schema ) {
+			$sequences = parent::$homolog ['schema'] [$schema] ['sequence'];
+			foreach ( $sequences as $sequence ) {
+				$lista [] = $sequence;
+			}
+		}
+		return $lista;
+	}
+	
+	public function listarDev() {
+		$lista = self::dev();
+		$string = "";
+		if (! empty ( $lista )) {
+			$string = "\n\n------ DEV SEQUENCES ------";
+			$string .= "\n\t-- " . implode ( "\n\t-- ", $lista );
+		}
+		return $string;
+	}
+	
+	public function listarHomolog() {
+		$lista = self::homolog();
+		$string = "";
+		if (! empty ( $lista )) {
+			$string = "\n\n------ HOMOLOG SEQUENCES ------";
+			$string .= "\n\t-- " . implode ( "\n\t-- ", $lista );
+		}
+		return $string;
+	}
+	
+	public function listar(){
+		$string = "";
+		$string .= $this->listarDev();
+		$string .= $this->listarHomolog();
+		return $string;
+	}
+	
 	public function dropSequence() {
-		$schema = $this->estrutura[EstruturaQuery::SCHEMA];
-		//$sequences = $this->diff_homolog_devQuery ();
-		$dev = $this->devArray;
-		$homolog = $this->homologArray;
-		$sequences = array_diff($homolog, $dev);		
+		$dev = self::dev();
+		$homolog = self::homolog();
+		$sequences = array_diff($homolog, $dev);
 		$string = "";
 		if (! empty ( $sequences )) {
-			$string = "\n\n\n--------------------  DROP DE SEQUENCES $schema -------------------- ";
+			$string = "\n\n\n--------------------  DROP DE SEQUENCES -------------------- ";
 			$string .= "\n/*";
 			foreach ( $sequences as $sequence ) {
 				$string .= "\nDROP SEQUENCE $sequence CASCADE;";
@@ -41,6 +77,15 @@ private $homologArray;
 		}
 		return $string;
 	}
+	
+	
+	
+	
+}
+	
+	/*
+	
+	
 	
 	public function createSequence() {
 		$schema = $this->estrutura[EstruturaQuery::SCHEMA];
@@ -71,3 +116,4 @@ private $homologArray;
 	}
 	
 }
+*/

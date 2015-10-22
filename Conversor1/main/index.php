@@ -22,21 +22,22 @@ If (isset ( $argv [1] )) {
 }
 
 $saida = new Saida ( $dbCompany, $cmd );
+$schema = new SchemaBO ();
+$sequence = new SequenceBO();
+
 $saida->open ();
-$estrutura = $saida->estrutura();
-$schema = new SchemaBO ( $dbCompany, $estrutura,null );
 $saida->gravarDataBase ();
-$funcao = new FuncaoDAOImpl($dbCompany);
-$assembler = new AssemblerBO($dbCompany);
+$saida->gravar($schema->listar());
+$saida->gravar($sequence->listar());
+$saida->gravar($schema->drop());
+
 echo "<pre>";
-//print_r($funcao->retorna(SchemaType::DEV));
+print_r($schema->listar());
+print_r($sequence->dropSequence());
+print_r(AssemblerBO::homolog());
 echo "<hr/>";
-print_r($assembler->dev());
+print_r(AssemblerBO::dev());
 echo "</pre>";
-/*
-$saida->gravar ( $schema->createSchema () );
-$saida->gravar ( $schema->alterSchema () );
-*/
 
 
 $saida->fecha ();

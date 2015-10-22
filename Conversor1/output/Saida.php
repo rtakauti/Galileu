@@ -5,11 +5,6 @@ ini_set ( "display_errors", 1 );
 include_once realpath ( __DIR__ . '/../enum/EstruturaQuery.php' );
 class Saida {
 	
-	/*
-	private $homolog;
-	private $dev;
-	private $user;
-	*/
 	private $file;
 	private $cmd;
 	private $path;
@@ -17,25 +12,22 @@ class Saida {
 	
 	public function __construct($dbCompany, $cmd) {
 		$this->cmd = $cmd;
-		date_default_timezone_set('America/Sao_Paulo');
+		date_default_timezone_set ( 'America/Sao_Paulo' );
 		try {
-			$config = parse_ini_file ( __DIR__."/../connection/config/config.ini", true );
-			$this->estrutura[EstruturaQuery::COMPANY] = $dbCompany;
-			$this->estrutura[EstruturaQuery::USER] =  $config['connection']['user'];
-			$this->estrutura[EstruturaQuery::DBHOMOLOG] =  $config [$dbCompany] ['homolog'];
-			$this->estrutura[EstruturaQuery::DBDEV] =  $config [$dbCompany] ['dev'];
-			/*
-			$this->homolog = $config [$dbCompany] ['homolog'];
-			$this->dev = $config [$dbCompany] ['dev'];
-			$this->user = $config['connection']['user'];
-			*/
-			$this->path = __DIR__."/../scripts/".$dbCompany.".".date('d').".".date('m').".".date('Y');
-			if (!is_dir ( $this->path )) {
+			$config = parse_ini_file ( __DIR__ . "/../connection/config/config.ini", true );
+			$this->estrutura [EstruturaQuery::COMPANY] = $dbCompany;
+			$this->estrutura [EstruturaQuery::USER] = $config ['connection'] ['user'];
+			$this->estrutura [EstruturaQuery::DBHOMOLOG] = $config [$dbCompany] ['homolog'];
+			$this->estrutura [EstruturaQuery::DBDEV] = $config [$dbCompany] ['dev'];
+			$this->path = __DIR__ . "/../scripts/" . $dbCompany . "." . date ( 'd' ) . "." . date ( 'm' ) . "." . date ( 'Y' );
+			if (! is_dir ( $this->path )) {
 				mkdir ( $this->path, 0777 );
 			}
 		} catch ( Exception $e ) {
 			$e->getMessage ();
 		}
+		$estrutura = $this->estrutura;
+		$assembler = new AssemblerBO($dbCompany, $estrutura);
 	}
 	
 	public function __destruct(){
@@ -76,10 +68,6 @@ class Saida {
 	public function gravarDataBase(){
 		$homolog = $this->estrutura[EstruturaQuery::DBHOMOLOG];
 		$this->gravar("\n\n------------------ DATABASE: $homolog ------------------\n");
-	}
-	
-	public function estrutura(){
-		return $this->estrutura;
 	}
 	
 }

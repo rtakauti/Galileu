@@ -1,6 +1,11 @@
 <?php
 include_once realpath ( __DIR__ . '/../IAssemblerDAO.php' );
-
+include_once 'ConstraintDAOImpl.php';
+include_once 'FuncaoDAOImpl.php';
+include_once 'IndiceDAOImpl.php';
+include_once 'SchemaDAOImpl.php';
+include_once 'SequenceDAOImpl.php';
+include_once 'TriggerDAOImpl.php';
 
 class AssemblerDAOImpl implements IAssemblerDAO{
 	
@@ -27,6 +32,7 @@ class AssemblerDAOImpl implements IAssemblerDAO{
 		$arrayIndice = $this->indice->retorna($schemaType);
 		$arrayTrigger = $this->trigger->retorna($schemaType);
 		$arrayConstraint = $this->constraint->retorna($schemaType);
+		
 		
 		$array = $this->schema->retorna($schemaType);
 		for($i = 0; $i < count ( $array ); $i ++) {

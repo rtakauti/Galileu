@@ -31,18 +31,10 @@ class SequenceDAOImpl extends DAOImpl implements ISequenceDAO{
 		$arrayResult = array ();
 		$array = $this->queryAllAssoc ( $schemaType );
 		for($i = 0; $i < count ( $array ); $i ++) {
-			$arrayResult ['sequences'][] = $array [$i] ['schema_name'].".".$array [$i] ['sequence_name'];
-			$arrayResult ['schema'][$array [$i] ['schema_name']]['sequence'][] =  $array [$i] ['schema_name'].".".$array [$i] ['sequence_name'];
+			$arrayResult ['schema'][$array [$i] ['schema_name']]['sequence'][$array [$i] ['schema_name'].".".$array [$i] ['sequence_name']] =  $array [$i] ['schema_name'].".".$array [$i] ['sequence_name'];
 		}
 		return $arrayResult;
 		
 	}
-	
-	
-	/*
-	public function retorna($schemaType){
-		return $this->queryAllAssoc($schemaType);
-	}
-	*/
 	
 }
