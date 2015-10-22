@@ -1,5 +1,5 @@
 <?php
-include_once realpath (__DIR__.'/../dao/daoImpl/FuncaoDAOImpl.php');
+//include_once realpath (__DIR__.'/../dao/daoImpl/FuncaoDAOImpl.php');
 include_once realpath (__DIR__.'/../enum/SchemasCompany.php');
 include_once realpath (__DIR__.'/../enum/SchemaType.php');
 include_once realpath (__DIR__.'/../enum/EstruturaQuery.php');
@@ -11,26 +11,67 @@ class FuncaoBO extends AssemblerBO{
 	public function __construct(){
 	}
 	
+	public static function dev(){
+		$schemas = array_keys ( parent::$dev['schema'] );
+		foreach ( $schemas as $schema ) {
+			$funcoes = array_keys (parent::$dev['schema'] [$schema] ['funcao']);
+			foreach ($funcoes as $funcao) {
+				$lista[] = $funcao;
+			}
+		}
+		return $lista;
+	}
 	
-	public function dropFuncao() {
-		$schema = $this->estrutura[EstruturaQuery::SCHEMA];
-		$homolog = $this->dao->funcao(SchemaType::HOMOLOG);
-		$dev = $this->dao->funcao(SchemaType::DEV);
-		$objetos =  array_diff_assoc($homolog, $dev);
+	public static function homolog(){
+		$schemas = array_keys ( parent::$homolog['schema'] );
+		foreach ( $schemas as $schema ) {
+			$funcoes = array_keys (parent::$homolog['schema'] [$schema] ['funcao']);
+			foreach ($funcoes as $funcao) {
+				$lista[] = $funcao;
+			}
+		}
+		return $lista;
+	}
+	
+	public function listarDev() {
+		$lista = self::dev();
 		$string = "";
-		if (! empty ( $objetos )) {
-			$string = "\n\n\n--------------------  DROP DE FUNCTION, PROCEDURE, TRIGGER $schema -------------------- ";
+		if (! empty ( $lista )) {
+			$string = "\n\n------ DEV FUNCTIONS ------";
+			$string .= "\n\t-- " . implode ( "\n\t-- ", $lista );
+		}
+		return $string;
+	}
+	
+	public function listarHomolog() {
+		$lista = self::homolog();
+		$string = "";
+		if (! empty ( $lista )) {
+			$string = "\n\n------ HOMOLOG FUNCTIONS ------";
+			$string .= "\n\t-- " . implode ( "\n\t-- ", $lista );
+		}
+		return $string;
+	}
+	
+	public function listar(){
+		$string = "";
+		$string .= $this->listarDev();
+		$string .= $this->listarHomolog();
+		return $string;
+	}
+	
+	
+	public function drop() {
+		$dev = self::dev();
+		$homolog = self::homolog();
+		$funcoes = array_diff ( $homolog, $dev );
+		$string = "";
+		if (! empty ( $funcoes )) {
+			$string = "\n\n\n--------------------  DROP DE FUNCTION, PROCEDURE, TRIGGER -------------------- ";
 			$string .= "\n/*";
-			foreach ( $objetos as $nomeObjeto => $objeto ) {
-				$parameter = $objeto['parameter'];
-				$arrayParameter = explode(", ", $parameter);
-				$stringParameter = "";
-				if (isset($arrayParameter))
-				foreach ($arrayParameter as $parameter) {
-					$stringParameter .= substr($parameter, strpos($parameter, " ")+1).", ";
-				}
-				$stringParameter = substr($stringParameter,0,-2);
-				if($objeto['return'] != "trigger") $string .= "\nDROP FUNCTION $nomeObjeto ($stringParameter);";
+			foreach ( $funcoes as $funcao ) {
+				 $string .= "\nDROP FUNCTION IF EXISTS $funcao CASCADE;";
+				 unset ( parent::$homolog ['schema'] [substr($funcao, 0, strpos($funcao, '.'))] ['funcao'] [$funcao] );
 			}
 			$string .= "\n*/";
 		}

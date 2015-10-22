@@ -3,34 +3,72 @@ include_once realpath (__DIR__.'/../enum/SchemasCompany.php');
 include_once realpath (__DIR__.'/../enum/SchemaType.php');
 include_once realpath (__DIR__.'/../enum/FaseQuery.php');
 include_once realpath (__DIR__.'/../enum/EstruturaQuery.php');
-include_once 'BOImpl.php';
+//include_once 'BOImpl.php';
 include_once 'ColunaBO.php';
 include_once 'ConstraintBO.php';
 
-class TabelaBO extends BOImpl{
+class TabelaBO extends AssemblerBO{
 	
-	//protected  $dao;
-	private $estrutura;
-	private $dev;
-	private $homolog;
 	
-	public function __construct($dbCompany, $schemaParameter, $sequenceParameter, $estrutura){
-		$this->estrutura = $estrutura;
-		//$this->dao = new TableDAOImpl($dbCompany, $schemaParameter);
-		$this->estrutura[EstruturaQuery::SEQUENCE] = $sequenceParameter;
-		$this->estrutura[EstruturaQuery::SCHEMA] = $schemaParameter;
-		$this->estrutura[EstruturaQuery::COMPANY] = $dbCompany;
-		
-		$this->dev = $this->dao->tabela(SchemaType::DEV);
-		$this->homolog = $this->dao->tabela(SchemaType::HOMOLOG);
+	public function __construct(){
+	}
+	
+	public static function dev(){
+		$schemas = array_keys ( parent::$dev['schema'] );
+		foreach ( $schemas as $schema ) {
+			$tabelas = array_keys (parent::$dev['schema'] [$schema] ['tabela']);
+			foreach ( $tabelas as $tabela ) {
+				$lista[] = $tabela;
+			}
+		}	
+		return $lista;
 	}
 	
 	
-	public function dropTable(){
-		//$tabelas = $this->diff_homolog_devQuery();
-		$dev = array_keys($this->dev);
-		$homolog = array_keys($this->homolog);
-		$tabelas = array_diff($homolog, $dev);
+	public static function homolog(){
+		$schemas = array_keys ( parent::$homolog['schema'] );
+		foreach ( $schemas as $schema ) {
+			$tabelas = array_keys (parent::$homolog['schema'] [$schema] ['tabela']);
+			foreach ( $tabelas as $tabela ) {
+				$lista[] = $tabela;
+			}
+		}
+		return $lista;
+	}
+	
+	public function listarDev() {
+		$lista = self::dev();
+		$string = "";
+		if (! empty ( $lista )) {
+			$string = "\n\n------ DEV TABELAS ------";
+			$string .= "\n\t-- " . implode ( "\n\t-- ", $lista );
+		}
+		return $string;
+	}
+	
+	public function listarHomolog() {
+		$lista = self::homolog();
+		$string = "";
+		if (! empty ( $lista )) {
+			$string = "\n\n------ HOMOLOG TABELAS ------";
+			$string .= "\n\t-- " . implode ( "\n\t-- ", $lista );
+		}
+		return $string;
+	}
+	
+	public function listar(){
+		$string = "";
+		$string .= $this->listarDev();
+		$string .= $this->listarHomolog();
+		return $string;
+	}
+	
+	
+	
+	public function drop(){
+		$dev = self::dev();
+		$homolog = self::homolog();
+		$tabelas = array_diff ( $homolog, $dev );
 		$string = "";
 		if(!empty($tabelas)){
 			$string = "\n\n\n------------------------------ DROP TABLE ------------------------------";

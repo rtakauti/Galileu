@@ -1,7 +1,7 @@
 <?php
 error_reporting ( E_ALL );
 ini_set ( "display_errors", 1 );
-ini_set("max_execution_time", 6000);
+//ini_set("max_execution_time", 3000);
 class Connection {
 	private static $instances;
 	private function __construct() {

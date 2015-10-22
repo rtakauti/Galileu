@@ -28,6 +28,9 @@ class Saida {
 		}
 		$estrutura = $this->estrutura;
 		$assembler = new AssemblerBO($dbCompany, $estrutura);
+		
+		$this->abre();
+		$this->gravarDataBase();
 	}
 	
 	public function __destruct(){
@@ -37,12 +40,12 @@ class Saida {
 		$this->tela("\n\nfechando o arquivo de script...\n\n");
 	}
 	
-	public function open() {
+	private function abre() {
 		$homolog = $this->estrutura[EstruturaQuery::DBHOMOLOG];
 		$this->file = fopen ( $this->path."/".$homolog.".Script.".date('d').".".date('m').".".date('Y')."_H".date('H')."m".date('i').".sql", "a+", 0 );
 	}
 	
-	public function fecha() {
+	private function fecha() {
 		$string = "\n\n---------- COMMIT ----------";
 		$string .= "\n--COMMIT;";
 		$string .= "\n\n---------- ROLLBACK ----------";
@@ -51,7 +54,7 @@ class Saida {
 		fclose ( $this->file );
 	}
 	
-	public function tela($string){
+	private function tela($string){
 		if ($this->cmd) {
 			echo $string;
 		} else {
@@ -65,7 +68,7 @@ class Saida {
 		fwrite ( $this->file, $string, strlen ( $string ) );
 	}
 	
-	public function gravarDataBase(){
+	private function gravarDataBase(){
 		$homolog = $this->estrutura[EstruturaQuery::DBHOMOLOG];
 		$this->gravar("\n\n------------------ DATABASE: $homolog ------------------\n");
 	}

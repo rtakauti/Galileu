@@ -24,20 +24,24 @@ If (isset ( $argv [1] )) {
 $saida = new Saida ( $dbCompany, $cmd );
 $schema = new SchemaBO ();
 $sequence = new SequenceBO();
+$funcao = new FuncaoBO();
+$tabela = new TabelaBO();
 
-$saida->open ();
-$saida->gravarDataBase ();
 $saida->gravar($schema->listar());
 $saida->gravar($sequence->listar());
+$saida->gravar($funcao->listar());
+$saida->gravar($tabela->listar());
 $saida->gravar($schema->drop());
+$saida->gravar($sequence->drop());
+$saida->gravar($funcao->drop());
 
 echo "<pre>";
 print_r($schema->listar());
-print_r($sequence->dropSequence());
+print_r($sequence->listar());
+print_r($funcao->listar());
 print_r(AssemblerBO::homolog());
 echo "<hr/>";
 print_r(AssemblerBO::dev());
 echo "</pre>";
 
 
-$saida->fecha ();
