@@ -15,7 +15,7 @@ class GerenciadorSequence {
 		return static::$criados;
 	}
 	
-	public static function sobreCarregaCriados($sequences){
+	public static function carregaCriados($sequences){
 		self::$criados = $sequences;
 	}
 	

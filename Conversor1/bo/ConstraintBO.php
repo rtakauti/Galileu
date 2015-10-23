@@ -98,13 +98,8 @@ class ConstraintBO extends AssemblerBO{
 			$string .= "\n/*";
 			foreach ( $constraints as $constraint ) {
 				list ( $schema, $tabela, $constraint ) = explode ( ".", $constraint );
-				$lista [$schema] [] = "\nALTER TABLE IF EXISTS $tabela DROP CONSTRAINT IF EXISTS $constraint CASCADE;";
+				$string .= "\nALTER TABLE IF EXISTS $schema.$tabela \n\tDROP CONSTRAINT IF EXISTS $constraint CASCADE;";
 				unset ( parent::$result ['schema'] [$schema] ['tabela'] [$tabela] ['constraint'] [$constraint] );
-			}
-			$schemas = array_keys ( $lista );
-			foreach ( $schemas as $schema ) {
-				$string .= "\n\nSET SEARCH_PATH TO $schema;";
-				$string .= implode ( "", $lista [$schema] );
 			}
 			$string .= "\n*/";
 		}
@@ -113,16 +108,17 @@ class ConstraintBO extends AssemblerBO{
 	
 	
 	
-	public function createConstraint() {
+	public function create($tabelaInput) {
+		list($schema, $tabela) = explode(".", $tabelaInput);
+		$constraints = array_keys(parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['constraint']);
 		$fase = FaseQuery::CREATE;
-		$homolog = $this->dao->restricao(SchemaType::HOMOLOG);
-		$dev = $this->dao->restricao ( SchemaType::DEV );
-		$constraints = array_diff_assoc($dev, $homolog);
 		$string = "";
-		if (isset ( $constraints )) {
-			foreach ( $constraints as $nameConstraint => $constraint ) {
-				$restricao = new RestricaoBO ( $constraint, $fase );
-				$string .= "\tCONSTRAINT $nameConstraint " . $restricao->constructConstraint () . ",\n";
+		if (! empty ( $constraints )) {
+			foreach ( $constraints as $constraint ) {
+				$constraintInput = "$schema.$tabela.$constraint";
+				$restricao = new RestricaoBO ();
+				$restricoes = $restricao->construct($constraintInput, $fase);
+				$string .= "\tCONSTRAINT $nameConstraint $restricoes,\n";
 			}
 		}
 		return $string;

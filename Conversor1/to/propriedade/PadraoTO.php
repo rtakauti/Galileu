@@ -12,7 +12,7 @@ class PadraoTO extends GerenciadorSequence implements IPropriedade {
 		$tabela = $estrutura [EstruturaQuery::TABELA];
 		$coluna = $estrutura [EstruturaQuery::COLUNA];
 		$sequences = $estrutura [EstruturaQuery::SEQUENCE];
-		GerenciadorSequence::sobreCarregaCriados ( $sequences );
+		GerenciadorSequence::carregaCriados ( $sequences );
 		$sequences = GerenciadorSequence::getCriados ();
 		
 		$string = "";

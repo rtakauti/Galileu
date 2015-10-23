@@ -17,47 +17,36 @@ include_once 'sequence/GerenciadorSequence.php';
 //include_once realpath (__DIR__ . '/../dao/daoImpl/PropriedadeDAOImpl.php');
 //include_once 'BOImpl.php';
 
-class PropriedadeBO {
+class PropriedadeBO extends AssemblerBO{
 
-	//protected  $dao;
-	private $arrayColuna;
-	private $objetos;
-	private $estrutura;
-	private $fase;
+	private $properties;
 	
-	public function __construct($dbCompany, $schemaParameter, $tableParameter, $columnParameter, $sequenceParameter, $fase, $arrayColuna){
-		//$this->dao = new PropriedadeDAOImpl($dbCompany, $schemaParameter, $tableParameter, $columnParameter, $fase);
-		$this->arrayColuna = $arrayColuna;
-		$this->estrutura[EstruturaQuery::SEQUENCE] = $sequenceParameter;
-		$this->estrutura[EstruturaQuery::COLUNA] = $columnParameter;
-		$this->estrutura[EstruturaQuery::TABELA] = $tableParameter;
-		$this->estrutura[EstruturaQuery::SCHEMA] = $schemaParameter;
-		$this->fase = $fase;
-		
-		$this->objetos['column_default'] = new PadraoTO();
-		$this->objetos['is_nullable'] = new NuloTO();
-		$this->objetos['data_type'] = new TipoDadoTO();
-		$this->objetos['character_maximum_length'] = new MaximoCharTO();
-		$this->objetos['numeric_precision'] = new PrecisaoNumericaTO();
-		$this->objetos['numeric_scale'] = new PrecisaoMantissaTO();
-		$this->objetos['datetime_precision'] = new PrecisaoDataTO();
-		$this->objetos['udt_name'] = new NomeUdtTO();
-		$this->objetos['interval_type'] = new TipoIntervaloTO();
+	public function __construct(){
+		$this->properties['column_default'] = new PadraoTO();
+		$this->properties['is_nullable'] = new NuloTO();
+		$this->properties['data_type'] = new TipoDadoTO();
+		$this->properties['character_maximum_length'] = new MaximoCharTO();
+		$this->properties['numeric_precision'] = new PrecisaoNumericaTO();
+		$this->properties['numeric_scale'] = new PrecisaoMantissaTO();
+		$this->properties['datetime_precision'] = new PrecisaoDataTO();
+		$this->properties['udt_name'] = new NomeUdtTO();
+		$this->properties['interval_type'] = new TipoIntervaloTO();
 	}
-	public function constructProperty() {
-		$coluna = $this->estrutura [EstruturaQuery::COLUNA];
-		$tabela = $this->estrutura [EstruturaQuery::TABELA];
-		$propriedadesBO = $this->objetos;
-		$fase = $this->fase;
-		$estrutura = $this->estrutura;
+	
+	public function construct($colunaInput, $fase) {
+		list($schema, $tabela, $coluna) = explode(".", $colunaInput);
+		$estrutura = parent::$estrutura;
+		$estrutura[EstruturaQuery::SCHEMA] = $schema;
+		$estrutura[EstruturaQuery::TABELA] = $tabela;
+		$estrutura[EstruturaQuery::COLUNA] = $coluna;
+	
+		$propriedadesBO = $this->properties;
+		$propriedades = parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['coluna'][$coluna];
 		$stringResult = "";
-		$propriedades = $this->arrayColuna;
-		$condicao = $propriedades;
-		foreach ( $propriedades as $key => $valor ) {
-			$string = GeradorPropriedades::gerarPropriedade ( $propriedadesBO [$key], $valor, $fase, $condicao, $estrutura );
+		foreach ( $propriedades as $propriedade => $valor ) {
+			$string = GeradorPropriedades::gerarPropriedade ( $propriedadesBO [$propriedade], $valor, $fase, $propriedades, $estrutura );
 			$stringResult .= $string;
 		}
-		//$stringResult = substr ( $stringResult, 0, - 1 );
 		return $stringResult;
 	}
 

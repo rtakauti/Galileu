@@ -10,7 +10,9 @@ class SequenceBO extends AssemblerBO{
 	
 	
 	public function __construct(){
+		$this->cargaSequence();
 	}
+	
 	
 	public static function dev() {
 		$lista = array ();
@@ -112,18 +114,25 @@ class SequenceBO extends AssemblerBO{
 			$string .= "\n\n\n--------------------  CREATE DE SEQUENCES -------------------- ";
 			foreach ( $sequences as $sequence ) {
 				list($schema, $sequence) = explode(".", $sequence);
-				$string .= "\nCREATE SEQUENCE $schema.$sequence INCREMENT 1 MINVALUE 1 START 1 CACHE 1;";
+				$string .= "\n\nCREATE SEQUENCE $schema.$sequence ";
+				$string .= "\n\tINCREMENT 1";
+				$string .= "\n\tMINVALUE 1";
+				$string .= "\n\tSTART 1";
+				$string .= "\n\tCACHE 1;";
 				parent::$result ['schema'] [$schema] ['sequence'] [$sequence] = $sequence;
 			}
 		}
 		return $string;
 	}
 	
-	public function cargaSeqGerenciamento() {
-		$sequences = $this->intersect_homolog_devQuery ();
+	public function cargaSequence() {
+		$dev = self::dev();
+		$homolog = self::homolog();
+		$sequences = array_intersect($homolog, $dev );
 		if (isset ( $sequences )){
 			foreach ( $sequences as $sequence ) {
-				GerenciadorSequence::adicionaCriados ( $sequence );
+				list($schema, $sequence) = explode(".", $sequence);
+				parent::$estrutura[EstruturaQuery::SEQUENCE][]= $sequence;
 			}
 		}
 	}

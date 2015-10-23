@@ -93,37 +93,32 @@ class TabelaBO extends AssemblerBO{
 	
 	
 	
-	public function createTable(){
-		$empresa = $this->estrutura[EstruturaQuery::COMPANY];
-		$schema= $this->estrutura[EstruturaQuery::SCHEMA];
-		$sequence = $this->estrutura[EstruturaQuery::SEQUENCE];
-		$user = $this->estrutura[EstruturaQuery::USER];
-		//$tabelas = $this->diff_dev_homologQuery();
-		$dev = $this->dev;
-		$homolog = $this->homolog;
-		$tabelas = array_diff(array_keys($dev), array_keys($homolog));
-		$fase = FaseQuery::CREATE;
-		$colunas = array();
-		$stringResult = "\n\n\n------------------------------ CREATE TABLE $schema ------------------------------";
+	public function create(){
+		$dev = self::dev();
+		$homolog = self::homolog();
+		$tabelas = array_diff($dev, $homolog);
+		$stringResult = "";
+		$user = parent::$estrutura[EstruturaQuery::USER];
 		if(!empty($tabelas)){
-			foreach ($tabelas as $tabela) {
-				$string = "\n\nCREATE TABLE $tabela";
+			$stringResult .= "\n\n\n-------------------- CREATE TABLE --------------------";
+			foreach ($tabelas as $tabelaInput) {
+				list($schema, $tabela) = explode(".", $tabelaInput);
+				$coluna = new ColunaBO();
+				$string = "\n\n\nCREATE TABLE $schema.$tabela";
 				$string .="\n(\n";
-				$stringColuna = "";
-				$stringConstraint = "";
-				$colunaBO = new ColunaBO($empresa, $schema , $tabela, $sequence, $fase, array(), $dev[$tabela]);
-				$string .= $colunaBO->createColumn();
-				$constraintBO = new ConstraintBO($empresa, $schema, $tabela, $fase);
-				$string .= $constraintBO->createConstraint();
-				$string = substr ( $string, 0, - 2 );
-				$string .= "\n);";
-				$string .= "\nALTER TABLE $tabela OWNER TO $user;";
+				$string .= $coluna->create($tabelaInput);
+				$string .= "\n)";
+				$string .= "\nWITH (\n\tOIDS=FALSE\n);";
+				$string .= "\nALTER TABLE $tabela \n\tOWNER TO $user;";
+				/*
 				$triggerBO = new TriggerBO($empresa, $schema, $tabela);
 				$string .= $triggerBO->createTrigger();
 				$indiceBO = new IndiceBO($empresa, $schema, $tabela);
 				$string .= $indiceBO->createIndex();
 				$stringResult .= GerenciadorSequence::getQueryCriado().$string.GerenciadorSequence::getQuerySetado();
-				$string = "";
+				*/
+				$stringResult .= $string;
+				//$string = "";
 			}
 			return $stringResult;
 		}

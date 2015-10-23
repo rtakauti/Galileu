@@ -2,5 +2,5 @@
 
 interface IRestricao{
 	
-	function retorna($valor, $fase, $condicao);
+	function retorna($valor, $fase);
 }

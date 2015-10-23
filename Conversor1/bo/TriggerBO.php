@@ -99,9 +99,9 @@ class TriggerBO extends AssemblerBO {
 			foreach ( $triggers as $trigger ) {
 				list($schema, $tabela, $trigger) = explode(".", $trigger);
 				$funcao = substr(parent::$homolog ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger]['action_statement'], strlen("EXECUTE PROCEDURE "));
-				$string .= "\nDROP TRIGGER IF EXISTS $trigger ON $tabela CASCADE;";
-				$string .= "\nDROP FUNCTION IF EXISTS $funcao CASCADE;";
-				$lista[$schema][] = $string; 
+				$stringTrigger = "\nDROP TRIGGER IF EXISTS $trigger ON $tabela CASCADE;";
+				$stringTrigger .= "\nDROP FUNCTION IF EXISTS $funcao CASCADE;";
+				$lista[$schema][] = $stringTrigger; 
 				unset ( parent::$result ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger] );
 			}
 			$schemas = array_keys($lista);
@@ -124,12 +124,18 @@ class TriggerBO extends AssemblerBO {
 			$string .= "\n\n\n-------------------- CREATE TRIGGER --------------------";
 			foreach ( $triggers as $trigger ) {
 				list($schema, $tabela, $trigger) = explode(".", $trigger);
-				$string .= "\nCREATE TRIGGER $schema.$trigger";
-				$eventos = implode ( " OR ", $trigger ['event_manipulation'] );
-				$string .= "\n\t{$trigger['action_timing']} $eventos";
+				$event_manipulation = parent::$dev ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger]['event_manipulation'];
+				$action_timing = parent::$dev ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger]['action_timing'];
+				$eventos = implode ( " OR ", $event_manipulation );
+				$trigger_scope = parent::$dev ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger]['trigger_scope'];
+				$action_statement = parent::$dev ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger]['action_statement'];
+				
+				$string .= "\n\nCREATE TRIGGER $trigger";
+				$string .= "\n\t$action_timing $eventos";
 				$string .= "\n\tON $tabela";
-				$string .= "\n\tFOR EACH {$trigger['trigger_scope']}";
-				$string .= "\n\t{$trigger['action_statement']};";
+				$string .= "\n\tFOR EACH $trigger_scope";
+				$string .= "\n\t$action_statement;";
+				parent::$result ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger] = parent::$dev ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger];
 			}
 		}
 		return $string;

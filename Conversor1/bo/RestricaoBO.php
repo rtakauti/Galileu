@@ -14,35 +14,28 @@ include_once realpath ( __DIR__ . '/../to/constraint/RegraDeleteTO.php' );
 include_once realpath ( __DIR__ . '/../to/constraint/RegraUniqueTO.php' );
 
 
-class RestricaoBO {
+class RestricaoBO extends AssemblerBO{
 
-	private $arrayConstraint;
-	private $objetos;
-	private  $fase;
+	private $restricoes;
 
-	public function __construct($arrayConstraint, $fase){
-		$this->arrayConstraint = $arrayConstraint;
-		$this->fase = $fase;
-		
-		$this->objetos['constraint_type'] = new TipoConstraintTO();
-		$this->objetos['column_name'] = new NomeColunaTO();
-		$this->objetos['foreign_table'] = new TabelaEstrangeiraTO();
-		$this->objetos['foreign_column'] = new ColunaEstrangeiraTO();
-		$this->objetos['match_option'] = new CombinacaoTO();
-		$this->objetos['update_rule'] = new RegraUpdateTO();
-		$this->objetos['delete_rule'] = new RegraDeleteTO();
-		$this->objetos['consrc'] = new RegraUniqueTO();
-
-
+	public function __construct(){
+		$this->restricoes['constraint_type'] = new TipoConstraintTO();
+		$this->restricoes['column_name'] = new NomeColunaTO();
+		$this->restricoes['foreign_table'] = new TabelaEstrangeiraTO();
+		$this->restricoes['foreign_column'] = new ColunaEstrangeiraTO();
+		$this->restricoes['match_option'] = new CombinacaoTO();
+		$this->restricoes['update_rule'] = new RegraUpdateTO();
+		$this->restricoes['delete_rule'] = new RegraDeleteTO();
+		$this->restricoes['consrc'] = new RegraUniqueTO();
 	}
 
-	public function constructConstraint(){
-		$fase = $this->fase;
-		$restricoesBO = $this->objetos;
-		$constraints = $this->arrayConstraint;
+	public function construct($constraintInput, $fase){
+		list($schema, $tabela, $constraint) = explode(".", $constraintInput);
+		$restricoesBO = $this->restricoes;
+		$constraints = parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['constraint'][$constraint];
 		$stringResult ="";
-		foreach ($constraints as $key => $constraint) {
-			$string = GeradorRestricoes::gerarRestricao($restricoesBO[$key], $constraint, $fase, $constraint);
+		foreach ($constraints as $constraint => $valor) {
+			$string = GeradorRestricoes::gerarRestricao($restricoesBO[$constraint], $valor, $fase);
 			$stringResult .= $string;
 		}
 		return $stringResult;

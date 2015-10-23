@@ -110,25 +110,26 @@ class IndiceBO extends AssemblerBO{
 	
 	
 	
-	public function createIndex() {
-		$indices = $this->dao->index(SchemaType::DEV);
-		$tabela = $this->estrutura[EstruturaQuery::TABELA];
+	public function create() {
+		$dev = self::dev();
+		$homolog = self::homolog();
+		$indices = array_diff($dev, $homolog);
 		$string = "";
 		if (! empty ( $indices )) {
-			$string = "\n\n\n--------------------  CREATE DE INDICES $tabela -------------------- ";
-			foreach ( $indices as $key => $indice ) {
-				$string .= "\n\nCREATE INDEX $key";
+			$string = "\n\n\n--------------------  CREATE DE INDICES -------------------- ";
+			foreach ( $indices as $indice ) {
+				list($schema, $tabela, $indice) = explode(".", $indice);
+				$colunas = parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['indice'][$indice] ;
+				$colunas = implode(", ", $colunas);
+				$string .= "\n\nCREATE INDEX $indice";
 				$string .= "\n\tON $tabela";
 				$string .= "\n\tUSING btree";
-				$string .= "\n\t(".implode(", ", $indice).");";
+				$string .= "\n\t($colunas);";
+				parent::$result ['schema'] [$schema] ['tabela'] [$tabela] ['indice'][$indice] = parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['indice'][$indice];
 			}
 		}
 		return $string;
 	}
 	
-	public function retornahomolog(){
-		return $this->dao->index(SchemaType::DEV);
-		return array_diff( $this->arrayHomolog(),$this->arrayDev());
-	}
 	
 }

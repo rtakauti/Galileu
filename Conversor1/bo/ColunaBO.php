@@ -99,39 +99,27 @@ class ColunaBO extends AssemblerBO{
 		$string .= "\n/*";
 			foreach ( $colunas as $coluna ) {
 				list($schema, $tabela, $coluna) = explode(".", $coluna);
-				$lista[$schema][] = "\nALTER TABLE IF EXISTS $tabela DROP COLUMN IF EXISTS $coluna CASCADE;";
+				$string .= "\nALTER TABLE IF EXISTS $schema.$tabela \n\tDROP COLUMN IF EXISTS $coluna CASCADE;";
 				unset ( parent::$result ['schema'] [$schema]['tabela'][$tabela]['coluna'] [$coluna] );
-			}
-			$schemas = array_keys($lista);
-			foreach ($schemas as $schema) {
-				$string .= "\n\nSET SEARCH_PATH TO $schema;";
-				$string .= implode("", $lista[$schema]);
 			}
 			$string .= "\n*/";
 		}
 		return $string;
 	}
 	
-	public function createColumn() {
-		$sequence = $this->estrutura [EstruturaQuery::SEQUENCE];
-		$tabela = $this->estrutura [EstruturaQuery::TABELA];
-		$schema = $this->estrutura [EstruturaQuery::SCHEMA];
-		$empresa = $this->estrutura [EstruturaQuery::COMPANY];
-		$fase = $this->fase;
-		//$dev = $this->dao->propriedade(SchemaType::DEV);
-		//$homolog = $this->dao->propriedade(SchemaType::HOMOLOG);
-		//$colunas = array_diff_assoc($dev, $homolog);
-		$homolog = $this->homologArray;
-		$dev = $this->devArray;
-		$colunas = array_diff(array_keys($dev), array_keys($homolog));
+	public function create($tabelaInput) {
+		list($schema, $tabela) = explode(".", $tabelaInput);
+		$colunas = array_keys(parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['coluna']);
+		$fase = FaseQuery::CREATE;
 		$string = "";
 		if (! empty ( $colunas )) {
-			foreach ( $colunas as $nomeColuna => $coluna ) {
-				$propriedade = new PropriedadeBO ( $empresa, $schema, $tabela, $nomeColuna, $sequence, $fase, $coluna );
-				//$propriedades = substr($propriedade->constructProperty (), 0, -1);
-				$propriedades = $propriedade->constructProperty ();
-				$string .= "\t$nomeColuna $propriedades ,\n";
+			foreach ( $colunas as $coluna ) {
+				$colunaInput = "$schema.$tabela.$coluna";
+				$propriedade = new PropriedadeBO ();
+				$propriedades = $propriedade->construct($colunaInput, $fase);
+				$string .= "\t$coluna $propriedades ,\n";
 			}
+			$string = substr($string, 0, -2);
 		}
 		return $string;
 	}
