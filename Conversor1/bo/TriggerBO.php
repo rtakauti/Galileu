@@ -22,8 +22,7 @@ class TriggerBO extends AssemblerBO {
 					if (isset ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela]['trigger'] )) {
 						$triggers = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['trigger'] );
 						foreach ( $triggers as $trigger ) {
-							$funcao = substr(parent::$dev ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger]['action_statement'], strlen("EXECUTE PROCEDURE "));
-							$lista [] = "$schema.$tabela.$trigger.$funcao";
+							$lista [] = "$schema.$tabela.$trigger";
 						}
 					}
 				}
@@ -43,8 +42,7 @@ class TriggerBO extends AssemblerBO {
 					if (isset ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela]['trigger'] )) {
 						$triggers = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['trigger'] );
 						foreach ( $triggers as $trigger ) {
-							$funcao = substr(parent::$homolog ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger]['action_statement'], strlen("EXECUTE PROCEDURE "));
-							$lista [] = "$schema.$tabela.$trigger.$funcao";
+							$lista [] = "$schema.$tabela.$trigger";
 						}
 					}
 				}
@@ -99,10 +97,17 @@ class TriggerBO extends AssemblerBO {
 			$string .= "\n\n\n-------------------- DROP TRIGGER --------------------";
 			$string .= "\n/*";
 			foreach ( $triggers as $trigger ) {
-				list($schema, $tabela, $trigger, $funcao) = explode(".", $trigger);
+				list($schema, $tabela, $trigger) = explode(".", $trigger);
+				$funcao = substr(parent::$homolog ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger]['action_statement'], strlen("EXECUTE PROCEDURE "));
 				$string .= "\nDROP TRIGGER IF EXISTS $trigger ON $tabela CASCADE;";
 				$string .= "\nDROP FUNCTION IF EXISTS $funcao CASCADE;";
+				$lista[$schema][] = $string; 
 				unset ( parent::$result ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger] );
+			}
+			$schemas = array_keys($lista);
+			foreach ($schemas as $schema) {
+				$string .= "\n\nSET SEARCH_PATH TO $schema;";
+				$string .= implode("", $lista[$schema]);
 			}
 			$string .= "\n*/";
 		}
@@ -110,16 +115,16 @@ class TriggerBO extends AssemblerBO {
 	}
 	
 	
-	public function createTrigger() {
-		$tabela = $this->estrutura[EstruturaQuery::TABELA];
-		$dev = $this->dao->trigger( SchemaType::DEV );
-		$homolog = $this->dao->trigger( SchemaType::HOMOLOG );
-		$triggers = array_diff_assoc($dev, $homolog);
+	public function create() {
+		$dev = self::dev();
+		$homolog = self::homolog();
+		$triggers = array_diff($dev, $homolog);
 		$string = "";
 		if (!empty ( $triggers )) {
 			$string .= "\n\n\n-------------------- CREATE TRIGGER --------------------";
-			foreach ( $triggers as $nameTrigger => $trigger ) {
-				$string .= "\nCREATE TRIGGER $nameTrigger ";
+			foreach ( $triggers as $trigger ) {
+				list($schema, $tabela, $trigger) = explode(".", $trigger);
+				$string .= "\nCREATE TRIGGER $schema.$trigger";
 				$eventos = implode ( " OR ", $trigger ['event_manipulation'] );
 				$string .= "\n\t{$trigger['action_timing']} $eventos";
 				$string .= "\n\tON $tabela";

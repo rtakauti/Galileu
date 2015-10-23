@@ -37,9 +37,11 @@ $saida->gravar($sequence->listar());
 $saida->gravar($funcao->listar());
 $saida->gravar($tabela->listar());
 $saida->gravar($trigger->listar());
+/*
 $saida->gravar($indice->listar());
 $saida->gravar($coluna->listar());
 $saida->gravar($constraint->listar());
+*/
 
 $saida->gravar($schema->drop());
 $saida->gravar($sequence->drop());
@@ -50,9 +52,16 @@ $saida->gravar($indice->drop());
 $saida->gravar($coluna->drop());
 $saida->gravar($constraint->drop());
 
+$saida->gravar($schema->create());
+$saida->gravar($sequence->create());
+$saida->gravar($funcao->create());
+
+
 
 echo "<pre>";
-print_r($coluna->homolog());
+print_r(SequenceBO::result());
+print_r(SchemaBO::result());
+echo "<hr/>";
 print_r(AssemblerBO::homolog());
 echo "<hr/>";
 print_r(AssemblerBO::dev());

@@ -41,6 +41,21 @@ class SequenceBO extends AssemblerBO{
 		return $lista;
 	}
 	
+	public static function result() {
+		$lista = array ();
+		$schemas = array_keys ( parent::$result ['schema'] );
+		foreach ( $schemas as $schema ) {
+			if (isset ( parent::$result ['schema'] [$schema] ['sequence'] )) {
+				$sequences = array_keys ( parent::$result ['schema'] [$schema] ['sequence'] );
+				foreach ( $sequences as $sequence ) {
+					$lista [] = "$schema.$sequence";
+				}
+			}
+		}
+		return $lista;
+	}
+	
+	
 	public function listarDev() {
 		$lista = self::dev();
 		$string = "";
@@ -61,6 +76,7 @@ class SequenceBO extends AssemblerBO{
 		return $string;
 	}
 	
+	
 	public function listar(){
 		$string = "";
 		$string .= $this->listarDev();
@@ -74,7 +90,7 @@ class SequenceBO extends AssemblerBO{
 		$sequences = array_diff ( $homolog, $dev );
 		$string = "";
 		if (! empty ( $sequences )) {
-			$string = "\n\n\n--------------------  DROP DE SEQUENCES -------------------- ";
+			$string .= "\n\n\n--------------------  DROP DE SEQUENCES -------------------- ";
 			$string .= "\n/*";
 			foreach ( $sequences as $sequence ) {
 				list($schema, $sequence) = explode(".", $sequence);
@@ -87,14 +103,17 @@ class SequenceBO extends AssemblerBO{
 	}
 	
 	
-	public function createSequence() {
-		$schema = $this->estrutura[EstruturaQuery::SCHEMA];
-		$sequences = $this->diff_dev_homologQuery ();
+	public function create() {
+		$dev = self::dev();
+		$homolog = self::homolog();
+		$sequences = array_diff($dev, $homolog);
 		$string = "";
 		if (! empty ( $sequences )) {
-			$string = "\n\n\n--------------------  CREATE DE SEQUENCES $schema -------------------- ";
+			$string .= "\n\n\n--------------------  CREATE DE SEQUENCES -------------------- ";
 			foreach ( $sequences as $sequence ) {
-				$string .= "\nCREATE SEQUENCE $sequence;";
+				list($schema, $sequence) = explode(".", $sequence);
+				$string .= "\nCREATE SEQUENCE $schema.$sequence INCREMENT 1 MINVALUE 1 START 1 CACHE 1;";
+				parent::$result ['schema'] [$schema] ['sequence'] [$sequence] = $sequence;
 			}
 		}
 		return $string;

@@ -44,7 +44,10 @@ class FuncaoBO extends AssemblerBO{
 		$string = "";
 		if (! empty ( $lista )) {
 			$string = "\n\n------ DEV FUNCTIONS ------";
-			$string .= "\n\t-- " . implode ( "\n\t-- ", $lista );
+			foreach ($lista as $funcao) {
+				list($schema, $funcao) = explode(".", $funcao);
+				$string .= "\n\t-- $schema.$funcao";
+			}
 		}
 		return $string;
 	}
@@ -53,8 +56,10 @@ class FuncaoBO extends AssemblerBO{
 		$lista = self::homolog();
 		$string = "";
 		if (! empty ( $lista )) {
-			$string = "\n\n------ HOMOLOG FUNCTIONS ------";
-			$string .= "\n\t-- " . implode ( "\n\t-- ", $lista );
+			foreach ($lista as $funcao) {
+				list($schema, $funcao) = explode(".", $funcao);
+				$string .= "\n\t-- $schema.$funcao";
+			}
 		}
 		return $string;
 	}
@@ -85,16 +90,18 @@ class FuncaoBO extends AssemblerBO{
 		return $string;
 	}
 	
-	public function createFuncao() {
-		$schema = $this->estrutura[EstruturaQuery::SCHEMA];
-		$dev = $this->dao->funcao(SchemaType::DEV);
-		$homolog = $this->dao->funcao(SchemaType::HOMOLOG);
-		$funcoes =  array_diff_assoc($dev, $homolog);
+	public function create() {
+		$dev = self::dev();
+		$homolog = self::homolog();
+		$funcoes = array_diff($dev, $homolog);
 		$string = "";
 		if (! empty ( $funcoes )) {
-			$string = "\n\n\n--------------------  CREATE DE FUNCTION, PROCEDURE, TRIGGER $schema -------------------- ";
-			foreach ( $funcoes as $nomeFuncao => $funcao ) {
-			$string .= "\n{$funcao['create']}";
+			$string .= "\n\n\n--------------------  CREATE DE FUNCTION, PROCEDURE, TRIGGER  -------------------- ";
+			foreach ( $funcoes as $funcao ) {
+				list($schema, $funcao) = explode(".", $funcao);
+				$create = parent::$dev ['schema'] [$schema] ['funcao'][$funcao]['create'];
+				$string .= "\n\n$create";
+				parent::$result ['schema'] [$schema] ['funcao'] [$funcao] = parent::$dev ['schema'] [$schema] ['funcao'] [$funcao];
 			}
 		}
 		return $string;

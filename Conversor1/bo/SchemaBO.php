@@ -19,6 +19,10 @@ class SchemaBO extends AssemblerBO{
 		return array_keys(parent::$homolog['schema']);
 	}
 	
+	public static function result(){
+		return array_keys(parent::$result['schema']);
+	}
+	
 	public function listarDev(){
 		$dev = self::dev();
 		if(!empty($dev)){
@@ -68,28 +72,16 @@ class SchemaBO extends AssemblerBO{
 		return $string;
 	}
 	
-	public function createSchema() {
-		$estrutura = $this->estrutura;
-		$dbCompany = $estrutura[EstruturaQuery::COMPANY];
-		//$schemas = $this->diff_dev_homologQuery ();
-		$dev = array_keys($this->devArray['schema']);
-		$homolog = array_keys($this->homologArray['schema']);
+	public function create() {
+		$dev = self::dev();
+		$homolog = self::homolog();
 		$schemas = array_diff($dev, $homolog);
 		$string = "";
 		if (! empty ( $schemas ))
+			$string .= "\n\n\n------------------------------ CREATE SCHEMA ------------------------------";
 			foreach ( $schemas as $schema ) {
-				$estrutura = $this->estrutura;
-				$string .= "\n\n\n\n------------------------------ CREATE SCHEMA ------------------------------";
 				$string .= "\nCREATE SCHEMA $schema;";
-				$string .= $this->setSchema ( $schema );
-				$sequence = new SequenceBO ( $dbCompany, $schema, $this->devArray['sequence'], $this->homologArray['sequence'] );
-				$string .= $sequence->dropSequence ();
-				$sequenceParameter = $sequence->diff_dev_homologQuery();
-				$string .= $sequence->createSequence ();
-				$tabela = new TabelaBO ( $dbCompany, $schema,$sequenceParameter, $estrutura );
-				$string .= $tabela->createTable ();
-				$funcao = new FuncaoBO($dbCompany, $schema);
-				$string .= $funcao->createFuncao();
+				parent::$result ['schema'] [$schema] = "";
 			}
 		return $string;
 	}
