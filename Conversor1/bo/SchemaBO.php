@@ -9,8 +9,7 @@ include_once realpath(__DIR__.'/../enum/EstruturaQuery.php');
 class SchemaBO extends AssemblerBO{
 	
 	
-	public function __construct(){
-	}
+	public function __construct(){}
 	
 	public static function dev(){
 		return array_keys(parent::$dev['schema']);
@@ -56,21 +55,18 @@ class SchemaBO extends AssemblerBO{
 			$string .= "\n/*";
 			foreach ( $schemas as $schema ) {
 				$string .= "\nDROP SCHEMA IF EXISTS $schema CASCADE;";
-				unset ( parent::$homolog ['schema'] [$schema] );
+				unset ( parent::$result ['schema'] [$schema] );
 			}
 			$string .= "\n*/";
 		}
 		return $string;
 	}
-}
-	
-	
-	/*
 	
 	public function setSchema($schemaName){
 		$string = "\n\n-------------------- SET SCHEMA $schemaName --------------------";
 		$string .= "\nSET SEARCH_PATH TO $schemaName;";
 		return $string;
+	}
 	
 	public function createSchema() {
 		$estrutura = $this->estrutura;
@@ -121,4 +117,4 @@ class SchemaBO extends AssemblerBO{
 		return $string;
 	}
 	
-	*/
+}

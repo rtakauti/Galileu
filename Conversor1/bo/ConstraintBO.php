@@ -1,48 +1,117 @@
 <?php
-include_once realpath (__DIR__ . '/../dao/daoImpl/ConstraintDAOImpl.php');
+//include_once realpath (__DIR__ . '/../dao/daoImpl/ConstraintDAOImpl.php');
 include_once realpath ( __DIR__ . '/../enum/SchemasCompany.php' );
 include_once realpath ( __DIR__ . '/../enum/SchemaType.php' );
 include_once realpath ( __DIR__ . '/../enum/EstruturaQuery.php' );
 include_once realpath ( __DIR__ . '/../enum/FaseQuery.php' );
-include_once 'BOImpl.php';
+//include_once 'BOImpl.php';
 include_once 'RestricaoBO.php';
 
-class ConstraintBO extends BOImpl {
+class ConstraintBO extends AssemblerBO{
 	
-	protected $dao;
-	private $fase;
-	private $estrutura;
 	
-	public function __construct($dbCompany, $schemaParameter, $tableParameter, $fase) {
-		$this->dao = new ConstraintDAOImpl ( $dbCompany, $schemaParameter, $tableParameter, $fase );
-		$this->fase = $fase;
-		$this->estrutura[EstruturaQuery::COMPANY] = $dbCompany;
-		$this->estrutura[EstruturaQuery::SCHEMA] = $schemaParameter;
-		$this->estrutura[EstruturaQuery::TABELA] = $tableParameter;
+	public function __construct() {}
+	
+	
+	public static function dev() {
+		$lista = array ();
+		$schemas = array_keys ( parent::$dev ['schema'] );
+		foreach ( $schemas as $schema ) {
+			if (isset ( parent::$dev ['schema'] [$schema] ['tabela'] )) {
+				$tabelas = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] );
+				foreach ( $tabelas as $tabela ) {
+					if (isset ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela]['constraint'] )) {
+						$constraints = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['constraint'] );
+						foreach ( $constraints as $constraint ) {
+							$lista [] = "$schema.$tabela.$constraint";
+						}
+					}
+				}
+			}
+		}
+		return $lista;
 	}
 	
-	public function dropConstraint(){
-		$tabela = $this->estrutura[EstruturaQuery::TABELA];
-		$homolog = $this->dao->restricao(SchemaType::HOMOLOG);
-		$dev = $this->dao->restricao ( SchemaType::DEV );
-		$constraintsDiff = array_diff(array_keys($homolog), array_keys($dev));
-		$constraintsIntersect = array_intersect(array_keys($homolog), array_keys($dev));
-		$string = "";
-		if (!empty ( $constraintsDiff ) || !empty($constraintsIntersect)) {
-		$string = "\n\n\n-------------------- DROP CONSTRAINT --------------------";
-		$string .= "\n/*";
-			foreach ( $constraintsDiff as $nameConstraint ) {
-				$string .= "\nALTER TABLE $tabela DROP CONSTRAINT $nameConstraint CASCADE;" ;
-			}
-			foreach ($constraintsIntersect as $nameConstraint) {
-				if($homolog[$nameConstraint] != $dev[$nameConstraint]){
-					$string .= "\nALTER TABLE $tabela DROP CONSTRAINT $nameConstraint CASCADE;" ;
+	public static function homolog() {
+		$lista = array ();
+		$schemas = array_keys ( parent::$homolog ['schema'] );
+		foreach ( $schemas as $schema ) {
+			if (isset ( parent::$homolog ['schema'] [$schema] ['tabela'] )) {
+				$tabelas = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] );
+				foreach ( $tabelas as $tabela ) {
+					if (isset ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela]['constraint'] )) {
+						$constraints = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['constraint'] );
+						foreach ( $constraints as $constraint ) {
+							$lista [] = "$schema.$tabela.$constraint";
+						}
+					}
 				}
+			}
+		}
+		return $lista;
+	}
+	
+	
+	public function listarDev() {
+		$lista = self::dev();
+		$string = "";
+		if (! empty ( $lista )) {
+			$string = "\n\n------ DEV CONSTRAINTS ------";
+			foreach ($lista as $constraint) {
+				list($schema, $tabela, $constraint) = explode(".", $constraint);
+				$string .= "\n\t-- $schema.$tabela.$constraint" ;
+			}
+		}
+		return $string;
+	}
+	
+	public function listarHomolog() {
+		$lista = self::homolog();
+		$string = "";
+		if (! empty ( $lista )) {
+			$string = "\n\n------ HOMOLOG CONSTRAINTS ------";
+			$i = 0;
+			foreach ($lista as $constraint) {
+				list($schema, $tabela, $constraint) = explode(".", $constraint);
+				$string .= "\n\t-- $schema.$tabela.$constraint" ;
+			}
+		}
+		return $string;
+	}
+	
+	
+	public function listar(){
+		$string = "";
+		$string .= $this->listarDev();
+		$string .= $this->listarHomolog();
+		return $string;
+	}
+	
+	
+	public function drop() {
+		$dev = self::dev ();
+		$homolog = self::homolog ();
+		$constraints = array_diff ( $homolog, $dev );
+		$string = "";
+		if (! empty ( $constraints )) {
+			$string = "\n\n\n-------------------- DROP CONSTRAINT --------------------";
+			$string .= "\n/*";
+			foreach ( $constraints as $constraint ) {
+				list ( $schema, $tabela, $constraint ) = explode ( ".", $constraint );
+				$lista [$schema] [] = "\nALTER TABLE IF EXISTS $tabela DROP CONSTRAINT IF EXISTS $constraint CASCADE;";
+				unset ( parent::$result ['schema'] [$schema] ['tabela'] [$tabela] ['constraint'] [$constraint] );
+			}
+			$schemas = array_keys ( $lista );
+			foreach ( $schemas as $schema ) {
+				$string .= "\n\nSET SEARCH_PATH TO $schema;";
+				$string .= implode ( "", $lista [$schema] );
 			}
 			$string .= "\n*/";
 		}
 		return $string;
 	}
+	
+	
 	
 	public function createConstraint() {
 		$fase = FaseQuery::CREATE;

@@ -10,17 +10,16 @@ include_once 'ConstraintBO.php';
 class TabelaBO extends AssemblerBO{
 	
 	
-	public function __construct(){
-	}
+	public function __construct(){}
 	
 	public static function dev() {
-		$schemas = array_keys ( parent::$dev ['schema'] );
 		$lista = array ();
+		$schemas = array_keys ( parent::$dev ['schema'] );
 		foreach ( $schemas as $schema ) {
 			if (isset ( parent::$dev ['schema'] [$schema] ['tabela'] )) {
 				$tabelas = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] );
 				foreach ( $tabelas as $tabela ) {
-					$lista [] = $tabela;
+					$lista [] = "$schema.$tabela";
 				}
 			}
 		}
@@ -29,13 +28,13 @@ class TabelaBO extends AssemblerBO{
 	
 	
 	public static function homolog() {
-		$schemas = array_keys ( parent::$homolog ['schema'] );
 		$lista = array ();
+		$schemas = array_keys ( parent::$homolog ['schema'] );
 		foreach ( $schemas as $schema ) {
 			if (isset ( parent::$homolog ['schema'] [$schema] ['tabela'] )) {
 				$tabelas = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] );
 				foreach ( $tabelas as $tabela ) {
-					$lista [] = $tabela;
+					$lista [] = "$schema.$tabela";
 				}
 			}
 		}
@@ -83,8 +82,9 @@ class TabelaBO extends AssemblerBO{
 			$string = "\n\n\n------------------------------ DROP TABLE ------------------------------";
 			$string .= "\n/*";
 			foreach ($tabelas as $tabela) {
-				$string .= "\nDROP TABLE IF EXISTS $tabela CASCADE;";
-				unset ( parent::$homolog ['schema'] [substr($tabela, 0, strpos($tabela, '.'))] ['tabela'] [$tabela] );
+				list($schema, $tabela) = explode(".", $tabela);
+				$string .= "\nDROP TABLE IF EXISTS $schema.$tabela CASCADE;";
+				unset ( parent::$result ['schema'] [$schema] ['tabela'] [$tabela] );
 			}
 			$string .= "\n*/";
 		}

@@ -23,7 +23,6 @@ class SequenceDAOImpl extends DAOImpl implements ISequenceDAO{
 			$query .= "	and nsp.nspname not like 'pg_toast%' ";
 			$query .= " and cls.relkind = 'S' ";
 			$query .= " order by 1 ";
-			
 			$this->query = $query;
 	}
 
@@ -31,7 +30,7 @@ class SequenceDAOImpl extends DAOImpl implements ISequenceDAO{
 		$arrayResult = array ();
 		$array = $this->queryAllAssoc ( $schemaType );
 		for($i = 0; $i < count ( $array ); $i ++) {
-			$arrayResult ['schema'][$array [$i] ['schema_name']]['sequence'][$array [$i] ['schema_name'].".".$array [$i] ['sequence_name']] =  $array [$i] ['schema_name'].".".$array [$i] ['sequence_name'];
+			$arrayResult ['schema'][$array [$i] ['schema_name']]['sequence'][$array [$i] ['sequence_name']] = $array [$i] ['sequence_name'];
 		}
 		return $arrayResult;
 		

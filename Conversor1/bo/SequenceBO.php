@@ -13,13 +13,13 @@ class SequenceBO extends AssemblerBO{
 	}
 	
 	public static function dev() {
-		$schemas = array_keys ( parent::$dev ['schema'] );
 		$lista = array ();
+		$schemas = array_keys ( parent::$dev ['schema'] );
 		foreach ( $schemas as $schema ) {
 			if (isset ( parent::$dev ['schema'] [$schema] ['sequence'] )) {
 				$sequences = array_keys ( parent::$dev ['schema'] [$schema] ['sequence'] );
 				foreach ( $sequences as $sequence ) {
-					$lista [] = $sequence;
+					$lista [] = "$schema.$sequence";
 				}
 			}
 		}
@@ -28,13 +28,13 @@ class SequenceBO extends AssemblerBO{
 	
 	
 	public static function homolog() {
-		$schemas = array_keys ( parent::$homolog ['schema'] );
 		$lista = array ();
+		$schemas = array_keys ( parent::$homolog ['schema'] );
 		foreach ( $schemas as $schema ) {
 			if (isset ( parent::$homolog ['schema'] [$schema] ['sequence'] )) {
 				$sequences = array_keys ( parent::$homolog ['schema'] [$schema] ['sequence'] );
 				foreach ( $sequences as $sequence ) {
-					$lista [] = $sequence;
+					$lista [] = "$schema.$sequence";
 				}
 			}
 		}
@@ -77,21 +77,14 @@ class SequenceBO extends AssemblerBO{
 			$string = "\n\n\n--------------------  DROP DE SEQUENCES -------------------- ";
 			$string .= "\n/*";
 			foreach ( $sequences as $sequence ) {
-				$string .= "\nDROP SEQUENCE IF EXISTS $sequence CASCADE;";
-				unset ( parent::$homolog ['schema'] [substr($sequence, 0, strpos($sequence, '.'))] ['sequence'] [$sequence] );
+				list($schema, $sequence) = explode(".", $sequence);
+				$string .= "\nDROP SEQUENCE IF EXISTS $schema.$sequence CASCADE;";
+				unset ( parent::$result ['schema'] [$schema] ['sequence'] [$sequence] );
 			}
 			$string .= "\n*/";
 		}
 		return $string;
 	}
-	
-	
-	
-	
-}
-	
-	/*
-	
 	
 	
 	public function createSequence() {
@@ -123,4 +116,3 @@ class SequenceBO extends AssemblerBO{
 	}
 	
 }
-*/

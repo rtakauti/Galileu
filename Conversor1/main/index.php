@@ -28,12 +28,18 @@ $funcao = new FuncaoBO();
 $tabela = new TabelaBO();
 $trigger = new TriggerBO();
 $indice = new IndiceBO();
+$coluna = new ColunaBO();
+$constraint = new ConstraintBO();
+
+
 $saida->gravar($schema->listar());
 $saida->gravar($sequence->listar());
 $saida->gravar($funcao->listar());
 $saida->gravar($tabela->listar());
 $saida->gravar($trigger->listar());
 $saida->gravar($indice->listar());
+$saida->gravar($coluna->listar());
+$saida->gravar($constraint->listar());
 
 $saida->gravar($schema->drop());
 $saida->gravar($sequence->drop());
@@ -41,14 +47,12 @@ $saida->gravar($funcao->drop());
 $saida->gravar($tabela->drop());
 $saida->gravar($trigger->drop());
 $saida->gravar($indice->drop());
+$saida->gravar($coluna->drop());
+$saida->gravar($constraint->drop());
+
 
 echo "<pre>";
-print_r($trigger->listarHomolog());
-print_r($trigger->listarDev());
-print_r($trigger->drop());
-print_r($schema->listar());
-print_r($sequence->listar());
-print_r($funcao->listar());
+print_r($coluna->homolog());
 print_r(AssemblerBO::homolog());
 echo "<hr/>";
 print_r(AssemblerBO::dev());

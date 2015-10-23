@@ -1,44 +1,111 @@
 <?php
-include_once realpath (__DIR__.'/../enum/SchemasCompany.php');
+//include_once realpath (__DIR__.'/../enum/SchemasCompany.php');
 include_once realpath (__DIR__.'/../enum/SchemaType.php');
 include_once realpath (__DIR__.'/../enum/EstruturaQuery.php');
 include_once realpath (__DIR__.'/../enum/FaseQuery.php');
-include_once 'BOImpl.php';
+//include_once 'BOImpl.php';
 include_once 'PropriedadeBO.php';
 
-class ColunaBO{
+class ColunaBO extends AssemblerBO{
 	
-	//protected  $dao;
-	private $estrutura;
-	private $fase;
-	private $devArray;
-	private $homologArray;
 	
-	public function __construct($dbCompany, $schemaParameter, $tableParameter, $sequenceParameter, $fase, $devArray, $homologArray) {
-		//$this->dao = new ColunaDAOImpl($dbCompany, $schemaParameter, $tableParameter, $fase);
-		$this->estrutura[EstruturaQuery::SEQUENCE] = $sequenceParameter;
-		$this->estrutura[EstruturaQuery::TABELA] = $tableParameter;
-		$this->estrutura[EstruturaQuery::SCHEMA] = $schemaParameter;
-		$this->estrutura[EstruturaQuery::COMPANY] = $dbCompany;
-		$this->fase = $fase;
-		$this->devArray = $devArray;
-		$this->homologArray = $homologArray;
-	}
+	public function __construct() {}
 
-	public function dropColumn(){
-		$tabela = $this->estrutura [EstruturaQuery::TABELA];
-		//$dev = array_keys($this->dao->propriedade(SchemaType::DEV));
-		//$homolog = array_keys($this->dao->propriedade(SchemaType::HOMOLOG));
-		//$colunas = array_diff($homolog, $dev);
-		$homolog = $this->homologArray;
-		$dev = $this->devArray;
-		$colunas = array_diff(array_keys($homolog), array_keys($dev));
+	
+	public static function dev() {
+		$lista = array ();
+		$schemas = array_keys ( parent::$dev ['schema'] );
+		foreach ( $schemas as $schema ) {
+			if (isset ( parent::$dev ['schema'] [$schema] ['tabela'] )) {
+				$tabelas = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] );
+				foreach ( $tabelas as $tabela ) {
+					if (isset ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela]['coluna'] )) {
+						$colunas = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] );
+						foreach ( $colunas as $coluna ) {
+							$lista [] = "$schema.$tabela.$coluna";
+						}
+					}
+				}
+			}
+		}
+		return $lista;
+	}
+	
+	
+	public static function homolog() {
+		$lista = array ();
+		$schemas = array_keys ( parent::$homolog ['schema'] );
+		foreach ( $schemas as $schema ) {
+			if (isset ( parent::$homolog ['schema'] [$schema] ['tabela'] )) {
+				$tabelas = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] );
+				foreach ( $tabelas as $tabela ) {
+					if (isset ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela]['coluna'] )) {
+					$colunas = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] );
+						foreach ( $colunas as $coluna ) {
+							$lista [] = "$schema.$tabela.$coluna";
+						}
+					}
+				}
+			}
+		}
+		return $lista;
+	}
+	
+	
+	public function listarDev() {
+		$lista = self::dev();
+		$string = "";
+		if (! empty ( $lista )) {
+			$string = "\n\n------ DEV COLUNAS ------";
+			foreach ($lista as $coluna) {
+				list($schema, $tabela, $coluna) = explode(".", $coluna);
+				$string .= "\n\t-- $schema.$tabela.$coluna" ;
+			}
+		}
+		return $string;
+	}
+	
+	public function listarHomolog() {
+		$lista = self::homolog();
+		$string = "";
+		if (! empty ( $lista )) {
+			$string = "\n\n------ HOMOLOG COLUNAS ------";
+			$i = 0;
+			foreach ($lista as $coluna) {
+				list($schema, $tabela, $coluna) = explode(".", $coluna);
+				$string .= "\n\t-- $schema.$tabela.$coluna" ;
+			}
+		}
+		return $string;
+	}
+	
+	
+	public function listar(){
+		$string = "";
+		$string .= $this->listarDev();
+		$string .= $this->listarHomolog();
+		return $string;
+	}
+	
+	
+	
+	public function drop(){
+		$dev = self::dev();
+		$homolog = self::homolog();
+		$colunas = array_diff ( $homolog, $dev );
 		$string = "";
 		if (! empty ( $colunas )) {
-		$string = "\n\n\n-------------------- DROP COLUMN --------------------";
+		$string = "\n\n\n-------------------- DROP DE COLUNAS --------------------";
 		$string .= "\n/*";
 			foreach ( $colunas as $coluna ) {
-				$string .= "\nALTER TABLE $tabela DROP COLUMN $coluna;";
+				list($schema, $tabela, $coluna) = explode(".", $coluna);
+				$lista[$schema][] = "\nALTER TABLE IF EXISTS $tabela DROP COLUMN IF EXISTS $coluna CASCADE;";
+				unset ( parent::$result ['schema'] [$schema]['tabela'][$tabela]['coluna'] [$coluna] );
+			}
+			$schemas = array_keys($lista);
+			foreach ($schemas as $schema) {
+				$string .= "\n\nSET SEARCH_PATH TO $schema;";
+				$string .= implode("", $lista[$schema]);
 			}
 			$string .= "\n*/";
 		}

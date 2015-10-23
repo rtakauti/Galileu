@@ -13,8 +13,8 @@ class TriggerBO extends AssemblerBO {
 	}
 	
 	public static function dev() {
-		$schemas = array_keys ( parent::$dev ['schema'] );
 		$lista = array ();
+		$schemas = array_keys ( parent::$dev ['schema'] );
 		foreach ( $schemas as $schema ) {
 			if (isset ( parent::$dev ['schema'] [$schema] ['tabela'] )) {
 				$tabelas = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] );
@@ -22,7 +22,8 @@ class TriggerBO extends AssemblerBO {
 					if (isset ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela]['trigger'] )) {
 						$triggers = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['trigger'] );
 						foreach ( $triggers as $trigger ) {
-							$lista [] = $tabela . "." . $trigger;
+							$funcao = substr(parent::$dev ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger]['action_statement'], strlen("EXECUTE PROCEDURE "));
+							$lista [] = "$schema.$tabela.$trigger.$funcao";
 						}
 					}
 				}
@@ -33,8 +34,8 @@ class TriggerBO extends AssemblerBO {
 	
 	
 	public static function homolog() {
-		$schemas = array_keys ( parent::$homolog ['schema'] );
 		$lista = array ();
+		$schemas = array_keys ( parent::$homolog ['schema'] );
 		foreach ( $schemas as $schema ) {
 			if (isset ( parent::$homolog ['schema'] [$schema] ['tabela'] )) {
 				$tabelas = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] );
@@ -42,7 +43,8 @@ class TriggerBO extends AssemblerBO {
 					if (isset ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela]['trigger'] )) {
 						$triggers = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['trigger'] );
 						foreach ( $triggers as $trigger ) {
-							$lista [] = $tabela . "." . $trigger;
+							$funcao = substr(parent::$homolog ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger]['action_statement'], strlen("EXECUTE PROCEDURE "));
+							$lista [] = "$schema.$tabela.$trigger.$funcao";
 						}
 					}
 				}
@@ -57,7 +59,8 @@ class TriggerBO extends AssemblerBO {
 		if (! empty ( $lista )) {
 			$string = "\n\n------ DEV TRIGGERS ------";
 			foreach ($lista as $trigger) {
-				$string .= "\n\t-- $trigger" ;
+				list($schema, $tabela, $trigger) = explode(".", $trigger);
+				$string .= "\n\t-- $schema.$trigger" ;
 			}
 		}
 		return $string;
@@ -69,7 +72,8 @@ class TriggerBO extends AssemblerBO {
 		if (! empty ( $lista )) {
 			$string = "\n\n------ HOMOLOG TRIGGERS ------";
 			foreach ($lista as $trigger) {
-				$string .= "\n\t-- $trigger" ;
+				list($schema, $tabela, $trigger) = explode(".", $trigger);
+				$string .= "\n\t-- $schema.$trigger" ;
 			}
 		}
 		return $string;
@@ -95,13 +99,10 @@ class TriggerBO extends AssemblerBO {
 			$string .= "\n\n\n-------------------- DROP TRIGGER --------------------";
 			$string .= "\n/*";
 			foreach ( $triggers as $trigger ) {
-				$schema = substr($trigger, 0, strpos($trigger, '.'));
-				$tabela = substr($trigger, strpos($trigger, $schema."."), strrpos($trigger, "."));
-				$trigger = substr($trigger, strrpos($trigger, ".")+strlen("."));
-				$function = substr(parent::$homolog ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger]['action_statement'], strlen("EXECUTE PROCEDURE "));
+				list($schema, $tabela, $trigger, $funcao) = explode(".", $trigger);
 				$string .= "\nDROP TRIGGER IF EXISTS $trigger ON $tabela CASCADE;";
-				$string .= "\nDROP FUNCTION IF EXISTS $function CASCADE;";
-				unset ( parent::$homolog ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger] );
+				$string .= "\nDROP FUNCTION IF EXISTS $funcao CASCADE;";
+				unset ( parent::$result ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger] );
 			}
 			$string .= "\n*/";
 		}

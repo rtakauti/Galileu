@@ -37,11 +37,9 @@ class FuncaoDAOImpl extends DAOImpl implements IFuncaoDAO {
 		$arrayResult = array ();
 		$array = $this->queryAllAssoc ( $schemaType );
 		for($i = 0; $i < count ( $array ); $i ++) {
-			//$arrayResult ['funcoes'][] = $array [$i] ['schema_name'].".".$array [$i] ['function_name']."(".$array [$i] ['parameter'].")";
-			$arrayResult ['schema'][$array [$i] ['schema_name']]['funcao'][$array [$i] ['schema_name'].".".$array [$i] ['function_name']."(".$array [$i] ['parameter'].")"] ['create'] = $array [$i] ['create'];
-			$arrayResult ['schema'][$array [$i] ['schema_name']]['funcao'][$array [$i] ['schema_name'].".".$array [$i] ['function_name']."(".$array [$i] ['parameter'].")"] ['return'] = $array [$i] ['return'];
-			$arrayResult ['schema'][$array [$i] ['schema_name']]['funcao'][$array [$i] ['schema_name'].".".$array [$i] ['function_name']."(".$array [$i] ['parameter'].")"] ['parameter'] = $array [$i] ['parameter'];
-			//$arrayResult [$array [$i] ['function_name']] ['body'] = $array [$i] ['body'];
+			$arrayResult ['schema'][$array [$i] ['schema_name']]['funcao'][$array [$i] ['function_name']."(".$array [$i] ['parameter'].")"] ['create'] = $array [$i] ['create'];
+			$arrayResult ['schema'][$array [$i] ['schema_name']]['funcao'][$array [$i] ['function_name']."(".$array [$i] ['parameter'].")"] ['return'] = $array [$i] ['return'];
+			$arrayResult ['schema'][$array [$i] ['schema_name']]['funcao'][$array [$i] ['function_name']."(".$array [$i] ['parameter'].")"] ['parameter'] = $array [$i] ['parameter'];
 		}
 		return $arrayResult;
 	}

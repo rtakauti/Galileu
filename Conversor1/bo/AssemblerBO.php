@@ -9,12 +9,18 @@ class AssemblerBO {
 	protected  static $estrutura;
 	protected  static $dev;
 	protected  static $homolog;
+	protected  static $result;
 	
 	public function __construct($dbCompany, $estrutura){
 		$this->dao = new AssemblerDAOImpl($dbCompany); 
 		self::$estrutura = $estrutura;
 		self::$dev = $this->dao->retorna(SchemaType::DEV);
-		self::$homolog = $this->dao->retorna(SchemaType::HOMOLOG);
+		self::$result = self::$homolog = $this->dao->retorna(SchemaType::HOMOLOG);
+		$this->dao = NULL;
+	}
+	
+	public function __destruct(){
+		$this->dao = NULL;
 	}
 	
 	public static function dev(){

@@ -8,17 +8,17 @@ include_once realpath (__DIR__.'/../enum/EstruturaQuery.php');
 class FuncaoBO extends AssemblerBO{
 	
 	
-	public function __construct(){
-	}
+	public function __construct(){}
+	
 	
 	public static function dev() {
-		$schemas = array_keys ( parent::$dev ['schema'] );
 		$lista = array();
+		$schemas = array_keys ( parent::$dev ['schema'] );
 		foreach ( $schemas as $schema ) {
 			if (isset ( parent::$dev ['schema'] [$schema] ['funcao'] )) {
 				$funcoes = array_keys ( parent::$dev ['schema'] [$schema] ['funcao'] );
 				foreach ( $funcoes as $funcao ) {
-					$lista [] = $funcao;
+					$lista [] = "$schema.$funcao";
 				}
 			}
 		}
@@ -26,13 +26,13 @@ class FuncaoBO extends AssemblerBO{
 	}
 	
 	public static function homolog() {
-		$schemas = array_keys ( parent::$homolog ['schema'] );
 		$lista = array ();
+		$schemas = array_keys ( parent::$homolog ['schema'] );
 		foreach ( $schemas as $schema ) {
 			if (isset ( parent::$homolog ['schema'] [$schema] ['funcao'] )) {
 				$funcoes = array_keys ( parent::$homolog ['schema'] [$schema] ['funcao'] );
 				foreach ( $funcoes as $funcao ) {
-					$lista [] = $funcao;
+					$lista [] = "$schema.$funcao";
 				}
 			}
 		}
@@ -76,9 +76,9 @@ class FuncaoBO extends AssemblerBO{
 			$string = "\n\n\n--------------------  DROP DE FUNCTION, PROCEDURE, TRIGGER -------------------- ";
 			$string .= "\n/*";
 			foreach ( $funcoes as $funcao ) {
-				 $string .= "\nDROP FUNCTION IF EXISTS $funcao CASCADE;";
-				 $schema = substr($funcao, 0, strpos($funcao, '.'));
-				 unset ( parent::$homolog ['schema'] [$schema] ['funcao'] [$funcao] );
+				list($schema, $funcao) = explode(".", $funcao);
+				 $string .= "\nDROP FUNCTION IF EXISTS $schema.$funcao CASCADE;";
+				 unset ( parent::$result ['schema'] [$schema] ['funcao'] [$funcao] );
 			}
 			$string .= "\n*/";
 		}

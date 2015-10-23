@@ -12,8 +12,8 @@ class IndiceBO extends AssemblerBO{
 	}
 	
 	public static function dev() {
-		$schemas = array_keys ( parent::$dev ['schema'] );
 		$lista = array ();
+		$schemas = array_keys ( parent::$dev ['schema'] );
 		foreach ( $schemas as $schema ) {
 			if (isset ( parent::$dev ['schema'] [$schema] ['tabela'] )) {
 				$tabelas = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] );
@@ -21,7 +21,7 @@ class IndiceBO extends AssemblerBO{
 					if (isset ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela]['indice'] )) {
 						$indices = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['indice'] );
 						foreach ( $indices as $indice ) {
-							$lista [] = $tabela . "." . $indice;
+							$lista [] = "$schema.$tabela.$indice";
 						}
 					}
 				}
@@ -31,8 +31,8 @@ class IndiceBO extends AssemblerBO{
 	}
 	
 	public static function homolog() {
-		$schemas = array_keys ( parent::$homolog ['schema'] );
 		$lista = array ();
+		$schemas = array_keys ( parent::$homolog ['schema'] );
 		foreach ( $schemas as $schema ) {
 			if (isset ( parent::$homolog ['schema'] [$schema] ['tabela'] )) {
 				$tabelas = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] );
@@ -40,7 +40,7 @@ class IndiceBO extends AssemblerBO{
 					if (isset ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela]['indice'] )) {
 						$indices = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['indice'] );
 						foreach ( $indices as $indice ) {
-							$lista [] = $tabela . "." . $indice;
+							$lista [] = "$schema.$tabela.$indice";
 						}
 					}
 				}
@@ -55,7 +55,8 @@ class IndiceBO extends AssemblerBO{
 		if (! empty ( $lista )) {
 			$string = "\n\n------ DEV INDICES ------";
 			foreach ($lista as $indice) {
-				$string .= "\n\t-- $indice" ;
+				list($schema, $tabela, $indice) = explode(".", $indice);
+				$string .= "\n\t-- $schema.$indice" ;
 			}
 		}
 		return $string;
@@ -67,7 +68,8 @@ class IndiceBO extends AssemblerBO{
 		if (! empty ( $lista )) {
 			$string = "\n\n------ HOMOLOG INDICES ------";
 			foreach ($lista as $indice) {
-				$string .= "\n\t-- $indice" ;
+				list($schema, $tabela, $indice) = explode(".", $indice);
+				$string .= "\n\t-- $schema.$indice" ;
 			}
 		}
 		return $string;
@@ -82,6 +84,7 @@ class IndiceBO extends AssemblerBO{
 	}
 	
 	
+	
 	public function drop() {
 		$dev = self::dev();
 		$homolog = self::homolog();
@@ -91,17 +94,21 @@ class IndiceBO extends AssemblerBO{
 			$string = "\n\n-------------------- DROP DE INDICES -------------------- ";
 			$string .= "\n/*";
 			foreach ( $indices as $indice ) {
-				$schema = substr($indice, 0, strpos($indice, '.'));
-				$tabela = substr($indice, strpos($indice, $schema."."), strrpos($indice, "."));
-				$indice = substr($indice, strrpos($indice, ".")+strlen("."));
-				$string .= "\nDROP INDEX IF EXISTS $indice CASCADE;";
-				unset ( parent::$homolog ['schema'] [$schema]['tabela'][$tabela]['indice'] [$indice] );
-				
+				list($schema, $tabela, $indice) = explode(".", $indice);
+				$lista[$schema][] = "\nDROP INDEX IF EXISTS $indice CASCADE;";
+				unset ( parent::$result ['schema'] [$schema]['tabela'][$tabela]['indice'] [$indice] );
+			}
+			$schemas = array_keys($lista);
+			foreach ($schemas as $schema) {
+				$string .= "\n\nSET SEARCH_PATH TO $schema;";
+				$string .= implode("", $lista[$schema]);
 			}
 			$string .= "\n*/";
 		}
 		return $string;
 	}
+	
+	
 	
 	public function createIndex() {
 		$indices = $this->dao->index(SchemaType::DEV);
