@@ -100,13 +100,16 @@ class TabelaBO extends AssemblerBO{
 		$stringResult = "";
 		$user = parent::$estrutura[EstruturaQuery::USER];
 		if(!empty($tabelas)){
+			$coluna = new ColunaBO();
+			$constraint = new ConstraintBO();
 			$stringResult .= "\n\n\n-------------------- CREATE TABLE --------------------";
 			foreach ($tabelas as $tabelaInput) {
 				list($schema, $tabela) = explode(".", $tabelaInput);
-				$coluna = new ColunaBO();
 				$string = "\n\n\nCREATE TABLE $schema.$tabela";
 				$string .="\n(\n";
 				$string .= $coluna->create($tabelaInput);
+				$string .= $constraint->create($tabelaInput);
+				$string = substr($string, 0, -2);
 				$string .= "\n)";
 				$string .= "\nWITH (\n\tOIDS=FALSE\n);";
 				$string .= "\nALTER TABLE $tabela \n\tOWNER TO $user;";

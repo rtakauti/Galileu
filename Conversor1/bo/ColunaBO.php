@@ -112,14 +112,13 @@ class ColunaBO extends AssemblerBO{
 		$colunas = array_keys(parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['coluna']);
 		$fase = FaseQuery::CREATE;
 		$string = "";
+		$propriedade = new PropriedadeBO ();
 		if (! empty ( $colunas )) {
 			foreach ( $colunas as $coluna ) {
 				$colunaInput = "$schema.$tabela.$coluna";
-				$propriedade = new PropriedadeBO ();
 				$propriedades = $propriedade->construct($colunaInput, $fase);
 				$string .= "\t$coluna $propriedades ,\n";
 			}
-			$string = substr($string, 0, -2);
 		}
 		return $string;
 	}

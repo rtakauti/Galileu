@@ -110,15 +110,16 @@ class ConstraintBO extends AssemblerBO{
 	
 	public function create($tabelaInput) {
 		list($schema, $tabela) = explode(".", $tabelaInput);
-		$constraints = array_keys(parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['constraint']);
-		$fase = FaseQuery::CREATE;
+		if(isset(parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['constraint']))
+			$constraints = array_keys(parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['constraint']);
 		$string = "";
 		if (! empty ( $constraints )) {
+			$fase = FaseQuery::CREATE;
+			$restricao = new RestricaoBO ();
 			foreach ( $constraints as $constraint ) {
 				$constraintInput = "$schema.$tabela.$constraint";
-				$restricao = new RestricaoBO ();
 				$restricoes = $restricao->construct($constraintInput, $fase);
-				$string .= "\tCONSTRAINT $nameConstraint $restricoes,\n";
+				$string .= "\tCONSTRAINT $constraint $restricoes,\n";
 			}
 		}
 		return $string;

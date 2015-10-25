@@ -10,9 +10,9 @@ class Connection {
 		if (! isset ( self::$conns )) {
 			try {
 				$config = parse_ini_file ( __DIR__."/config/config.ini", true );
-				$host = $config ['connection'] ['host'];
-				$user = $config ['connection'] ['user'];
-				$pass = $config ['connection'] ['pass'];
+				$host = $config ['connection1'] ['host'];
+				$user = $config ['connection1'] ['user'];
+				$pass = $config ['connection1'] ['pass'];
 				$schemaHomolog = $config [$dbCompany] ['homolog'];
 				$schemaDev = $config [$dbCompany] ['dev'];
 				

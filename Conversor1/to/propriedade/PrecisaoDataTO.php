@@ -3,10 +3,9 @@ include_once realpath ( __DIR__ . '/../../enum/FaseQuery.php' );
 include_once realpath ( __DIR__ . '/../../enum/EstruturaQuery.php' );
 include_once realpath ( __DIR__ . '/../../bo/sequence/GerenciadorSequence.php' );
 include_once realpath ( __DIR__ . '/../IPropriedade.php' );
+
 class PrecisaoDataTO implements IPropriedade {
-	public function __construct($valor = NULL, $fase = NULL, $condicao = NULL, $estrutura = NULL) {
-		$this->retorna ( $valor, $fase, $condicao, $estrutura );
-	}
+
 	public function retorna($valor, $fase, $condicao, $estrutura) {
 		$string = "";
 		if (isset ( $valor ) && ! isset ( $condicao ['interval_type'] )) {
