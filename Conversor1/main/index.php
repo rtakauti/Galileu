@@ -20,7 +20,7 @@ If (isset ( $argv [1] )) {
 	$dbCompany = $_GET ['empresa'];
 	$cmd = false;
 } else {
-	$dbCompany = "test";
+	$dbCompany = "teste";
 	$cmd = false;
 }
 
@@ -64,8 +64,9 @@ $saida->gravar($funcao->create());
 $saida->gravar($trigger->create());
 
 echo "<pre>";
-print_r($propriedade->construct("public.tabela3.cd_codigo", FaseQuery::CREATE));
-print_r($restricao->construct("public.tabela3.pk_tabela3", FaseQuery::CREATE));
+print_r($tabela->create());
+//print_r($propriedade->construct("public.tabela3.cd_codigo", FaseQuery::CREATE));
+//print_r($restricao->construct("public.tabela3.pk_tabela3", FaseQuery::CREATE));
 //print_r(SequenceBO::result());
 //print_r(SchemaBO::result());
 echo "<hr/>";

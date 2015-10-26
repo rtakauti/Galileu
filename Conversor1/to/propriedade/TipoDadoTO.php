@@ -6,7 +6,6 @@ include_once realpath ( __DIR__ . '/../IPropriedade.php' );
 
 class TipoDadoTO implements IPropriedade {
 	
-	
 	public function retorna($valor, $fase, $condicao, $estrutura) {
 		$schema = $estrutura [EstruturaQuery::SCHEMA];
 		$tabela = $estrutura [EstruturaQuery::TABELA];

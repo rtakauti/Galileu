@@ -97,6 +97,8 @@ class TabelaBO extends AssemblerBO{
 		$stringResult = "";
 		$user = parent::$estrutura[EstruturaQuery::USER];
 		if(!empty($tabelas)){
+			$coluna = new ColunaBO();
+			$constraint = new ConstraintBO();
 			$stringResult .= "\n\n\n-------------------- CREATE TABLE --------------------";
 			foreach ($tabelas as $tabelaInput) {
 				list($schema, $tabela) = explode(".", $tabelaInput);

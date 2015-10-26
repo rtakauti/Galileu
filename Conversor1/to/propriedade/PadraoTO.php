@@ -5,8 +5,7 @@ include_once realpath ( __DIR__ . '/../../bo/sequence/GerenciadorSequence.php' )
 include_once realpath ( __DIR__ . '/../IPropriedade.php' );
 
 class PadraoTO extends GerenciadorSequence implements IPropriedade {
-	
-	
+
 	public function retorna($valor, $fase, $condicao, $estrutura) {
 		$schema = $estrutura [EstruturaQuery::SCHEMA];
 		$tabela = $estrutura [EstruturaQuery::TABELA];

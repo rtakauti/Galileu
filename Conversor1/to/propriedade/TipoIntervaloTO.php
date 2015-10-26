@@ -6,6 +6,7 @@ include_once realpath(__DIR__.'/../IPropriedade.php');
 
 class TipoIntervaloTO implements IPropriedade{
 
+
 	public function retorna($valor, $fase, $condicao, $estrutura) {
 		$string = "";
 		if (isset ( $valor )) {

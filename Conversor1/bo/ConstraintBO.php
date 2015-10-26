@@ -111,11 +111,11 @@ class ConstraintBO extends AssemblerBO{
 		$fase = FaseQuery::CREATE;
 		$string = "";
 		if (! empty ( $constraints )) {
+			$restricao = new RestricaoBO ();
 			foreach ( $constraints as $constraint ) {
 				$constraintInput = "$schema.$tabela.$constraint";
-				$restricao = new RestricaoBO ();
 				$restricoes = $restricao->construct($constraintInput, $fase);
-				$string .= "\tCONSTRAINT $nameConstraint $restricoes,\n";
+				$string .= "\tCONSTRAINT $constraint $restricoes,\n";
 			}
 		}
 		return $string;

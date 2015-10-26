@@ -4,6 +4,7 @@ include_once __DIR__ .'/../../enum/FaseQuery.php';
 include_once __DIR__.'/../../enum/EstruturaQuery.php';
 include_once __DIR__ .'/../../bo/sequence/GerenciadorSequence.php';
 include_once __DIR__.'/../IPropriedade.php';
+
 class MaximoCharTO implements IPropriedade{
 	
 	
