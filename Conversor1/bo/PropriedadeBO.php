@@ -46,6 +46,25 @@ class PropriedadeBO extends AssemblerBO{
 		}
 		return $stringResult;
 	}
+	
+	public function compare($colunaInput){
+		list($schema, $tabela, $coluna) = explode(".", $colunaInput);
+		$estrutura = parent::$estrutura;
+		$estrutura[EstruturaQuery::SCHEMA] = $schema;
+		$estrutura[EstruturaQuery::TABELA] = $tabela;
+		$estrutura[EstruturaQuery::COLUNA] = $coluna;
+		$fase = FaseQuery::ALTER;
+		$propriedadesBO = $this->properties;
+		$dev = parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['coluna'][$coluna];
+		$homolog = parent::$homolog ['schema'] [$schema] ['tabela'][$tabela]['coluna'][$coluna];
+		$propriedades = array_diff($dev, $homolog);
+		$stringResult = "";
+		foreach ( $propriedades as $propriedade => $valor ) {
+			$string = GeradorPropriedades::gerarPropriedade ( $propriedadesBO [$propriedade], $valor, $fase, $propriedades, $estrutura );
+			$stringResult .= $string;
+		}
+		return $stringResult;
+	}
 
 
 }

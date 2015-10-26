@@ -22,7 +22,7 @@ class MaximoCharTO implements IPropriedade{
 					$string = "($valor) ";
 					break;
 				case FaseQuery::ALTER :
-					$string = "\nALTER TABLE $tabela ALTER COLUMN $coluna TYPE character varying($valor);";
+					$string = "\nALTER TABLE $schema.$tabela ALTER COLUMN $coluna TYPE character varying($valor);";
 					break;
 				default :
 					break;

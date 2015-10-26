@@ -36,9 +36,9 @@ $constraint = new ConstraintBO();
 $propriedade = new PropriedadeBO();
 $restricao = new RestricaoBO();
 
-/*
 $saida->gravar($schema->listar());
 $saida->gravar($sequence->listar());
+/*
 $saida->gravar($funcao->listar());
 $saida->gravar($tabela->listar());
 $saida->gravar($trigger->listar());
@@ -55,16 +55,20 @@ $saida->gravar($trigger->drop());
 $saida->gravar($indice->drop());
 $saida->gravar($coluna->drop());
 $saida->gravar($constraint->drop());
-*/
+
+
 $saida->gravar($schema->create());
 $saida->gravar($sequence->create());
 $saida->gravar($tabela->create());
 $saida->gravar($indice->create());
 $saida->gravar($funcao->create());
 $saida->gravar($trigger->create());
+*/
 
 echo "<pre>";
-print_r($tabela->create());
+//print_r($coluna->alter("public.tabela3"));
+//print_r($tabela->create());
+print_r($tabela->alter());
 //print_r($propriedade->construct("public.tabela3.cd_codigo", FaseQuery::CREATE));
 //print_r($restricao->construct("public.tabela3.pk_tabela3", FaseQuery::CREATE));
 //print_r(SequenceBO::result());
@@ -72,7 +76,7 @@ print_r($tabela->create());
 echo "<hr/>";
 //print_r(AssemblerBO::homolog());
 echo "<hr/>";
-print_r(AssemblerBO::dev());
+//print_r(AssemblerBO::dev());
 echo "</pre>";
 
 

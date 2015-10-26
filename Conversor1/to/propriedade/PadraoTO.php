@@ -46,14 +46,17 @@ class PadraoTO extends GerenciadorSequence implements IPropriedade {
 					$string = "\n\tDEFAULT $valor ";
 					break;
 				case FaseQuery::ALTER :
-					$string = "\nALTER TABLE $tabela ALTER COLUMN $coluna DROP DEFAULT;";
-					$string .= "\nALTER TABLE $tabela ALTER COLUMN $coluna SET DEFAULT $valor;";
+					//$string = "\nALTER TABLE $tabela ALTER COLUMN $coluna DROP DEFAULT;";
+					$string = "\nALTER TABLE $tabela ALTER COLUMN $coluna SET DEFAULT $valor;";
 					break;
 				
 				default :
 					break;
 			}
 			return $string;
+		}else{
+			if($fase == FaseQuery::ALTER)
+				return  "\nALTER TABLE $tabela ALTER COLUMN $coluna DROP DEFAULT;";
 		}
 	}
 }

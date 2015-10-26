@@ -43,7 +43,7 @@ class TipoDadoTO implements IPropriedade {
 				case FaseQuery::ADD :
 					switch ($valor) {
 						case "ARRAY" :
-							$string = "[] ";
+							$string = "[]";
 							break;
 						case "time without time zone" :
 							$string = "";

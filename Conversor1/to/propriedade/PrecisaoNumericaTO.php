@@ -21,7 +21,7 @@ class PrecisaoNumericaTO implements IPropriedade{
 					$string = "($valor,";
 					break;
 				case FaseQuery::ALTER :
-					$string = "\nALTER TABLE $tabela ALTER COLUMN $coluna TYPE NUMERIC($valor,{$condicao['numeric_scale']});";
+					$string = "\nALTER TABLE $schema.$tabela ALTER COLUMN $coluna TYPE NUMERIC($valor,{$condicao['numeric_scale']});";
 					break;
 				default :
 					break;

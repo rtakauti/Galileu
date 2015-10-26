@@ -39,8 +39,6 @@ class TabelaBO extends AssemblerBO{
 	}
 	
 	
-	
-	
 	public function listarDev() {
 		$lista = self::dev();
 		$string = "";
@@ -67,7 +65,6 @@ class TabelaBO extends AssemblerBO{
 		$string .= $this->listarHomolog();
 		return $string;
 	}
-	
 	
 	
 	public function drop(){
@@ -102,8 +99,6 @@ class TabelaBO extends AssemblerBO{
 			$stringResult .= "\n\n\n-------------------- CREATE TABLE --------------------";
 			foreach ($tabelas as $tabelaInput) {
 				list($schema, $tabela) = explode(".", $tabelaInput);
-				$coluna = new ColunaBO();
-				$constraint = new ConstraintBO();
 				$string = "\n\n\nCREATE TABLE $schema.$tabela";
 				$string .="\n(\n";
 				$string .= $coluna->create($tabelaInput);
@@ -112,15 +107,7 @@ class TabelaBO extends AssemblerBO{
 				$string .= "\n)";
 				$string .= "\nWITH (\n\tOIDS=FALSE\n);";
 				$string .= "\nALTER TABLE $tabela \n\tOWNER TO $user;";
-				/*
-				$triggerBO = new TriggerBO($empresa, $schema, $tabela);
-				$string .= $triggerBO->createTrigger();
-				$indiceBO = new IndiceBO($empresa, $schema, $tabela);
-				$string .= $indiceBO->createIndex();
-				$stringResult .= GerenciadorSequence::getQueryCriado().$string.GerenciadorSequence::getQuerySetado();
-				*/
 				$stringResult .= $string;
-				//$string = "";
 			}
 			return $stringResult;
 		}
@@ -130,12 +117,15 @@ class TabelaBO extends AssemblerBO{
 		$dev = self::dev();
 		$homolog = self::homolog();
 		$tabelas = array_intersect($homolog, $dev);
-		$fase = FaseQuery::ALTER;
-		$colunas = array();
-		$stringResult = "\n\n\n------------------------------ ALTER TABLE ------------------------------";
-		$string = "";
+		$stringResult = "";
 		if(!empty($tabelas)){
-			foreach ($tabelas as $tabela) {
+			$stringResult = "\n\n\n------------------------------ ALTER TABLE ------------------------------";
+			$coluna = new ColunaBO();
+			foreach ($tabelas as $tabelaInput) {
+				list($schema, $tabela) = explode(".", $tabelaInput);
+				$string  = $coluna->add($tabelaInput);
+				$string .= $coluna->alter($tabelaInput);
+				/*
 				$colunaBO = new ColunaBO($empresa, $schema , $tabela, $sequence, $fase, $homolog[$tabela], $dev[$tabela]);
 				$string .= $colunaBO->dropColumn();
 				$string .= $colunaBO->addColumn();
@@ -149,6 +139,7 @@ class TabelaBO extends AssemblerBO{
 				$triggerBO = new TriggerBO($empresa, $schema, $tabela);
 				$string .= $triggerBO->dropTrigger();
 				$string .= $triggerBO->createTrigger();
+				*/
 				$stringResult .= GerenciadorSequence::getQueryCriado().$string.GerenciadorSequence::getQuerySetado();
 				$string = "";
 			}
