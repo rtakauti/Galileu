@@ -1,16 +1,11 @@
 <?php
-//include_once realpath (__DIR__ . '/../dao/daoImpl/TriggerDAOImpl.php');
-include_once realpath ( __DIR__ . '/../enum/SchemasCompany.php' );
 include_once realpath ( __DIR__ . '/../enum/SchemaType.php' );
 include_once realpath ( __DIR__ . '/../enum/EstruturaQuery.php' );
 include_once realpath ( __DIR__ . '/../enum/FaseQuery.php' );
-//include_once 'BOImpl.php';
 
 class TriggerBO extends AssemblerBO {
 	
 	
-	public function __construct() {
-	}
 	
 	public static function dev() {
 		$lista = array ();

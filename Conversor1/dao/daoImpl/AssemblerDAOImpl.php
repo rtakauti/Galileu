@@ -1,5 +1,5 @@
 <?php
-include_once realpath ( __DIR__ . '/../IAssemblerDAO.php' );
+include_once realpath ( __DIR__ . '/../IDAOImpl.php' );
 include_once 'ConstraintDAOImpl.php';
 include_once 'FuncaoDAOImpl.php';
 include_once 'IndiceDAOImpl.php';
@@ -7,7 +7,7 @@ include_once 'SchemaDAOImpl.php';
 include_once 'SequenceDAOImpl.php';
 include_once 'TriggerDAOImpl.php';
 
-class AssemblerDAOImpl implements IAssemblerDAO{
+class AssemblerDAOImpl implements IDAOImpl{
 	
 	private $funcao;
 	private $schema;
@@ -16,13 +16,13 @@ class AssemblerDAOImpl implements IAssemblerDAO{
 	private $constraint;
 	private $indice;
 
-	public function __construct($dbCompany){
-		$this->funcao = new FuncaoDAOImpl($dbCompany);
-		$this->schema = new SchemaDAOImpl($dbCompany);
-		$this->sequence = new SequenceDAOImpl($dbCompany);
-		$this->trigger = new TriggerDAOImpl($dbCompany);
-		$this->constraint = new ConstraintDAOImpl($dbCompany);
-		$this->indice = new IndiceDAOImpl($dbCompany);
+	public function __construct(){
+		$this->funcao = new FuncaoDAOImpl();
+		$this->schema = new SchemaDAOImpl();
+		$this->sequence = new SequenceDAOImpl();
+		$this->trigger = new TriggerDAOImpl();
+		$this->constraint = new ConstraintDAOImpl();
+		$this->indice = new IndiceDAOImpl();
 	}
 	
 	public function retorna($schemaType){

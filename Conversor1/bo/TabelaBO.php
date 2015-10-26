@@ -1,16 +1,13 @@
 <?php
-include_once realpath (__DIR__.'/../enum/SchemasCompany.php');
 include_once realpath (__DIR__.'/../enum/SchemaType.php');
 include_once realpath (__DIR__.'/../enum/FaseQuery.php');
 include_once realpath (__DIR__.'/../enum/EstruturaQuery.php');
-//include_once 'BOImpl.php';
 include_once 'ColunaBO.php';
 include_once 'ConstraintBO.php';
 
 class TabelaBO extends AssemblerBO{
 	
 	
-	public function __construct(){}
 	
 	public static function dev() {
 		$lista = array ();
@@ -104,9 +101,12 @@ class TabelaBO extends AssemblerBO{
 			foreach ($tabelas as $tabelaInput) {
 				list($schema, $tabela) = explode(".", $tabelaInput);
 				$coluna = new ColunaBO();
+				$constraint = new ConstraintBO();
 				$string = "\n\n\nCREATE TABLE $schema.$tabela";
 				$string .="\n(\n";
 				$string .= $coluna->create($tabelaInput);
+				$string .= $constraint->create($tabelaInput);
+				$string = substr($string, 0, -2);
 				$string .= "\n)";
 				$string .= "\nWITH (\n\tOIDS=FALSE\n);";
 				$string .= "\nALTER TABLE $tabela \n\tOWNER TO $user;";
@@ -124,16 +124,11 @@ class TabelaBO extends AssemblerBO{
 		}
 	}
 	
-	public function alterTable(){
-		$empresa = $this->estrutura[EstruturaQuery::COMPANY];
-		$schema= $this->estrutura[EstruturaQuery::SCHEMA];
-		$sequence = $this->estrutura[EstruturaQuery::SEQUENCE];
-		//$user = $this->estrutura[EstruturaQuery::USER];
+	public function alter(){
+		$dev = self::dev();
+		$homolog = self::homolog();
+		$tabelas = array_intersect($homolog, $dev);
 		$fase = FaseQuery::ALTER;
-		//$tabelas = $this->intersect_homolog_devQuery();
-		$dev = $this->dev;
-		$homolog = $this->homolog;
-		$tabelas = array_intersect(array_keys($homolog), array_keys($dev));
 		$colunas = array();
 		$stringResult = "\n\n\n------------------------------ ALTER TABLE ------------------------------";
 		$string = "";

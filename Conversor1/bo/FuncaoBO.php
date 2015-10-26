@@ -1,14 +1,10 @@
 <?php
-//include_once realpath (__DIR__.'/../dao/daoImpl/FuncaoDAOImpl.php');
-include_once realpath (__DIR__.'/../enum/SchemasCompany.php');
 include_once realpath (__DIR__.'/../enum/SchemaType.php');
 include_once realpath (__DIR__.'/../enum/EstruturaQuery.php');
-//include_once 'BOImpl.php';
 
 class FuncaoBO extends AssemblerBO{
 	
 	
-	public function __construct(){}
 	
 	
 	public static function dev() {

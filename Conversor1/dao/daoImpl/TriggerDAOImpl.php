@@ -1,12 +1,13 @@
 <?php
 include_once realpath ( __DIR__ . '/../DAOImpl.php' );
-include_once realpath ( __DIR__ . '/../ITriggerDAO.php' );
+include_once realpath ( __DIR__ . '/../IDAOImpl.php' );
 include_once realpath ( __DIR__ . '/../../enum/FaseQuery.php' );
 include_once realpath ( __DIR__ . '/../../enum/SchemaType.php' );
-class TriggerDAOImpl extends DAOImpl implements ITriggerDAO {
+
+class TriggerDAOImpl extends DAOImpl implements IDAOImpl {
 	
-	public function __construct($dbCompany) {
-		parent::__construct ( $dbCompany );
+	public function __construct() {
+		parent::__construct (  );
 		$this->setQuery ();
 	}
 	

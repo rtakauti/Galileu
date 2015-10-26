@@ -1,16 +1,12 @@
 <?php
-//include_once realpath (__DIR__ . '/../dao/daoImpl/ConstraintDAOImpl.php');
-include_once realpath ( __DIR__ . '/../enum/SchemasCompany.php' );
 include_once realpath ( __DIR__ . '/../enum/SchemaType.php' );
 include_once realpath ( __DIR__ . '/../enum/EstruturaQuery.php' );
 include_once realpath ( __DIR__ . '/../enum/FaseQuery.php' );
-//include_once 'BOImpl.php';
 include_once 'RestricaoBO.php';
 
 class ConstraintBO extends AssemblerBO{
 	
 	
-	public function __construct() {}
 	
 	
 	public static function dev() {
@@ -98,7 +94,7 @@ class ConstraintBO extends AssemblerBO{
 			$string .= "\n/*";
 			foreach ( $constraints as $constraint ) {
 				list ( $schema, $tabela, $constraint ) = explode ( ".", $constraint );
-				$string .= "\nALTER TABLE IF EXISTS $schema.$tabela \n\tDROP CONSTRAINT IF EXISTS $constraint CASCADE;";
+				$string .= "\n\nALTER TABLE IF EXISTS $schema.$tabela \n\tDROP CONSTRAINT IF EXISTS $constraint CASCADE;";
 				unset ( parent::$result ['schema'] [$schema] ['tabela'] [$tabela] ['constraint'] [$constraint] );
 			}
 			$string .= "\n*/";
@@ -110,7 +106,8 @@ class ConstraintBO extends AssemblerBO{
 	
 	public function create($tabelaInput) {
 		list($schema, $tabela) = explode(".", $tabelaInput);
-		$constraints = array_keys(parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['constraint']);
+		if(isset(parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['constraint']))
+			$constraints = array_keys(parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['constraint']);
 		$fase = FaseQuery::CREATE;
 		$string = "";
 		if (! empty ( $constraints )) {

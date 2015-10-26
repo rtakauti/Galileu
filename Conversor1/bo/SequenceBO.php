@@ -1,27 +1,21 @@
 <?php
-//include_once realpath (__DIR__.'/../dao/daoImpl/SequenceDAOImpl.php');
-include_once realpath (__DIR__.'/../enum/SchemasCompany.php');
 include_once realpath (__DIR__.'/../enum/SchemaType.php');
 include_once realpath (__DIR__.'/../enum/EstruturaQuery.php');
 include_once 'sequence/GerenciadorSequence.php';
-//include_once 'BOImpl.php';
 
-class SequenceBO extends AssemblerBO{
+class SequenceBO extends SchemaBO{
 	
-	
-	public function __construct(){
-		$this->cargaSequence();
-	}
 	
 	
 	public static function dev() {
 		$lista = array ();
-		$schemas = array_keys ( parent::$dev ['schema'] );
+		$schemas = parent::dev();
 		foreach ( $schemas as $schema ) {
 			if (isset ( parent::$dev ['schema'] [$schema] ['sequence'] )) {
 				$sequences = array_keys ( parent::$dev ['schema'] [$schema] ['sequence'] );
 				foreach ( $sequences as $sequence ) {
 					$lista [] = "$schema.$sequence";
+					parent::$estrutura[EstruturaQuery::SEQUENCES]["$schema.$sequence"] = "$schema.$sequence";
 				}
 			}
 		}
@@ -31,7 +25,7 @@ class SequenceBO extends AssemblerBO{
 	
 	public static function homolog() {
 		$lista = array ();
-		$schemas = array_keys ( parent::$homolog ['schema'] );
+		$schemas = parent::homolog();
 		foreach ( $schemas as $schema ) {
 			if (isset ( parent::$homolog ['schema'] [$schema] ['sequence'] )) {
 				$sequences = array_keys ( parent::$homolog ['schema'] [$schema] ['sequence'] );
@@ -43,37 +37,23 @@ class SequenceBO extends AssemblerBO{
 		return $lista;
 	}
 	
-	public static function result() {
-		$lista = array ();
-		$schemas = array_keys ( parent::$result ['schema'] );
-		foreach ( $schemas as $schema ) {
-			if (isset ( parent::$result ['schema'] [$schema] ['sequence'] )) {
-				$sequences = array_keys ( parent::$result ['schema'] [$schema] ['sequence'] );
-				foreach ( $sequences as $sequence ) {
-					$lista [] = "$schema.$sequence";
-				}
-			}
-		}
-		return $lista;
-	}
-	
 	
 	public function listarDev() {
-		$lista = self::dev();
+		$dev = self::dev();
 		$string = "";
-		if (! empty ( $lista )) {
+		if (! empty ( $dev )) {
 			$string = "\n\n------ DEV SEQUENCES ------";
-			$string .= "\n\t-- " . implode ( "\n\t-- ", $lista );
+			$string .= "\n\t-- " . implode ( "\n\t-- ", $dev );
 		}
 		return $string;
 	}
 	
 	public function listarHomolog() {
-		$lista = self::homolog();
+		$homolog = self::homolog();
 		$string = "";
-		if (! empty ( $lista )) {
+		if (! empty ( $homolog )) {
 			$string = "\n\n------ HOMOLOG SEQUENCES ------";
-			$string .= "\n\t-- " . implode ( "\n\t-- ", $lista );
+			$string .= "\n\t-- " . implode ( "\n\t-- ", $homolog );
 		}
 		return $string;
 	}
@@ -123,18 +103,6 @@ class SequenceBO extends AssemblerBO{
 			}
 		}
 		return $string;
-	}
-	
-	public function cargaSequence() {
-		$dev = self::dev();
-		$homolog = self::homolog();
-		$sequences = array_intersect($homolog, $dev );
-		if (isset ( $sequences )){
-			foreach ( $sequences as $sequence ) {
-				list($schema, $sequence) = explode(".", $sequence);
-				parent::$estrutura[EstruturaQuery::SEQUENCE][]= $sequence;
-			}
-		}
 	}
 	
 	public function resetSeqGerenciamento(){

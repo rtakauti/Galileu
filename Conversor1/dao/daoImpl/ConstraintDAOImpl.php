@@ -1,16 +1,15 @@
 <?php
 include_once realpath ( __DIR__ . '/../DAOImpl.php' );
-include_once realpath ( __DIR__ . '/../IConstarintDAO.php' );
+include_once realpath ( __DIR__ . '/../IDAOImpl.php' );
 include_once realpath ( __DIR__ . '/../../enum/FaseQuery.php' );
 include_once realpath ( __DIR__ . '/../../enum/SchemaType.php' );
 
 
-class ConstraintDAOImpl extends DAOImpl implements IConstarintDAO{
+class ConstraintDAOImpl extends DAOImpl implements IDAOImpl{
 	
-	//private $fase;
 	
-	public function __construct($dbCompany) {
-		parent::__construct ( $dbCompany );
+	public function __construct() {
+		parent::__construct (  );
 		$this->setQuery ( );
 	}
 	
@@ -59,7 +58,6 @@ class ConstraintDAOImpl extends DAOImpl implements IConstarintDAO{
 		$arrayResult = array ();
 		$array = $this->queryAllAssoc ( $schemaType );
 		for($i = 0; $i < count ( $array ); $i ++) {
-			//$arrayResult ['constraints'][]="\nALTER TABLE ".$array [$i] ['schema_name'].".".$array [$i] ['table_name']." DROP CONSTRAINT ". $array [$i] ['constraint_name'].";";
 			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['table_name']] ['constraint'][$array [$i] ['constraint_name']] ['constraint_type'] = $array [$i] ['constraint_type'];
 			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['table_name']] ['constraint'][$array [$i] ['constraint_name']] ['column_name'] [] = $array [$i] ['column_name'];
 			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['table_name']] ['constraint'][$array [$i] ['constraint_name']] ['foreign_table'] = $array [$i] ['foreign_table'];

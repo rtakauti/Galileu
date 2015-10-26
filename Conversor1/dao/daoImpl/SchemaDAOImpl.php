@@ -1,19 +1,17 @@
 <?php
 include_once realpath(__DIR__.'/../DAOImpl.php');
-include_once realpath(__DIR__.'/../ISchemaDAO.php');
+include_once realpath(__DIR__.'/../IDAOImpl.php');
 include_once 'SequenceDAOImpl.php';
 include_once 'FuncaoDAOImpl.php';
 include_once 'IndiceDAOImpl.php';
 
 
-class SchemaDAOImpl extends DAOImpl implements ISchemaDAO{
+class SchemaDAOImpl extends DAOImpl implements IDAOImpl{
 	
-	private $dbCompany;
 	
-	public function __construct($dbCompany) {
-		parent::__construct ( $dbCompany );
+	public function __construct() {
+		parent::__construct (  );
 		$this->setQuery ();
-		$this->dbCompany = $dbCompany;
 	}
 	
 	public function setQuery() {

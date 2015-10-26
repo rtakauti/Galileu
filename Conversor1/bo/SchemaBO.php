@@ -1,15 +1,10 @@
 <?php
-//include_once realpath(__DIR__.'/../dao/daoImpl/SchemaDAOImpl.php');
-include_once realpath(__DIR__.'/../enum/SchemasCompany.php');
 include_once realpath(__DIR__.'/../enum/SchemaType.php');
 include_once realpath(__DIR__.'/../enum/EstruturaQuery.php');
-//include_once 'BOImpl.php';
-//include_once 'TabelaBO.php';
 
 class SchemaBO extends AssemblerBO{
 	
 	
-	public function __construct(){}
 	
 	public static function dev(){
 		return array_keys(parent::$dev['schema']);
@@ -19,26 +14,25 @@ class SchemaBO extends AssemblerBO{
 		return array_keys(parent::$homolog['schema']);
 	}
 	
-	public static function result(){
-		return array_keys(parent::$result['schema']);
-	}
 	
 	public function listarDev(){
 		$dev = self::dev();
+		$string = "";
 		if(!empty($dev)){
 			$string = "\n\n------ DEV SCHEMAS ------";
 			$string .= "\n\t-- " . implode ( "\n\t-- ", $dev )  ;
-			return $string;
 		}
+		return $string;
 	}
 	
 	public function listarHomolog(){
 		$homolog = self::homolog();
+		$string = "";
 		if(!empty($homolog)){
 			$string = "\n\n------ HOMOLOG SCHEMAS ------";
 			$string .= "\n\t-- " . implode ( "\n\t-- ", $homolog )  ;
-			return $string;
 		}
+		return $string;
 	}
 	
 	

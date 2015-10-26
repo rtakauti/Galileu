@@ -6,8 +6,8 @@ class DAOImpl implements IDAO {
 	protected $conns;
 	protected $query;
 	
-	public function __construct($dbCompany) {
-		$this->conns = Connection::getInstances ( $dbCompany );
+	public function __construct() {
+		$this->conns = Connection::getInstances (  );
 	}
 	
 	/**

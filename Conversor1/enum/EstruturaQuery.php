@@ -9,9 +9,9 @@ abstract class EstruturaQuery{
 	
 	const SCHEMA = "schema";
 	
-	const COMPANY = "empresa";
+	const SEQUENCES = "sequences";
 	
-	const SEQUENCE = "sequence";
+	const HOST = "host";
 	
 	const USER = "user";
 	

@@ -1,15 +1,12 @@
 <?php
-//include_once realpath (__DIR__.'/../enum/SchemasCompany.php');
 include_once realpath (__DIR__.'/../enum/SchemaType.php');
 include_once realpath (__DIR__.'/../enum/EstruturaQuery.php');
 include_once realpath (__DIR__.'/../enum/FaseQuery.php');
-//include_once 'BOImpl.php';
 include_once 'PropriedadeBO.php';
 
 class ColunaBO extends AssemblerBO{
 	
 	
-	public function __construct() {}
 
 	
 	public static function dev() {
@@ -99,7 +96,7 @@ class ColunaBO extends AssemblerBO{
 		$string .= "\n/*";
 			foreach ( $colunas as $coluna ) {
 				list($schema, $tabela, $coluna) = explode(".", $coluna);
-				$string .= "\nALTER TABLE IF EXISTS $schema.$tabela \n\tDROP COLUMN IF EXISTS $coluna CASCADE;";
+				$string .= "\n\nALTER TABLE IF EXISTS $schema.$tabela \n\tDROP COLUMN IF EXISTS $coluna CASCADE;";
 				unset ( parent::$result ['schema'] [$schema]['tabela'][$tabela]['coluna'] [$coluna] );
 			}
 			$string .= "\n*/";
@@ -119,7 +116,6 @@ class ColunaBO extends AssemblerBO{
 				$propriedades = $propriedade->construct($colunaInput, $fase);
 				$string .= "\t$coluna $propriedades ,\n";
 			}
-			$string = substr($string, 0, -2);
 		}
 		return $string;
 	}

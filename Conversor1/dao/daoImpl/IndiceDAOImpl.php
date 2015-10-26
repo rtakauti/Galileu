@@ -1,13 +1,13 @@
 <?php
 include_once realpath(__DIR__.'/../DAOImpl.php');
-include_once realpath(__DIR__.'/../IIndiceDAO.php');
+include_once realpath(__DIR__.'/../IDAOImpl.php');
 
 
-class IndiceDAOImpl extends DAOImpl implements IIndiceDAO{
+class IndiceDAOImpl extends DAOImpl implements IDAOImpl{
 	
 	
-	public function __construct($dbCompany) {
-		parent::__construct ( $dbCompany );
+	public function __construct() {
+		parent::__construct (  );
 		$this->setQuery();
 	}
 	

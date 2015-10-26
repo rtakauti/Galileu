@@ -1,4 +1,4 @@
 <?php
-interface IAssemblerDAO{
+interface IDAOImpl{
 	function retorna($schemaType);
 }

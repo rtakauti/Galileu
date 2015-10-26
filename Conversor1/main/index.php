@@ -13,6 +13,9 @@ function __autoload($classe) {
 If (isset ( $argv [1] )) {
 	$dbCompany = $argv [1];
 	$cmd = true;
+	If (isset ( $argv [2] )) {
+		$host = $argv [2];
+	}
 } elseif (isset ( $_GET ['empresa'] )) {
 	$dbCompany = $_GET ['empresa'];
 	$cmd = false;
@@ -21,7 +24,7 @@ If (isset ( $argv [1] )) {
 	$cmd = false;
 }
 
-$saida = new Saida ( $dbCompany, $cmd );
+$saida = new Saida ( $dbCompany, $cmd, $host = NULL );
 $schema = new SchemaBO ();
 $sequence = new SequenceBO();
 $funcao = new FuncaoBO();
@@ -39,7 +42,6 @@ $saida->gravar($sequence->listar());
 $saida->gravar($funcao->listar());
 $saida->gravar($tabela->listar());
 $saida->gravar($trigger->listar());
-
 $saida->gravar($indice->listar());
 $saida->gravar($coluna->listar());
 $saida->gravar($constraint->listar());
@@ -53,14 +55,13 @@ $saida->gravar($trigger->drop());
 $saida->gravar($indice->drop());
 $saida->gravar($coluna->drop());
 $saida->gravar($constraint->drop());
-
+*/
 $saida->gravar($schema->create());
 $saida->gravar($sequence->create());
+$saida->gravar($tabela->create());
+$saida->gravar($indice->create());
 $saida->gravar($funcao->create());
 $saida->gravar($trigger->create());
-$saida->gravar($indice->create());
-$saida->gravar($tabela->create());
-*/
 
 echo "<pre>";
 print_r($propriedade->construct("public.tabela3.cd_codigo", FaseQuery::CREATE));

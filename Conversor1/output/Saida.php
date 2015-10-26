@@ -1,24 +1,28 @@
 <?php
 error_reporting ( E_ALL );
 ini_set ( "display_errors", 1 );
+date_default_timezone_set ( 'America/Sao_Paulo' );
 
 include_once realpath ( __DIR__ . '/../enum/EstruturaQuery.php' );
-class Saida {
+include_once realpath ( __DIR__ . '/../bo/estrutura/Estrutura.php' );
+
+class Saida extends Estrutura{
 	
 	private $file;
 	private $cmd;
 	private $path;
-	private $estrutura;
 	
-	public function __construct($dbCompany, $cmd) {
+	public function __construct($dbCompany, $cmd, $host) {
 		$this->cmd = $cmd;
-		date_default_timezone_set ( 'America/Sao_Paulo' );
 		try {
 			$config = parse_ini_file ( __DIR__ . "/../connection/config/config.ini", true );
-			$this->estrutura [EstruturaQuery::COMPANY] = $dbCompany;
-			$this->estrutura [EstruturaQuery::USER] = $config ['connection'] ['user'];
-			$this->estrutura [EstruturaQuery::DBHOMOLOG] = $config [$dbCompany] ['homolog'];
-			$this->estrutura [EstruturaQuery::DBDEV] = $config [$dbCompany] ['dev'];
+			if(!isset($host)) parent::$estrutura[EstruturaQuery::HOST] = $config ['connection'] ['host'];
+			else parent::$estrutura[EstruturaQuery::HOST] = $host;
+			parent::$estrutura[EstruturaQuery::USER] = $config ['connection'] ['user'];
+			parent::setPass($config['connection']['pass']);
+			parent::$estrutura[EstruturaQuery::DBHOMOLOG] = $config [$dbCompany] ['homolog'];
+			parent::$estrutura[EstruturaQuery::DBDEV] = $config [$dbCompany] ['dev'];
+			
 			$this->path = __DIR__ . "/../scripts/" . $dbCompany . "." . date ( 'd' ) . "." . date ( 'm' ) . "." . date ( 'Y' );
 			if (! is_dir ( $this->path )) {
 				mkdir ( $this->path, 0777 );
@@ -26,11 +30,9 @@ class Saida {
 		} catch ( Exception $e ) {
 			$e->getMessage ();
 		}
-		$estrutura = $this->estrutura;
-		$assembler = new AssemblerBO($dbCompany, $estrutura);
 		
+		$assembler = new AssemblerBO();
 		$this->abre();
-		$this->gravarDataBase();
 	}
 	
 	public function __destruct(){
@@ -41,8 +43,9 @@ class Saida {
 	}
 	
 	private function abre() {
-		$homolog = $this->estrutura[EstruturaQuery::DBHOMOLOG];
+		$homolog = parent::$estrutura[EstruturaQuery::DBHOMOLOG];
 		$this->file = fopen ( $this->path."/".$homolog.".Script.".date('d').".".date('m').".".date('Y')."_H".date('H')."m".date('i').".sql", "a+", 0 );
+		$this->gravar("\n\n------------------ DATABASE: $homolog ------------------\n");
 	}
 	
 	private function fecha() {
@@ -68,9 +71,5 @@ class Saida {
 		fwrite ( $this->file, $string, strlen ( $string ) );
 	}
 	
-	private function gravarDataBase(){
-		$homolog = $this->estrutura[EstruturaQuery::DBHOMOLOG];
-		$this->gravar("\n\n------------------ DATABASE: $homolog ------------------\n");
-	}
 	
 }

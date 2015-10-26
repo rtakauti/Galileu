@@ -1,5 +1,4 @@
 <?php
-include_once realpath (__DIR__ . '/../enum/SchemasCompany.php');
 include_once realpath (__DIR__ . '/../enum/SchemaType.php');
 include_once realpath (__DIR__ . '/../enum/FaseQuery.php');
 include_once realpath (__DIR__ . '/../enum/EstruturaQuery.php');
@@ -14,8 +13,6 @@ include_once realpath (__DIR__ .'/../to/propriedade/PrecisaoDataTO.php');
 include_once realpath (__DIR__ .'/../to/propriedade/TipoDadoTO.php');
 include_once realpath (__DIR__ .'/../to/propriedade/TipoIntervaloTO.php');
 include_once 'sequence/GerenciadorSequence.php';
-//include_once realpath (__DIR__ . '/../dao/daoImpl/PropriedadeDAOImpl.php');
-//include_once 'BOImpl.php';
 
 class PropriedadeBO extends AssemblerBO{
 
