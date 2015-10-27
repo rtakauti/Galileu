@@ -3,7 +3,18 @@
 
 abstract class Estrutura {
 	
-	protected static $estrutura;
+	protected static $sequences;
+	protected static $querySet;
+	protected static $schema;
+	protected static $tabela;
+	protected static $coluna;
+	protected static $fase;
+	protected static $propriedades;
+	
+	protected static $host;
+	protected static $user;
+	protected static $dbHomolog;
+	protected static $dbDev;
 	protected static $dev;
 	protected static $homolog;
 	protected static $result;

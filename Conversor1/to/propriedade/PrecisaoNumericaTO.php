@@ -1,19 +1,19 @@
 <?php
 include_once realpath(__DIR__ .'/../../enum/FaseQuery.php');
-include_once realpath(__DIR__.'/../../enum/EstruturaQuery.php');
-include_once realpath(__DIR__ .'/../../bo/sequence/GerenciadorSequence.php');
+include_once realpath ( __DIR__ . '/../../bo/estrutura/Estrutura.php' );
 include_once realpath(__DIR__.'/../IPropriedade.php');
 
-class PrecisaoNumericaTO implements IPropriedade{
+class PrecisaoNumericaTO extends Estrutura implements IPropriedade{
 
 
-	public function retorna($valor, $fase, $condicao, $estrutura) {
-		$schema = $estrutura [EstruturaQuery::SCHEMA];
-		$tabela = $estrutura [EstruturaQuery::TABELA];
-		$coluna = $estrutura [EstruturaQuery::COLUNA];
+	public function retorna($valor) {
+		$schema = parent::$schema;
+		$tabela = parent::$tabela;
+		$coluna = parent::$coluna;
+		$propriedades = parent::$propriedades;
 		$string = "";
-		if (isset ( $valor ) && $condicao ['udt_name'] == "numeric") {
-			switch ($fase) {
+		if (isset ( $valor ) && $propriedades ['udt_name'] == "numeric") {
+			switch (parent::$fase) {
 				case FaseQuery::CREATE :
 					$string = "($valor,";
 					break;
@@ -21,7 +21,7 @@ class PrecisaoNumericaTO implements IPropriedade{
 					$string = "($valor,";
 					break;
 				case FaseQuery::ALTER :
-					$string = "\nALTER TABLE $schema.$tabela ALTER COLUMN $coluna TYPE NUMERIC($valor,{$condicao['numeric_scale']});";
+					$string = "\nALTER TABLE $schema.$tabela ALTER COLUMN $coluna TYPE NUMERIC($valor,{$propriedades['numeric_scale']});";
 					break;
 				default :
 					break;

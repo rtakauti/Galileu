@@ -1,21 +1,20 @@
 <?php
 include_once realpath (__DIR__.'/../enum/SchemaType.php');
-include_once realpath (__DIR__.'/../enum/EstruturaQuery.php');
-include_once 'sequence/GerenciadorSequence.php';
+include_once 'estrutura/Estrutura.php';
 
-class SequenceBO extends SchemaBO{
+class SequenceBO extends Estrutura{
 	
 	
 	
 	public static function dev() {
 		$lista = array ();
-		$schemas = parent::dev();
+		$schemas = array_keys(parent::$dev['schema']);
 		foreach ( $schemas as $schema ) {
 			if (isset ( parent::$dev ['schema'] [$schema] ['sequence'] )) {
 				$sequences = array_keys ( parent::$dev ['schema'] [$schema] ['sequence'] );
 				foreach ( $sequences as $sequence ) {
 					$lista [] = "$schema.$sequence";
-					parent::$estrutura[EstruturaQuery::SEQUENCES]["$schema.$sequence"] = "$schema.$sequence";
+					parent::$sequences[] = "$schema.$sequence";
 				}
 			}
 		}
@@ -25,7 +24,7 @@ class SequenceBO extends SchemaBO{
 	
 	public static function homolog() {
 		$lista = array ();
-		$schemas = parent::homolog();
+		$schemas = array_keys(parent::$homolog['schema']);
 		foreach ( $schemas as $schema ) {
 			if (isset ( parent::$homolog ['schema'] [$schema] ['sequence'] )) {
 				$sequences = array_keys ( parent::$homolog ['schema'] [$schema] ['sequence'] );

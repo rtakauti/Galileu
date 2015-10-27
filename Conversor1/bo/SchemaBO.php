@@ -1,8 +1,8 @@
 <?php
 include_once realpath(__DIR__.'/../enum/SchemaType.php');
-include_once realpath(__DIR__.'/../enum/EstruturaQuery.php');
+include_once 'estrutura/Estrutura.php';
 
-class SchemaBO extends AssemblerBO{
+class SchemaBO extends Estrutura{
 	
 	
 	
@@ -31,8 +31,8 @@ class SchemaBO extends AssemblerBO{
 		if(!empty($homolog)){
 			$string = "\n\n------ HOMOLOG SCHEMAS ------";
 			$string .= "\n\t-- " . implode ( "\n\t-- ", $homolog )  ;
+			return $string;
 		}
-		return $string;
 	}
 	
 	

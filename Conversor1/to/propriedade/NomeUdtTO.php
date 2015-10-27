@@ -1,20 +1,20 @@
 <?php
 include_once realpath ( __DIR__ . '/../../enum/FaseQuery.php' );
-include_once realpath ( __DIR__ . '/../../enum/EstruturaQuery.php' );
-include_once realpath ( __DIR__ . '/../../bo/sequence/GerenciadorSequence.php' );
+include_once realpath ( __DIR__ . '/../../bo/estrutura/Estrutura.php' );
 include_once realpath ( __DIR__ . '/../IPropriedade.php' );
 
-class NomeUdtTO implements IPropriedade {
+class NomeUdtTO extends Estrutura implements IPropriedade {
 
 
-	public function __construct($valor = NULL, $fase = NULL, $condicao = NULL, $estrutura = NULL) {
-		$this->retorna ( $valor, $fase, $condicao, $estrutura );
-	}
 
-	public function retorna($valor, $fase, $condicao, $estrutura) {
+	public function retorna($valor) {
+		$schema = parent::$schema;
+		$tabela = parent::$tabela;
+		$coluna = parent::$coluna;
+		$propriedades = parent::$propriedades;
 		$string = "";
 		if (isset ( $valor )) {
-			switch ($fase) {
+			switch (parent::$fase) {
 
 				case FaseQuery::CREATE :
 						

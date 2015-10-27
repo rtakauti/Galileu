@@ -1,9 +1,9 @@
 <?php
 include_once realpath ( __DIR__ . '/../enum/SchemaType.php' );
-include_once realpath ( __DIR__ . '/../enum/EstruturaQuery.php' );
 include_once realpath ( __DIR__ . '/../enum/FaseQuery.php' );
+include_once 'estrutura/Estrutura.php';
 
-class TriggerBO extends AssemblerBO {
+class TriggerBO extends Estrutura {
 	
 	
 	

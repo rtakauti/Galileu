@@ -1,7 +1,6 @@
 <?php
 include_once realpath ( __DIR__ . '/../enum/SchemaType.php' );
 include_once realpath ( __DIR__ . '/../enum/FaseQuery.php' );
-include_once realpath ( __DIR__ . '/../enum/EstruturaQuery.php' );
 include_once realpath ( __DIR__ . '/../to/GeradorRestricoes.php' );
 include_once realpath ( __DIR__ . '/../to/constraint/TipoConstraintTO.php' );
 include_once realpath ( __DIR__ . '/../to/constraint/NomeColunaTO.php' );
@@ -11,9 +10,9 @@ include_once realpath ( __DIR__ . '/../to/constraint/CombinacaoTO.php' );
 include_once realpath ( __DIR__ . '/../to/constraint/RegraUpdateTO.php' );
 include_once realpath ( __DIR__ . '/../to/constraint/RegraDeleteTO.php' );
 include_once realpath ( __DIR__ . '/../to/constraint/RegraUniqueTO.php' );
+include_once 'estrutura/Estrutura.php';
 
-
-class RestricaoBO extends AssemblerBO{
+class RestricaoBO extends Estrutura{
 
 	private $restricoes;
 

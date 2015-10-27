@@ -1,6 +1,7 @@
 <?php
 error_reporting ( E_ALL );
 ini_set ( "display_errors", 1 );
+
 include_once realpath(__DIR__.'/../dao/daoImpl/AssemblerDAOImpl.php');
 include_once 'estrutura/Estrutura.php';
 
@@ -15,10 +16,6 @@ class AssemblerBO extends Estrutura{
 		$this->dao = NULL;
 	}
 	
-	public function __destruct(){
-		$this->dao = NULL;
-		//parent::$dev = parent::$result = parent::$homolog = NULL;
-	}
 	
 	public static function dev(){
 		return self::$dev;

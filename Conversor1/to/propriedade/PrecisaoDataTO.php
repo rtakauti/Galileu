@@ -1,19 +1,23 @@
 <?php
 include_once realpath ( __DIR__ . '/../../enum/FaseQuery.php' );
-include_once realpath ( __DIR__ . '/../../enum/EstruturaQuery.php' );
-include_once realpath ( __DIR__ . '/../../bo/sequence/GerenciadorSequence.php' );
+include_once realpath ( __DIR__ . '/../../bo/estrutura/Estrutura.php' );
 include_once realpath ( __DIR__ . '/../IPropriedade.php' );
-class PrecisaoDataTO implements IPropriedade {
+
+class PrecisaoDataTO extends Estrutura implements IPropriedade {
 	
 	
-	public function retorna($valor, $fase, $condicao, $estrutura) {
+	public function retorna($valor) {
+		$schema = parent::$schema;
+		$tabela = parent::$tabela;
+		$coluna = parent::$coluna;
+		$propriedades = parent::$propriedades;
 		$string = "";
-		if (isset ( $valor ) && ! isset ( $condicao ['interval_type'] )) {
-			switch ($fase) {
+		if (isset ( $valor ) && ! isset ( $propriedades ['interval_type'] )) {
+			switch (parent::$fase) {
 				case FaseQuery::CREATE :
 					if ($valor != 0)
 						$string = " ($valor) ";
-					switch ($condicao ['data_type']) {
+					switch ($propriedades ['data_type']) {
 						case "time without time zone" :
 							$string = "time ($valor) without time zone";
 							break;
@@ -33,7 +37,7 @@ class PrecisaoDataTO implements IPropriedade {
 				case FaseQuery::ADD :
 					if ($valor != 0)
 						$string = " ($valor) ";
-					switch ($condicao ['data_type']) {
+					switch ($propriedades ['data_type']) {
 						case "time without time zone" :
 							$string = "\n\ttime($valor) without time zone";
 							break;

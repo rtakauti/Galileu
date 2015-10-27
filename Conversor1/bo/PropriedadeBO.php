@@ -1,7 +1,6 @@
 <?php
 include_once realpath (__DIR__ . '/../enum/SchemaType.php');
 include_once realpath (__DIR__ . '/../enum/FaseQuery.php');
-include_once realpath (__DIR__ . '/../enum/EstruturaQuery.php');
 include_once realpath (__DIR__ .'/../to/GeradorPropriedades.php');
 include_once realpath (__DIR__ .'/../to/propriedade/MaximoCharTO.php');
 include_once realpath (__DIR__ .'/../to/propriedade/NomeUdtTO.php');
@@ -12,9 +11,9 @@ include_once realpath (__DIR__ .'/../to/propriedade/PrecisaoNumericaTO.php');
 include_once realpath (__DIR__ .'/../to/propriedade/PrecisaoDataTO.php');
 include_once realpath (__DIR__ .'/../to/propriedade/TipoDadoTO.php');
 include_once realpath (__DIR__ .'/../to/propriedade/TipoIntervaloTO.php');
-include_once 'sequence/GerenciadorSequence.php';
+include_once 'estrutura/Estrutura.php';
 
-class PropriedadeBO extends AssemblerBO{
+class PropriedadeBO extends Estrutura{
 
 	private $properties;
 	
@@ -30,40 +29,59 @@ class PropriedadeBO extends AssemblerBO{
 		$this->properties['interval_type'] = new TipoIntervaloTO();
 	}
 	
-	public function construct($colunaInput, $fase) {
-		list($schema, $tabela, $coluna) = explode(".", $colunaInput);
-		$estrutura = parent::$estrutura;
-		$estrutura[EstruturaQuery::SCHEMA] = $schema;
-		$estrutura[EstruturaQuery::TABELA] = $tabela;
-		$estrutura[EstruturaQuery::COLUNA] = $coluna;
-	
+	public function create() {
+		$schema = parent::$schema;
+		$tabela = parent::$tabela;
+		$coluna = parent::$coluna;
+		parent::$fase = FaseQuery::CREATE;
 		$propriedadesBO = $this->properties;
-		$propriedades = parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['coluna'][$coluna];
+		parent::$propriedades = parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['coluna'][$coluna];
 		$stringResult = "";
-		foreach ( $propriedades as $propriedade => $valor ) {
-			$string = GeradorPropriedades::gerarPropriedade ( $propriedadesBO [$propriedade], $valor, $fase, $propriedades, $estrutura );
+		foreach ( parent::$propriedades as $propriedade => $valor ) {
+			$string = GeradorPropriedades::gerarPropriedade ( $propriedadesBO [$propriedade], $valor);
 			$stringResult .= $string;
 		}
 		return $stringResult;
 	}
 	
-	public function compare($colunaInput){
-		list($schema, $tabela, $coluna) = explode(".", $colunaInput);
-		$estrutura = parent::$estrutura;
-		$estrutura[EstruturaQuery::SCHEMA] = $schema;
-		$estrutura[EstruturaQuery::TABELA] = $tabela;
-		$estrutura[EstruturaQuery::COLUNA] = $coluna;
-		$fase = FaseQuery::ALTER;
+	public function add() {
+		$schema = parent::$schema;
+		$tabela = parent::$tabela;
+		$coluna = parent::$coluna;
+		parent::$fase = FaseQuery::ADD;
+		$fase = FaseQuery::ADD;
 		$propriedadesBO = $this->properties;
-		$dev = parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['coluna'][$coluna];
-		$homolog = parent::$homolog ['schema'] [$schema] ['tabela'][$tabela]['coluna'][$coluna];
-		$propriedades = array_diff($dev, $homolog);
+		parent::$propriedades = parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['coluna'][$coluna];
 		$stringResult = "";
-		foreach ( $propriedades as $propriedade => $valor ) {
-			$string = GeradorPropriedades::gerarPropriedade ( $propriedadesBO [$propriedade], $valor, $fase, $propriedades, $estrutura );
+		foreach ( parent::$propriedades as $propriedade => $valor ) {
+			$string = GeradorPropriedades::gerarPropriedade ( $propriedadesBO [$propriedade], $valor );
 			$stringResult .= $string;
 		}
 		return $stringResult;
+	}
+	
+	public function alter(){
+		$schema = parent::$schema;
+		$tabela = parent::$tabela;
+		$coluna = parent::$coluna;
+		parent::$fase = FaseQuery::ALTER;
+		$propriedadesBO = $this->properties;
+		$dev = parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['coluna'][$coluna];
+		$homolog = parent::$homolog ['schema'] [$schema] ['tabela'][$tabela]['coluna'][$coluna];
+		parent::$propriedades  = array_diff($dev, $homolog);
+		$string = "";
+		$anteriorColuna = $anterior = "";
+		foreach ( parent::$propriedades as $propriedade => $valor ) {
+			if(!empty($valor)) {
+				$anteriorColuna = "\n-- VALOR ANTERIOR $coluna -- ";
+				$homologValor = parent::$homolog ['schema'] [$schema] ['tabela'][$tabela]['coluna'][$coluna][$propriedade];
+				if(!isset($homologValor)) $homologValor = "NULO";
+				$anterior .= " $propriedade => $homologValor, ";
+			}
+			$string .= GeradorPropriedades::gerarPropriedade ( $propriedadesBO [$propriedade], $valor );
+		}
+		$anterior = substr($anterior, 0, -2);
+		return $anteriorColuna.$anterior.$string;
 	}
 
 

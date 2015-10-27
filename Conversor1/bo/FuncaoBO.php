@@ -1,10 +1,8 @@
 <?php
 include_once realpath (__DIR__.'/../enum/SchemaType.php');
-include_once realpath (__DIR__.'/../enum/EstruturaQuery.php');
+include_once 'estrutura/Estrutura.php';
 
-class FuncaoBO extends AssemblerBO{
-	
-	
+class FuncaoBO extends Estrutura{
 	
 	
 	public static function dev() {

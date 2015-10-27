@@ -1,44 +1,40 @@
 <?php
 include_once realpath ( __DIR__ . '/../../enum/FaseQuery.php' );
-include_once realpath ( __DIR__ . '/../../enum/EstruturaQuery.php' );
-include_once realpath ( __DIR__ . '/../../bo/sequence/GerenciadorSequence.php' );
+include_once realpath ( __DIR__ . '/../../bo/estrutura/Estrutura.php' );
 include_once realpath ( __DIR__ . '/../IPropriedade.php' );
 
-class PadraoTO extends GerenciadorSequence implements IPropriedade {
+class PadraoTO extends Estrutura implements IPropriedade {
 
-	public function retorna($valor, $fase, $condicao, $estrutura) {
-		$schema = $estrutura [EstruturaQuery::SCHEMA];
-		$tabela = $estrutura [EstruturaQuery::TABELA];
-		$coluna = $estrutura [EstruturaQuery::COLUNA];
-		$sequences = $estrutura [EstruturaQuery::SEQUENCES];
-		GerenciadorSequence::carregaCriados ( $sequences );
-		$sequences = GerenciadorSequence::getCriados ();
+	public function sequence($valor, $sequences, $schema, $tabela, $coluna){
+		$valida = "nextval('";
+		$string = "";
+		if ((substr ( $valor, 0, strlen ( $valida ) ) == $valida) ) {
+			$fimSequence = strpos ( $valor, "':" ) - strlen ( $valida );
+			$sequence = substr ( $valor, strlen ( $valida ), $fimSequence );
+			if ($schema == "public")
+				$sequence = "public." . $sequence;
+			if(isset($sequences))
+				if (! in_array ( $sequence, $sequences ) ) {
+					$string  = "\nCREATE SEQUENCE $sequence;";
+					$string .= "\nSELECT setval('$sequence', MAX($coluna)) FROM $schema.$tabela;";
+				} else {
+					$string = "\nSELECT setval('$sequence', MAX($coluna)) FROM $schema.$tabela;";
+				}
+		}
+		return $string;
+	}
+	
+	public function retorna($valor) {
+		$schema = parent::$schema;
+		$tabela = parent::$tabela;
+		$coluna = parent::$coluna;
+		$propriedades = parent::$propriedades;
+		$sequences = parent::$sequences;
 		
 		$string = "";
 		if (isset ( $valor )) {
 			
-			if ((substr ( $valor, 0, strlen ( "nextval('" ) ) == "nextval('") && $fase != FaseQuery::CREATE) {
-				$fimSequence = strpos ( $valor, "':" ) - strlen ( "nextval('" );
-				$sequence = substr ( $valor, strlen ( "nextval('" ), $fimSequence );
-				if ($schema == "public")
-					$sequence = "public." . $sequence;
-				if(isset($sequences))
-				if (! in_array ( $sequence, $sequences ) ) {
-					GerenciadorSequence::adicionaCriados ( $sequence );
-					$createSequence = "\n\n-------------------- CREATE DA SEQUENCE --------------------";
-					$createSequence .= "\nCREATE SEQUENCE $sequence;";
-					GerenciadorSequence::adicionaQueryCriado ( $createSequence );
-					$setSequence = "\n\n-------------------- SET DA SEQUENCE --------------------";
-					$setSequence .= "\nSELECT setval('$sequence', MAX($coluna)) FROM $tabela;";
-					GerenciadorSequence::adicionaQuerySetado ( $setSequence );
-				} else {
-					$setSequence = "\n\n-------------------- SET DA SEQUENCE --------------------";
-					$setSequence .= "\nSELECT setval('$sequence', MAX($coluna)) FROM $tabela;";
-					GerenciadorSequence::adicionaQuerySetado ( $setSequence );
-				}
-			}
-			
-			switch ($fase) {
+			switch (parent::$fase) {
 				case FaseQuery::CREATE :
 					$string = " DEFAULT $valor ";
 					break;
@@ -46,17 +42,17 @@ class PadraoTO extends GerenciadorSequence implements IPropriedade {
 					$string = "\n\tDEFAULT $valor ";
 					break;
 				case FaseQuery::ALTER :
-					//$string = "\nALTER TABLE $tabela ALTER COLUMN $coluna DROP DEFAULT;";
-					$string = "\nALTER TABLE $tabela ALTER COLUMN $coluna SET DEFAULT $valor;";
+					$string = "\nALTER TABLE $schema.$tabela ALTER COLUMN $coluna SET DEFAULT $valor;";
+					$string .= $this->sequence($valor, $sequences, $schema, $tabela, $coluna);
 					break;
 				
 				default :
 					break;
 			}
-			return $string;
 		}else{
-			if($fase == FaseQuery::ALTER)
-				return  "\nALTER TABLE $tabela ALTER COLUMN $coluna DROP DEFAULT;";
+			if(parent::$fase == FaseQuery::ALTER)
+				$string = "\nALTER TABLE $schema.$tabela ALTER COLUMN $coluna DROP DEFAULT;";
 		}
+		return $string;
 	}
 }

@@ -1,8 +1,12 @@
 <?php
 error_reporting ( E_ALL );
 ini_set ( "display_errors", 1 );
+ini_set("max_execution_time", 3000);
+ini_set('memory_limit', '64M');
+//ini_set('memory_limit', '-1');
+
+
 include_once realpath ( __DIR__ . '/../output/Saida.php' );
-//include_once realpath ( __DIR__ . '/../bo/sequence/GerenciadorSequence.php' );
 include_once realpath ( __DIR__ . '/../dao/daoImpl/TriggerDAOImpl.php' );
 function __autoload($classe) {
 	if (file_exists ( __DIR__ . "/../bo/$classe.php" )) {
@@ -38,7 +42,7 @@ $restricao = new RestricaoBO();
 
 $saida->gravar($schema->listar());
 $saida->gravar($sequence->listar());
-/*
+
 $saida->gravar($funcao->listar());
 $saida->gravar($tabela->listar());
 $saida->gravar($trigger->listar());
@@ -63,18 +67,20 @@ $saida->gravar($tabela->create());
 $saida->gravar($indice->create());
 $saida->gravar($funcao->create());
 $saida->gravar($trigger->create());
-*/
+
+$saida->gravar($tabela->alter());
+
 
 echo "<pre>";
 //print_r($coluna->alter("public.tabela3"));
 //print_r($tabela->create());
-print_r($tabela->alter());
+//print_r($tabela->alter());
 //print_r($propriedade->construct("public.tabela3.cd_codigo", FaseQuery::CREATE));
 //print_r($restricao->construct("public.tabela3.pk_tabela3", FaseQuery::CREATE));
 //print_r(SequenceBO::result());
 //print_r(SchemaBO::result());
 echo "<hr/>";
-//print_r(AssemblerBO::homolog());
+print_r(AssemblerBO::homolog());
 echo "<hr/>";
 //print_r(AssemblerBO::dev());
 echo "</pre>";

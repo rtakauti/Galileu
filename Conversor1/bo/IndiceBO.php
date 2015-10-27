@@ -1,8 +1,8 @@
 <?php
 include_once realpath(__DIR__.'/../enum/SchemaType.php');
-include_once realpath (__DIR__.'/../enum/EstruturaQuery.php');
+include_once 'estrutura/Estrutura.php';
 
-class IndiceBO extends AssemblerBO{
+class IndiceBO extends Estrutura{
 	
 	
 	

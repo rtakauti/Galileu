@@ -1,18 +1,18 @@
 <?php
 include_once realpath ( __DIR__ . '/../../enum/FaseQuery.php' );
-include_once realpath ( __DIR__ . '/../../enum/EstruturaQuery.php' );
-include_once realpath ( __DIR__ . '/../../bo/sequence/GerenciadorSequence.php' );
+include_once realpath ( __DIR__ . '/../../bo/estrutura/Estrutura.php' );
 include_once realpath ( __DIR__ . '/../IPropriedade.php' );
 
-class TipoDadoTO implements IPropriedade {
+class TipoDadoTO extends Estrutura implements IPropriedade {
 	
-	public function retorna($valor, $fase, $condicao, $estrutura) {
-		$schema = $estrutura [EstruturaQuery::SCHEMA];
-		$tabela = $estrutura [EstruturaQuery::TABELA];
-		$coluna = $estrutura [EstruturaQuery::COLUNA];
+	public function retorna($valor) {
+		$schema = parent::$schema;
+		$tabela = parent::$tabela;
+		$coluna = parent::$coluna;
+		$propriedades = parent::$propriedades;
 		$string = "";
 		if (isset ( $valor )) {
-			switch ($fase) {
+			switch (parent::$fase) {
 				case FaseQuery::CREATE :
 					
 					switch ($valor) {
@@ -67,7 +67,7 @@ class TipoDadoTO implements IPropriedade {
 					break;
 				
 				case FaseQuery::ALTER :
-					$string = "\nALTER TABLE $tabela ALTER COLUMN $coluna TYPE $valor USING $coluna::$valor;";
+					$string = "\nALTER TABLE $schema.$tabela ALTER COLUMN $coluna TYPE $valor USING $coluna::$valor;";
 					break;
 				
 				default :

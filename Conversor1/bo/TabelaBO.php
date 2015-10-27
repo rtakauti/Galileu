@@ -1,11 +1,11 @@
 <?php
 include_once realpath (__DIR__.'/../enum/SchemaType.php');
 include_once realpath (__DIR__.'/../enum/FaseQuery.php');
-include_once realpath (__DIR__.'/../enum/EstruturaQuery.php');
 include_once 'ColunaBO.php';
 include_once 'ConstraintBO.php';
+include_once 'estrutura/Estrutura.php';
 
-class TabelaBO extends AssemblerBO{
+class TabelaBO extends Estrutura{
 	
 	
 	
@@ -92,16 +92,18 @@ class TabelaBO extends AssemblerBO{
 		$homolog = self::homolog();
 		$tabelas = array_diff($dev, $homolog);
 		$stringResult = "";
-		$user = parent::$estrutura[EstruturaQuery::USER];
+		$user = parent::$user;
 		if(!empty($tabelas)){
 			$coluna = new ColunaBO();
 			$constraint = new ConstraintBO();
-			$stringResult .= "\n\n\n-------------------- CREATE TABLE --------------------";
+			$stringResult .= "\n\n\n------------------------------ CREATE TABLE ------------------------------";
 			foreach ($tabelas as $tabelaInput) {
 				list($schema, $tabela) = explode(".", $tabelaInput);
+				parent::$schema = $schema;
+				parent::$tabela = $tabela;
 				$string = "\n\n\nCREATE TABLE $schema.$tabela";
 				$string .="\n(\n";
-				$string .= $coluna->create($tabelaInput);
+				$string .= $coluna->create();
 				$string .= $constraint->create($tabelaInput);
 				$string = substr($string, 0, -2);
 				$string .= "\n)";
@@ -113,34 +115,44 @@ class TabelaBO extends AssemblerBO{
 		}
 	}
 	
+	
+	public function add() {
+		$dev = self::dev ();
+		$homolog = self::homolog ();
+		$tabelas = array_intersect ( $homolog, $dev );
+		$stringResult = "";
+		if (! empty ( $tabelas )) {
+			$stringResult = "\n\n\n------------------------------ ALTER TABLE ------------------------------";
+			$coluna = new ColunaBO ();
+			foreach ( $tabelas as $tabelaInput ) {
+				list ( $schema, $tabela ) = explode ( ".", $tabelaInput );
+				parent::$schema = $schema;
+				parent::$tabela = $tabela;
+				$string = $coluna->add ( );
+				
+				$stringResult .= GerenciadorSequence::getQueryCriado () . $string . GerenciadorSequence::getQuerySetado ();
+				$string = "";
+			}
+			return $stringResult . $string;
+		}
+	}
+	
+	
 	public function alter(){
 		$dev = self::dev();
 		$homolog = self::homolog();
 		$tabelas = array_intersect($homolog, $dev);
 		$stringResult = "";
 		if(!empty($tabelas)){
-			$stringResult = "\n\n\n------------------------------ ALTER TABLE ------------------------------";
+			$string = "\n\n\n------------------------------ ALTER TABLE ------------------------------";
 			$coluna = new ColunaBO();
 			foreach ($tabelas as $tabelaInput) {
 				list($schema, $tabela) = explode(".", $tabelaInput);
-				$string  = $coluna->add($tabelaInput);
-				$string .= $coluna->alter($tabelaInput);
-				/*
-				$colunaBO = new ColunaBO($empresa, $schema , $tabela, $sequence, $fase, $homolog[$tabela], $dev[$tabela]);
-				$string .= $colunaBO->dropColumn();
-				$string .= $colunaBO->addColumn();
-				$string .= $colunaBO->alterColumn();
-				$indiceBO = new IndiceBO($empresa, $schema, $tabela);
-				$string .= $indiceBO->dropIndice();
-				$string .= $indiceBO->createIndex();
-				$constraintBO = new ConstraintBO($empresa, $schema, $tabela, $fase);
-				$string .= $constraintBO->dropConstraint();
-				$string .= $constraintBO->addConstraint();
-				$triggerBO = new TriggerBO($empresa, $schema, $tabela);
-				$string .= $triggerBO->dropTrigger();
-				$string .= $triggerBO->createTrigger();
-				*/
-				$stringResult .= GerenciadorSequence::getQueryCriado().$string.GerenciadorSequence::getQuerySetado();
+				parent::$schema = $schema;
+				parent::$tabela = $tabela;
+				$colunas = $coluna->alter();
+				if($colunas != "") $string .= "\n".$colunas;
+				$stringResult .= $string;
 				$string = "";
 			}
 			return $stringResult.$string;

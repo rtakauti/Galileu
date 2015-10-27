@@ -3,7 +3,6 @@ error_reporting ( E_ALL );
 ini_set ( "display_errors", 1 );
 date_default_timezone_set ( 'America/Sao_Paulo' );
 
-include_once realpath ( __DIR__ . '/../enum/EstruturaQuery.php' );
 include_once realpath ( __DIR__ . '/../bo/estrutura/Estrutura.php' );
 
 class Saida extends Estrutura{
@@ -16,12 +15,12 @@ class Saida extends Estrutura{
 		$this->cmd = $cmd;
 		try {
 			$config = parse_ini_file ( __DIR__ . "/../connection/config/config.ini", true );
-			if(!isset($host)) parent::$estrutura[EstruturaQuery::HOST] = $config ['connection'] ['host'];
-			else parent::$estrutura[EstruturaQuery::HOST] = $host;
-			parent::$estrutura[EstruturaQuery::USER] = $config ['connection'] ['user'];
+			if(!isset($host)) parent::$host = $config ['connection'] ['host'];
+			else parent::$host = $host;
+			parent::$user = $config ['connection'] ['user'];
 			parent::setPass($config['connection']['pass']);
-			parent::$estrutura[EstruturaQuery::DBHOMOLOG] = $config [$dbCompany] ['homolog'];
-			parent::$estrutura[EstruturaQuery::DBDEV] = $config [$dbCompany] ['dev'];
+			parent::$dbHomolog = $config [$dbCompany] ['homolog'];
+			parent::$dbDev = $config [$dbCompany] ['dev'];
 			
 			$this->path = __DIR__ . "/../scripts/" . $dbCompany . "." . date ( 'd' ) . "." . date ( 'm' ) . "." . date ( 'Y' );
 			if (! is_dir ( $this->path )) {
@@ -43,7 +42,7 @@ class Saida extends Estrutura{
 	}
 	
 	private function abre() {
-		$homolog = parent::$estrutura[EstruturaQuery::DBHOMOLOG];
+		$homolog = parent::$dbHomolog;
 		$this->file = fopen ( $this->path."/".$homolog.".Script.".date('d').".".date('m').".".date('Y')."_H".date('H')."m".date('i').".sql", "a+", 0 );
 		$this->gravar("\n\n------------------ DATABASE: $homolog ------------------\n");
 	}

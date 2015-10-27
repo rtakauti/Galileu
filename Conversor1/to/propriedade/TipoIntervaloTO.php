@@ -1,16 +1,19 @@
 <?php
 include_once realpath(__DIR__ .'/../../enum/FaseQuery.php');
-include_once realpath(__DIR__.'/../../enum/EstruturaQuery.php');
-include_once realpath(__DIR__ .'/../../bo/sequence/GerenciadorSequence.php');
+include_once realpath ( __DIR__ . '/../../bo/estrutura/Estrutura.php' );
 include_once realpath(__DIR__.'/../IPropriedade.php');
 
-class TipoIntervaloTO implements IPropriedade{
+class TipoIntervaloTO extends Estrutura implements IPropriedade{
 
 
-	public function retorna($valor, $fase, $condicao, $estrutura) {
+	public function retorna($valor) {
+		$schema = parent::$schema;
+		$tabela = parent::$tabela;
+		$coluna = parent::$coluna;
+		$propriedades = parent::$propriedades;
 		$string = "";
 		if (isset ( $valor )) {
-			switch ($fase) {
+			switch (parent::$fase) {
 				case FaseQuery::CREATE :
 					$string = " $valor ";
 					break;
