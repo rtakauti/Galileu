@@ -129,8 +129,7 @@ class TabelaBO extends Estrutura{
 				parent::$schema = $schema;
 				parent::$tabela = $tabela;
 				$string = $coluna->add ( );
-				
-				$stringResult .= GerenciadorSequence::getQueryCriado () . $string . GerenciadorSequence::getQuerySetado ();
+				$stringResult .= $string;
 				$string = "";
 			}
 			return $stringResult . $string;

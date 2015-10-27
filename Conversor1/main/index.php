@@ -42,7 +42,6 @@ $restricao = new RestricaoBO();
 
 $saida->gravar($schema->listar());
 $saida->gravar($sequence->listar());
-
 $saida->gravar($funcao->listar());
 $saida->gravar($tabela->listar());
 $saida->gravar($trigger->listar());
@@ -67,6 +66,8 @@ $saida->gravar($tabela->create());
 $saida->gravar($indice->create());
 $saida->gravar($funcao->create());
 $saida->gravar($trigger->create());
+
+$saida->gravar($tabela->add());
 
 $saida->gravar($tabela->alter());
 

@@ -18,7 +18,8 @@ class PadraoTO extends Estrutura implements IPropriedade {
 					$string  = "\nCREATE SEQUENCE $sequence;";
 					$string .= "\nSELECT setval('$sequence', MAX($coluna)) FROM $schema.$tabela;";
 				} else {
-					$string = "\nSELECT setval('$sequence', MAX($coluna)) FROM $schema.$tabela;";
+					$string = "\n\n----  SET DA SEQUENCE  ----";  
+					$string .= "\nSELECT setval('$sequence', MAX($coluna)) FROM $schema.$tabela;";
 				}
 		}
 		return $string;
@@ -32,7 +33,7 @@ class PadraoTO extends Estrutura implements IPropriedade {
 		$sequences = parent::$sequences;
 		
 		$string = "";
-		if (isset ( $valor )) {
+		if ( isset($valor) ){
 			
 			switch (parent::$fase) {
 				case FaseQuery::CREATE :

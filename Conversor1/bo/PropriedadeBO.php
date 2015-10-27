@@ -60,28 +60,28 @@ class PropriedadeBO extends Estrutura{
 		return $stringResult;
 	}
 	
-	public function alter(){
+	public function alter() {
 		$schema = parent::$schema;
 		$tabela = parent::$tabela;
 		$coluna = parent::$coluna;
 		parent::$fase = FaseQuery::ALTER;
 		$propriedadesBO = $this->properties;
-		$dev = parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['coluna'][$coluna];
-		$homolog = parent::$homolog ['schema'] [$schema] ['tabela'][$tabela]['coluna'][$coluna];
-		parent::$propriedades  = array_diff($dev, $homolog);
+		$dev = parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] [$coluna];
+		$homolog = parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] [$coluna];
+		parent::$propriedades = array_diff_assoc ( $dev, $homolog );
 		$string = "";
 		$anteriorColuna = $anterior = "";
+		$string = "";
 		foreach ( parent::$propriedades as $propriedade => $valor ) {
-			if(!empty($valor)) {
-				$anteriorColuna = "\n-- VALOR ANTERIOR $coluna -- ";
-				$homologValor = parent::$homolog ['schema'] [$schema] ['tabela'][$tabela]['coluna'][$coluna][$propriedade];
-				if(!isset($homologValor)) $homologValor = "NULO";
-				$anterior .= " $propriedade => $homologValor, ";
-			}
+			$anteriorColuna = "\n-- ESTADO ANTERIOR $coluna -- ";
+			$homologValor = parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] [$coluna] [$propriedade];
+			if (! isset ( $homologValor ))
+				$homologValor = "NULO";
+			$anterior .= " $propriedade => $homologValor, ";
 			$string .= GeradorPropriedades::gerarPropriedade ( $propriedadesBO [$propriedade], $valor );
 		}
-		$anterior = substr($anterior, 0, -2);
-		return $anteriorColuna.$anterior.$string;
+		$anterior = substr ( $anterior, 0, - 2 );
+		return $anteriorColuna . $anterior . $string;
 	}
 
 
