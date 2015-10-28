@@ -27,16 +27,19 @@ class RestricaoBO extends Estrutura{
 		$this->restricoes['consrc'] = new RegraUniqueTO();
 	}
 
-	public function construct($constraintInput, $fase){
-		list($schema, $tabela, $constraint) = explode(".", $constraintInput);
+	public function construct(){
 		$restricoesBO = $this->restricoes;
-		$constraints = parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['constraint'][$constraint];
-		$stringResult ="";
-		foreach ($constraints as $constraint => $valor) {
-			$string = GeradorRestricoes::gerarRestricao($restricoesBO[$constraint], $valor, $fase);
-			$stringResult .= $string;
-		}
-		return $stringResult;
+		$schema = parent::$schema;
+		$tabela = parent::$tabela;
+		$constraint = parent::$constraint;
+		$string ="";
+		if(isset(parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['constraint'][$constraint]))
+			$constraints = parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['constraint'][$constraint];
+		if(!empty($constraints))
+			foreach ($constraints as $constraint => $valor) 
+				$string .= GeradorRestricoes::gerarRestricao($restricoesBO[$constraint], $valor);
+		
+		return $string;
 
 	}
 	

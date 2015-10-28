@@ -5,13 +5,13 @@ include_once 'ColunaBO.php';
 include_once 'ConstraintBO.php';
 include_once 'estrutura/Estrutura.php';
 
-class TabelaBO extends Estrutura{
+class TabelaBO extends SchemaBO{
 	
 	
 	
 	public static function dev() {
 		$lista = array ();
-		$schemas = array_keys ( parent::$dev ['schema'] );
+		$schemas = parent::dev();
 		foreach ( $schemas as $schema ) {
 			if (isset ( parent::$dev ['schema'] [$schema] ['tabela'] )) {
 				$tabelas = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] );
@@ -26,7 +26,7 @@ class TabelaBO extends Estrutura{
 	
 	public static function homolog() {
 		$lista = array ();
-		$schemas = array_keys ( parent::$homolog ['schema'] );
+		$schemas = parent::homolog();
 		foreach ( $schemas as $schema ) {
 			if (isset ( parent::$homolog ['schema'] [$schema] ['tabela'] )) {
 				$tabelas = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] );
@@ -104,7 +104,7 @@ class TabelaBO extends Estrutura{
 				$string = "\n\n\nCREATE TABLE $schema.$tabela";
 				$string .="\n(\n";
 				$string .= $coluna->create();
-				$string .= $constraint->create($tabelaInput);
+				$string .= $constraint->create();
 				$string = substr($string, 0, -2);
 				$string .= "\n)";
 				$string .= "\nWITH (\n\tOIDS=FALSE\n);";
@@ -115,47 +115,5 @@ class TabelaBO extends Estrutura{
 		}
 	}
 	
-	
-	public function add() {
-		$dev = self::dev ();
-		$homolog = self::homolog ();
-		$tabelas = array_intersect ( $homolog, $dev );
-		$stringResult = "";
-		if (! empty ( $tabelas )) {
-			$stringResult = "\n\n\n------------------------------ ALTER TABLE ------------------------------";
-			$coluna = new ColunaBO ();
-			foreach ( $tabelas as $tabelaInput ) {
-				list ( $schema, $tabela ) = explode ( ".", $tabelaInput );
-				parent::$schema = $schema;
-				parent::$tabela = $tabela;
-				$string = $coluna->add ( );
-				$stringResult .= $string;
-				$string = "";
-			}
-			return $stringResult . $string;
-		}
-	}
-	
-	
-	public function alter(){
-		$dev = self::dev();
-		$homolog = self::homolog();
-		$tabelas = array_intersect($homolog, $dev);
-		$stringResult = "";
-		if(!empty($tabelas)){
-			$string = "\n\n\n------------------------------ ALTER TABLE ------------------------------";
-			$coluna = new ColunaBO();
-			foreach ($tabelas as $tabelaInput) {
-				list($schema, $tabela) = explode(".", $tabelaInput);
-				parent::$schema = $schema;
-				parent::$tabela = $tabela;
-				$colunas = $coluna->alter();
-				if($colunas != "") $string .= "\n".$colunas;
-				$stringResult .= $string;
-				$string = "";
-			}
-			return $stringResult.$string;
-		}
-	}
 	
 }

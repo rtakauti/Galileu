@@ -4,22 +4,18 @@ include_once realpath (__DIR__.'/../enum/FaseQuery.php');
 include_once 'PropriedadeBO.php';
 include_once 'estrutura/Estrutura.php';
 
-class ColunaBO extends Estrutura{
+class ColunaBO extends TabelaBO{
 
 	
 	public static function dev() {
 		$lista = array ();
-		$schemas = array_keys ( parent::$dev ['schema'] );
-		foreach ( $schemas as $schema ) {
-			if (isset ( parent::$dev ['schema'] [$schema] ['tabela'] )) {
-				$tabelas = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] );
-				foreach ( $tabelas as $tabela ) {
-					if (isset ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela]['coluna'] )) {
-						$colunas = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] );
-						foreach ( $colunas as $coluna ) {
-							$lista [] = "$schema.$tabela.$coluna";
-						}
-					}
+		$tabelas = parent::dev ();
+		foreach ( $tabelas as $tabelaInput ) {
+			list($schema, $tabela) = explode(".", $tabelaInput);
+			if (isset ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] )) {
+				$colunas = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] );
+				foreach ( $colunas as $coluna ) {
+					$lista [] = "$schema.$tabela.$coluna";
 				}
 			}
 		}
@@ -29,30 +25,26 @@ class ColunaBO extends Estrutura{
 	
 	public static function homolog() {
 		$lista = array ();
-		$schemas = array_keys ( parent::$homolog ['schema'] );
-		foreach ( $schemas as $schema ) {
-			if (isset ( parent::$homolog ['schema'] [$schema] ['tabela'] )) {
-				$tabelas = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] );
-				foreach ( $tabelas as $tabela ) {
-					if (isset ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela]['coluna'] )) {
-					$colunas = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] );
-						foreach ( $colunas as $coluna ) {
-							$lista [] = "$schema.$tabela.$coluna";
-						}
-					}
+		$tabelas = parent::homolog ();
+		foreach ( $tabelas as $tabelaInput ) {
+			list ( $schema, $tabela ) = explode ( ".", $tabelaInput );
+			if (isset ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] )) {
+				$colunas = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] );
+				foreach ( $colunas as $coluna ) {
+					$lista [] = "$schema.$tabela.$coluna";
 				}
 			}
 		}
 		return $lista;
 	}
-	
+
 	
 	public function listarDev() {
-		$lista = self::dev();
+		$colunas = self::dev();
 		$string = "";
-		if (! empty ( $lista )) {
+		if (! empty ( $colunas )) {
 			$string = "\n\n------ DEV COLUNAS ------";
-			foreach ($lista as $coluna) {
+			foreach ($colunas as $coluna) {
 				list($schema, $tabela, $coluna) = explode(".", $coluna);
 				$string .= "\n\t-- $schema.$tabela.$coluna" ;
 			}
@@ -61,12 +53,11 @@ class ColunaBO extends Estrutura{
 	}
 	
 	public function listarHomolog() {
-		$lista = self::homolog();
+		$colunas = self::homolog();
 		$string = "";
-		if (! empty ( $lista )) {
+		if (! empty ( $colunas )) {
 			$string = "\n\n------ HOMOLOG COLUNAS ------";
-			$i = 0;
-			foreach ($lista as $coluna) {
+			foreach ($colunas as $coluna) {
 				list($schema, $tabela, $coluna) = explode(".", $coluna);
 				$string .= "\n\t-- $schema.$tabela.$coluna" ;
 			}
@@ -120,26 +111,32 @@ class ColunaBO extends Estrutura{
 		return $string;
 	}
 	
-	public function add(){
-		$schema = parent::$schema;
-		$tabela = parent::$tabela;
-		if((isset(parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['coluna'])))
-			$dev = array_keys(parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['coluna']);
-		if((isset(parent::$homolog ['schema'] [$schema] ['tabela'][$tabela]['coluna'])))
-			$homolog = array_keys(parent::$homolog ['schema'] [$schema] ['tabela'][$tabela]['coluna']);
-		$colunas = array_diff($dev, $homolog);
-		$string ="";
-		if (! empty ( $colunas )) {
-			$propriedade = new PropriedadeBO ( );
-			foreach ( $colunas as $coluna ) {
-				parent::$coluna = $coluna;
-				$lista[$coluna][] = $propriedade->add();
-				parent::$result['schema'] [$schema] ['tabela'][$tabela]['coluna'][$coluna] = parent::$dev['schema'] [$schema] ['tabela'][$tabela]['coluna'][$coluna];
-			}
-			$colunas = array_keys($lista);
-			foreach ($colunas as $coluna) {
-				$string .= "\n\nALTER TABLE $schema.$tabela ADD COLUMN $coluna ";
-				$string .= implode("", $lista[$coluna]).";\n";
+	
+	public function add() {
+		$dev = parent::dev ();
+		$homolog = parent::homolog ();
+		$tabelas = array_intersect ( $dev, $homolog );
+		if (! empty ( $tabelas )) {
+			$string = "\n\n\n------------------------------ ALTER TABLE ADD COLUMN ------------------------------";
+			$propriedade = new PropriedadeBO ();
+			foreach ( $tabelas as $tabelaInput ) {
+				list ( $schema, $tabela ) = explode ( ".", $tabelaInput );
+				parent::$schema = $schema;
+				parent::$tabela = $tabela;
+				if ((isset ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] )))
+					$dev = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] );
+				if ((isset ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] )))
+					$homolog = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] );
+				$colunas = array_diff ( $dev, $homolog );
+				if (! empty ( $colunas )) {
+					foreach ( $colunas as $coluna ) {
+						parent::$coluna = $coluna;
+						$string .= "\n\nALTER TABLE $schema.$tabela ADD COLUMN $coluna ";
+						$string .= $propriedade->add ();
+						$string .= ";";
+						parent::$result ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] [$coluna] = parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] [$coluna];
+					}
+				}
 			}
 		}
 		return $string;
@@ -147,24 +144,33 @@ class ColunaBO extends Estrutura{
 	
 	
 	public function alter() {
-		$schema = parent::$schema;
-		$tabela = parent::$tabela;
-		if ((isset ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] )))
-			$dev = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] );
-		if ((isset ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] )))
-			$homolog = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] );
-		$colunas = array_intersect ( $dev, $homolog );
-		if (! empty ( $colunas )) {
-			$string = "";
-			foreach ( $colunas as $coluna ) {
+		$lista = array();
+		$dev = parent::dev ();
+		$homolog = parent::homolog ();
+		$tabelas = array_intersect ( $dev, $homolog );
+		if (! empty ( $tabelas )) {
+			$propriedade = new PropriedadeBO ();
+			$string = "\n\n\n------------------------------ ALTER TABLE ALTER COLUMN ------------------------------";
+			foreach ( $tabelas as $tabelaInput ) {
+				list ( $schema, $tabela ) = explode ( ".", $tabelaInput );
 				parent::$schema = $schema;
 				parent::$tabela = $tabela;
-				parent::$coluna = $coluna;
-				$propriedade = new PropriedadeBO ();
-				$string .= $propriedade->alter ();
+				if ((isset ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] )))
+					$dev = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] );
+				if ((isset ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] )))
+					$homolog = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] );
+				$colunas = array_intersect ( $dev, $homolog );
+				if (! empty ( $colunas )) {
+					foreach ( $colunas as $coluna ) {
+						parent::$coluna = $coluna;
+						$string .= $propriedade->alter ();
+						parent::$result ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] [$coluna] = parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] [$coluna];
+					}
+				}
+				$string .= "\n";
 			}
-			return $string;
 		}
+		return $string;
 	}
 	
 }

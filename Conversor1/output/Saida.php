@@ -11,7 +11,7 @@ class Saida extends Estrutura{
 	private $cmd;
 	private $path;
 	
-	public function __construct($dbCompany, $cmd, $connection = "connection") {
+	public function __construct($dbCompany, $cmd, $connection) {
 		$this->cmd = $cmd;
 		try {
 			$config = parse_ini_file ( __DIR__ . "/../connection/config/config.ini", true );

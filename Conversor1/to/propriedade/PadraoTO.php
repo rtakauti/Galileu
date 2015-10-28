@@ -15,10 +15,10 @@ class PadraoTO extends Estrutura implements IPropriedade {
 				$sequence = "public." . $sequence;
 			if(isset($sequences))
 				if (! in_array ( $sequence, $sequences ) ) {
-					$string  = "\nCREATE SEQUENCE $sequence;";
+					$string .= "\nCREATE SEQUENCE $sequence;";
 					$string .= "\nSELECT setval('$sequence', MAX($coluna)) FROM $schema.$tabela;";
 				} else {
-					$string = "\n\n----  SET DA SEQUENCE  ----";  
+				//	$string = "\n\n----  SET DA SEQUENCE  ----";  
 					$string .= "\nSELECT setval('$sequence', MAX($coluna)) FROM $schema.$tabela;";
 				}
 		}

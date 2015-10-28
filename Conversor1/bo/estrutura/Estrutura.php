@@ -4,10 +4,10 @@
 abstract class Estrutura {
 	
 	protected static $sequences;
-	protected static $querySet;
 	protected static $schema;
 	protected static $tabela;
 	protected static $coluna;
+	protected static $constraint;
 	protected static $fase;
 	protected static $propriedades;
 	
