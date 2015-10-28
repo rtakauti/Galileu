@@ -1,12 +1,10 @@
 <?php
 include_once realpath (__DIR__.'/../enum/SchemaType.php');
-include_once realpath (__DIR__.'/../enum/EstruturaQuery.php');
 include_once realpath (__DIR__.'/../enum/FaseQuery.php');
 include_once 'PropriedadeBO.php';
+include_once 'estrutura/Estrutura.php';
 
-class ColunaBO extends AssemblerBO{
-	
-	
+class ColunaBO extends Estrutura{
 
 	
 	public static function dev() {
@@ -104,72 +102,68 @@ class ColunaBO extends AssemblerBO{
 		return $string;
 	}
 	
-	public function create($tabelaInput) {
-		list($schema, $tabela) = explode(".", $tabelaInput);
-		$colunas = array_keys(parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['coluna']);
-		$fase = FaseQuery::CREATE;
+	public function create() {
+		$schema = parent::$schema;
+		$tabela = parent::$tabela;
+		if((isset(parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['coluna'])))
+			$colunas = array_keys(parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['coluna']);
 		$string = "";
-		$propriedade = new PropriedadeBO ();
 		if (! empty ( $colunas )) {
+			$propriedade = new PropriedadeBO ();
 			foreach ( $colunas as $coluna ) {
-				$colunaInput = "$schema.$tabela.$coluna";
-				$propriedades = $propriedade->construct($colunaInput, $fase);
-				$string .= "\t$coluna $propriedades ,\n";
+				parent::$coluna = $coluna;
+				$propriedades = $propriedade->create();
+				$string .= "\t$coluna $propriedades,\n";
+				parent::$result['schema'] [$schema] ['tabela'][$tabela]['coluna'][$coluna] = parent::$dev['schema'] [$schema] ['tabela'][$tabela]['coluna'][$coluna];
 			}
 		}
 		return $string;
 	}
 	
-	public function addColumn(){
-		$sequence = $this->estrutura [EstruturaQuery::SEQUENCE];
-		$tabela = $this->estrutura [EstruturaQuery::TABELA];
-		$schema = $this->estrutura [EstruturaQuery::SCHEMA];
-		$empresa = $this->estrutura [EstruturaQuery::COMPANY];
-		$fase = FaseQuery::ADD;
-		//$dev = $this->dao->propriedade(SchemaType::DEV);
-		//$homolog = $this->dao->propriedade(SchemaType::HOMOLOG);
-		//$colunas = array_diff_assoc($dev, $homolog);
-		$homolog = $this->homologArray;
-		$dev = $this->devArray;
-		$colunas = array_diff(array_keys($dev), array_keys($homolog));
+	public function add(){
+		$schema = parent::$schema;
+		$tabela = parent::$tabela;
+		if((isset(parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['coluna'])))
+			$dev = array_keys(parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['coluna']);
+		if((isset(parent::$homolog ['schema'] [$schema] ['tabela'][$tabela]['coluna'])))
+			$homolog = array_keys(parent::$homolog ['schema'] [$schema] ['tabela'][$tabela]['coluna']);
+		$colunas = array_diff($dev, $homolog);
 		$string ="";
 		if (! empty ( $colunas )) {
-			foreach ( $colunas as $nomeColuna => $coluna ) {
-				$string .= "\n\nALTER TABLE $tabela ADD COLUMN $nomeColuna ";
-				$propriedade = new PropriedadeBO ( $empresa, $schema, $tabela, $nomeColuna, $sequence, $fase, $coluna );
-				$string .= $propriedade->constructProperty () . ";\n";
+			$propriedade = new PropriedadeBO ( );
+			foreach ( $colunas as $coluna ) {
+				parent::$coluna = $coluna;
+				$lista[$coluna][] = $propriedade->add();
+				parent::$result['schema'] [$schema] ['tabela'][$tabela]['coluna'][$coluna] = parent::$dev['schema'] [$schema] ['tabela'][$tabela]['coluna'][$coluna];
+			}
+			$colunas = array_keys($lista);
+			foreach ($colunas as $coluna) {
+				$string .= "\n\nALTER TABLE $schema.$tabela ADD COLUMN $coluna ";
+				$string .= implode("", $lista[$coluna]).";\n";
 			}
 		}
-		//$string = substr($string, 0, -1);
 		return $string;
 	}
 	
-public function alterColumn(){
-		$sequence = $this->estrutura [EstruturaQuery::SEQUENCE];
-		$tabela = $this->estrutura [EstruturaQuery::TABELA];
-		$schema = $this->estrutura [EstruturaQuery::SCHEMA];
-		$empresa = $this->estrutura [EstruturaQuery::COMPANY];
-		$fase = FaseQuery::ALTER;
-		$devArray = $this->devArray;
-		$homologArray = $this->homologArray;
-		$diffArray = array_intersect_key($devArray, $homologArray);
-		$colunas = array();
-		foreach ($diffArray as $nomeColuna => $valor) {
-			$colunas[$nomeColuna] =  array_diff_assoc($devArray[$nomeColuna], $homologArray[$nomeColuna]);
-			$input[$nomeColuna] =  array_diff_assoc($homologArray[$nomeColuna], $devArray[$nomeColuna]);
-		}
-		$string ="";
+	
+	public function alter() {
+		$schema = parent::$schema;
+		$tabela = parent::$tabela;
+		if ((isset ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] )))
+			$dev = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] );
+		if ((isset ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] )))
+			$homolog = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] );
+		$colunas = array_intersect ( $dev, $homolog );
 		if (! empty ( $colunas )) {
-			foreach ( $colunas as $nomeColuna => $coluna ) {
-				if(!empty($coluna)){
-				$string .= "\n\n---- CAMPO $nomeColuna TABELA $tabela ----";
-				$output = implode(', ', array_map(function ($v, $k) { return $k . " = " . (!isset($v)?'NULO':$v); }, $input[$nomeColuna], array_keys($input[$nomeColuna])));
-				$string .= "\n---- ESTADO ANTERIOR $output ----";
-				$propriedade = new PropriedadeBO ( $empresa, $schema, $tabela, $nomeColuna, $sequence, $fase, $coluna );
-				$string .= $propriedade->constructProperty () . "\n";
-				}
+			$string = "";
+			foreach ( $colunas as $coluna ) {
+				parent::$schema = $schema;
+				parent::$tabela = $tabela;
+				parent::$coluna = $coluna;
+				$propriedade = new PropriedadeBO ();
+				$string .= $propriedade->alter ();
 			}
-		return $string;
+			return $string;
 		}
 	}
 	
