@@ -1,13 +1,5 @@
 <?php
-include_once realpath (__DIR__.'/../enum/SchemaType.php');
-include_once realpath (__DIR__.'/../enum/FaseQuery.php');
-include_once 'ColunaBO.php';
-include_once 'ConstraintBO.php';
-include_once 'estrutura/Estrutura.php';
-
 class TabelaBO extends SchemaBO{
-	
-	
 	
 	public static function dev() {
 		$lista = array ();
@@ -73,14 +65,13 @@ class TabelaBO extends SchemaBO{
 		$tabelas = array_diff ( $homolog, $dev );
 		$string = "";
 		if(!empty($tabelas)){
-			$string = "\n\n\n------------------------------ DROP TABLE ------------------------------";
-			$string .= "\n/*";
+			$string .= "\n\n\n------------------------------ DROP TABLE ------------------------------";
+			$string .= "\n/*\n";
 			foreach ($tabelas as $tabela) {
 				list($schema, $tabela) = explode(".", $tabela);
 				$string .= "\nDROP TABLE IF EXISTS $schema.$tabela CASCADE;";
-				unset ( parent::$result ['schema'] [$schema] ['tabela'] [$tabela] );
 			}
-			$string .= "\n*/";
+			$string .= "\n\n\n*/";
 		}
 		return $string;
 	}
@@ -91,17 +82,17 @@ class TabelaBO extends SchemaBO{
 		$dev = self::dev();
 		$homolog = self::homolog();
 		$tabelas = array_diff($dev, $homolog);
-		$stringResult = "";
+		$string = "";
 		$user = parent::$user;
 		if(!empty($tabelas)){
 			$coluna = new ColunaBO();
 			$constraint = new ConstraintBO();
-			$stringResult .= "\n\n\n------------------------------ CREATE TABLE ------------------------------";
+			$string .= "\n\n\n------------------------------ CREATE TABLE ------------------------------";
 			foreach ($tabelas as $tabelaInput) {
 				list($schema, $tabela) = explode(".", $tabelaInput);
 				parent::$schema = $schema;
 				parent::$tabela = $tabela;
-				$string = "\n\n\nCREATE TABLE $schema.$tabela";
+				$string .= "\n\n\nCREATE TABLE $schema.$tabela";
 				$string .="\n(\n";
 				$string .= $coluna->create();
 				$string .= $constraint->create();
@@ -109,9 +100,8 @@ class TabelaBO extends SchemaBO{
 				$string .= "\n)";
 				$string .= "\nWITH (\n\tOIDS=FALSE\n);";
 				$string .= "\nALTER TABLE $tabela \n\tOWNER TO $user;";
-				$stringResult .= $string;
 			}
-			return $stringResult;
+			return $string;
 		}
 	}
 	

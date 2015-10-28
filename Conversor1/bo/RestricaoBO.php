@@ -38,7 +38,6 @@ class RestricaoBO extends Estrutura{
 		if(!empty($constraints))
 			foreach ($constraints as $constraint => $valor) 
 				$string .= GeradorRestricoes::gerarRestricao($restricoesBO[$constraint], $valor);
-		
 		return $string;
 
 	}

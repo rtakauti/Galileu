@@ -1,13 +1,10 @@
 <?php
-include_once realpath (__DIR__.'/../enum/SchemaType.php');
-include_once 'estrutura/Estrutura.php';
-
-class FuncaoBO extends Estrutura{
+class FuncaoBO extends SchemaBO{
 	
 	
 	public static function dev() {
 		$lista = array();
-		$schemas = array_keys ( parent::$dev ['schema'] );
+		$schemas = parent::dev();
 		foreach ( $schemas as $schema ) {
 			if (isset ( parent::$dev ['schema'] [$schema] ['funcao'] )) {
 				$funcoes = array_keys ( parent::$dev ['schema'] [$schema] ['funcao'] );
@@ -21,7 +18,7 @@ class FuncaoBO extends Estrutura{
 	
 	public static function homolog() {
 		$lista = array ();
-		$schemas = array_keys ( parent::$homolog ['schema'] );
+		$schemas = parent::homolog();
 		foreach ( $schemas as $schema ) {
 			if (isset ( parent::$homolog ['schema'] [$schema] ['funcao'] )) {
 				$funcoes = array_keys ( parent::$homolog ['schema'] [$schema] ['funcao'] );
@@ -72,14 +69,13 @@ class FuncaoBO extends Estrutura{
 		$funcoes = array_diff ( $homolog, $dev );
 		$string = "";
 		if (! empty ( $funcoes )) {
-			$string = "\n\n\n--------------------  DROP DE FUNCTION, PROCEDURE, TRIGGER -------------------- ";
-			$string .= "\n/*";
+			$string .= "\n\n\n--------------------  DROP DE FUNCTION, PROCEDURE, TRIGGER -------------------- ";
+			$string .= "\n/*\n";
 			foreach ( $funcoes as $funcao ) {
 				list($schema, $funcao) = explode(".", $funcao);
 				 $string .= "\nDROP FUNCTION IF EXISTS $schema.$funcao CASCADE;";
-				 unset ( parent::$result ['schema'] [$schema] ['funcao'] [$funcao] );
 			}
-			$string .= "\n*/";
+			$string .= "\n\n\n*/";
 		}
 		return $string;
 	}
@@ -95,7 +91,6 @@ class FuncaoBO extends Estrutura{
 				list($schema, $funcao) = explode(".", $funcao);
 				$create = parent::$dev ['schema'] [$schema] ['funcao'][$funcao]['create'];
 				$string .= "\n\n$create";
-				parent::$result ['schema'] [$schema] ['funcao'] [$funcao] = parent::$dev ['schema'] [$schema] ['funcao'] [$funcao];
 			}
 		}
 		return $string;

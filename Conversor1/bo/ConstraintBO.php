@@ -1,9 +1,4 @@
 <?php
-include_once realpath ( __DIR__ . '/../enum/SchemaType.php' );
-include_once realpath ( __DIR__ . '/../enum/FaseQuery.php' );
-include_once 'RestricaoBO.php';
-include_once 'estrutura/Estrutura.php';
-
 class ConstraintBO extends TabelaBO{
 	
 	
@@ -81,13 +76,13 @@ class ConstraintBO extends TabelaBO{
 		$string = "";
 		if (! empty ( $constraints )) {
 			$string = "\n\n\n-------------------- DROP CONSTRAINT --------------------";
-			$string .= "\n/*";
+			$string .= "\n/*\n";
 			foreach ( $constraints as $constraint ) {
 				list ( $schema, $tabela, $constraint ) = explode ( ".", $constraint );
 				$string .= "\n\nALTER TABLE IF EXISTS $schema.$tabela \n\tDROP CONSTRAINT IF EXISTS $constraint CASCADE;";
 				unset ( parent::$result ['schema'] [$schema] ['tabela'] [$tabela] ['constraint'] [$constraint] );
 			}
-			$string .= "\n*/";
+			$string .= "\n\n\n*/";
 		}
 		return $string;
 	}
@@ -105,7 +100,6 @@ class ConstraintBO extends TabelaBO{
 				parent::$constraint = $constraint;
 				$restricoes = $restricao->construct ( );
 				$string .= "\tCONSTRAINT $constraint $restricoes,\n";
-				parent::$result['schema'] [$schema] ['tabela'][$tabela]['constraint'][$constraint] = parent::$dev['schema'] [$schema] ['tabela'][$tabela]['constraint'][$constraint];
 			}
 		}
 		return $string;
@@ -116,7 +110,7 @@ class ConstraintBO extends TabelaBO{
 		$dev = parent::dev ();
 		$homolog = parent::homolog ();
 		$tabelas = array_intersect ( $dev, $homolog );
-		$string = "";
+		$string1 = $string = "";
 		$restricao = new RestricaoBO ( );
 		if (! empty ( $tabelas )) {
 			$string = "\n\n\n-------------------- ALTER TABLE ADD CONSTRAINT --------------------";
@@ -130,7 +124,6 @@ class ConstraintBO extends TabelaBO{
 				if ((isset ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['constraint'] )))
 					$homolog = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['constraint']);
 				$constraints = array_diff ( $dev, $homolog );
-				$constraintsIntersect = array_intersect ( $homolog ,  $dev );
 				if (! empty ( $constraints )) {
 					foreach ( $constraints as $constraint) {
 						parent::$constraint = $constraint;
@@ -141,17 +134,25 @@ class ConstraintBO extends TabelaBO{
 						}
 					}
 				}
-					/*
-					foreach ( $constraintsIntersect as $constraint ) {
+				/*
+				 * alter
+				 */
+				$constraints = array_intersect_assoc(  $dev, $homolog );
+				if (! empty ( $constraints )) {
+					foreach ( $constraints as $constraint ) {
 						parent::$constraint = $constraint;
-						if ($homolog [$constraint] != $dev [$constraint]) {
-							$string .= "\nALTER TABLE $schema.$tabela\n\tADD CONSTRAINT $constraint " . $restricao->construct () . ";\n";
+						$restricoes = $restricao->construct ();
+						if(parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['constraint'][$constraint] != parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['constraint'][$constraint]){
+						if ($restricoes != "") {
+							$string1 .= "\nALTER TABLE $schema.$tabela";
+							$string1 .= "\n\tADD CONSTRAINT $constraint " . $restricoes . ";\n";
+						}
 						}
 					}
-					*/
+				}
 			}
 		}
-		return $string;
+		return $string.$string1;
 	}
 	
 	

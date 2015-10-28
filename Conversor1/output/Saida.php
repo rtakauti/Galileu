@@ -34,24 +34,25 @@ class Saida extends Estrutura{
 		$this->abre();
 	}
 	
+	
 	public function __destruct(){
-		if(is_resource($this->file)){
-			$this->fecha();
-		}
+		if(is_resource($this->file)) $this->fecha();
 		$this->tela("\n\nfechando o arquivo de script...\n\n");
 	}
+	
 	
 	private function abre() {
 		$homolog = parent::$dbHomolog;
 		$this->file = fopen ( $this->path."/".$homolog.".Script.".date('d').".".date('m').".".date('Y')."_H".date('H')."m".date('i').".sql", "a+", 0 );
-		$this->gravar("\n\n------------------ DATABASE: $homolog ------------------\n");
+		$this->gravar("\n\n---------------------- DATABASE: $homolog ----------------------\n");
 	}
 	
 	private function fecha() {
-		$string = "\n\n---------- COMMIT ----------";
-		$string .= "\n--COMMIT;";
-		$string .= "\n\n---------- ROLLBACK ----------";
-		$string .= "\n--ROLLBACK;";
+		$string = "\n\n/*\n\n";
+		$string .= "COMMIT;";
+		$string .= "\n\n\n";
+		$string .= "ROLLBACK;";
+		$string .= "\n\n*/";
 		$this->gravar($string);
 		fclose ( $this->file );
 	}

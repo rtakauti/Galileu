@@ -1,14 +1,10 @@
 <?php
-include_once realpath (__DIR__.'/../enum/SchemaType.php');
-include_once 'estrutura/Estrutura.php';
 
-class SequenceBO extends Estrutura{
-	
-	
+class SequenceBO extends SchemaBO{
 	
 	public static function dev() {
 		$lista = array ();
-		$schemas = array_keys(parent::$dev['schema']);
+		$schemas = parent::dev();
 		foreach ( $schemas as $schema ) {
 			if (isset ( parent::$dev ['schema'] [$schema] ['sequence'] )) {
 				$sequences = array_keys ( parent::$dev ['schema'] [$schema] ['sequence'] );
@@ -24,7 +20,7 @@ class SequenceBO extends Estrutura{
 	
 	public static function homolog() {
 		$lista = array ();
-		$schemas = array_keys(parent::$homolog['schema']);
+		$schemas = parent::homolog();
 		foreach ( $schemas as $schema ) {
 			if (isset ( parent::$homolog ['schema'] [$schema] ['sequence'] )) {
 				$sequences = array_keys ( parent::$homolog ['schema'] [$schema] ['sequence'] );
@@ -72,13 +68,12 @@ class SequenceBO extends Estrutura{
 		$string = "";
 		if (! empty ( $sequences )) {
 			$string .= "\n\n\n--------------------  DROP DE SEQUENCES -------------------- ";
-			$string .= "\n/*";
+			$string .= "\n/*\n";
 			foreach ( $sequences as $sequence ) {
 				list($schema, $sequence) = explode(".", $sequence);
 				$string .= "\nDROP SEQUENCE IF EXISTS $schema.$sequence CASCADE;";
-				unset ( parent::$result ['schema'] [$schema] ['sequence'] [$sequence] );
 			}
-			$string .= "\n*/";
+			$string .= "\n\n\n*/";
 		}
 		return $string;
 	}
@@ -91,23 +86,17 @@ class SequenceBO extends Estrutura{
 		$string = "";
 		if (! empty ( $sequences )) {
 			$string .= "\n\n\n--------------------  CREATE DE SEQUENCES -------------------- ";
-			foreach ( $sequences as $sequence ) {
-				list($schema, $sequence) = explode(".", $sequence);
+			foreach ( $sequences as $sequenceInput ) {
+				list($schema, $sequence) = explode(".", $sequenceInput);
 				$string .= "\n\nCREATE SEQUENCE $schema.$sequence ";
 				$string .= "\n\tINCREMENT 1";
 				$string .= "\n\tMINVALUE 1";
 				$string .= "\n\tSTART 1";
 				$string .= "\n\tCACHE 1;";
-				parent::$result ['schema'] [$schema] ['sequence'] [$sequence] = $sequence;
 			}
 		}
 		return $string;
 	}
 	
-	public function resetSeqGerenciamento(){
-		GerenciadorSequence::resetCriados();
-		GerenciadorSequence::resetQueryCriado();
-		GerenciadorSequence::resetQuerySetado();
-	}
 	
 }

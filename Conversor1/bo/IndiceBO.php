@@ -1,48 +1,39 @@
 <?php
-include_once realpath(__DIR__.'/../enum/SchemaType.php');
-include_once 'estrutura/Estrutura.php';
-
-class IndiceBO extends Estrutura{
-	
+class IndiceBO extends TabelaBO{
 	
 	
 	public static function dev() {
 		$lista = array ();
-		$schemas = array_keys ( parent::$dev ['schema'] );
-		foreach ( $schemas as $schema ) {
-			if (isset ( parent::$dev ['schema'] [$schema] ['tabela'] )) {
-				$tabelas = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] );
-				foreach ( $tabelas as $tabela ) {
-					if (isset ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela]['indice'] )) {
-						$indices = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['indice'] );
-						foreach ( $indices as $indice ) {
-							$lista [] = "$schema.$tabela.$indice";
-						}
-					}
+		$tabelas = parent::dev ();
+		foreach ( $tabelas as $tabelaInput ) {
+			list ( $schema, $tabela ) = explode ( ".", $tabelaInput );
+			if (isset ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['indice'] )) {
+				$indices = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['indice'] );
+				foreach ( $indices as $indice ) {
+					$lista [] = "$schema.$tabela.$indice";
 				}
 			}
 		}
 		return $lista;
 	}
 	
+	
+	
 	public static function homolog() {
 		$lista = array ();
-		$schemas = array_keys ( parent::$homolog ['schema'] );
-		foreach ( $schemas as $schema ) {
-			if (isset ( parent::$homolog ['schema'] [$schema] ['tabela'] )) {
-				$tabelas = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] );
-				foreach ( $tabelas as $tabela ) {
-					if (isset ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela]['indice'] )) {
-						$indices = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['indice'] );
-						foreach ( $indices as $indice ) {
-							$lista [] = "$schema.$tabela.$indice";
-						}
-					}
+		$tabelas = parent::homolog ();
+		foreach ( $tabelas as $tabelaInput ) {
+			list ( $schema, $tabela ) = explode ( ".", $tabelaInput );
+			if (isset ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['indice'] )) {
+				$indices = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['indice'] );
+				foreach ( $indices as $indice ) {
+					$lista [] = "$schema.$tabela.$indice";
 				}
 			}
 		}
 		return $lista;
 	}
+	
 	
 	public function listarDev() {
 		$lista = self::dev();
@@ -87,18 +78,17 @@ class IndiceBO extends Estrutura{
 		$string = "";
 		if (! empty ( $indices )) {
 			$string = "\n\n-------------------- DROP DE INDICES -------------------- ";
-			$string .= "\n/*";
+			$string .= "\n/*\n";
 			foreach ( $indices as $indice ) {
 				list($schema, $tabela, $indice) = explode(".", $indice);
 				$lista[$schema][] = "\nDROP INDEX IF EXISTS $indice CASCADE;";
-				unset ( parent::$result ['schema'] [$schema]['tabela'][$tabela]['indice'] [$indice] );
 			}
 			$schemas = array_keys($lista);
 			foreach ($schemas as $schema) {
 				$string .= "\n\nSET SEARCH_PATH TO $schema;";
 				$string .= implode("", $lista[$schema]);
 			}
-			$string .= "\n*/";
+			$string .= "\n\n\n*/";
 		}
 		return $string;
 	}
@@ -120,7 +110,6 @@ class IndiceBO extends Estrutura{
 				$string .= "\n\tON $tabela";
 				$string .= "\n\tUSING btree";
 				$string .= "\n\t($colunas);";
-				parent::$result ['schema'] [$schema] ['tabela'] [$tabela] ['indice'][$indice] = parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['indice'][$indice];
 			}
 		}
 		return $string;

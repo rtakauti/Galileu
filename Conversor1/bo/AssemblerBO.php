@@ -12,17 +12,26 @@ class AssemblerBO extends Estrutura{
 	public function __construct(){
 		$this->dao = new AssemblerDAOImpl(); 
 		parent::$dev = $this->dao->retorna(SchemaType::DEV);
-		parent::$result = parent::$homolog = $this->dao->retorna(SchemaType::HOMOLOG);
+		parent::$homolog = $this->dao->retorna(SchemaType::HOMOLOG);
 		$this->dao = NULL;
 	}
 	
 	
 	public static function dev(){
-		return self::$dev;
+		echo "<pre>";
+		echo "\n\n------------------ DEV TREE-------------------- \n\n";
+		print_r(parent::$dev);
+		echo "<hr/>";
+		echo "</pre>";
 	}
 	
 	public static function homolog(){
-		return self::$homolog;
+		echo "<pre>";
+		echo "\n\n------------------ HOMOLOG TREE-------------------- \n\n";
+		print_r(parent::$homolog);
+		echo "<hr/>";
+		echo "</pre>";
 	}
+	
 	
 }

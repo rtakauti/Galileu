@@ -1,25 +1,15 @@
 <?php
-include_once realpath ( __DIR__ . '/../enum/SchemaType.php' );
-include_once realpath ( __DIR__ . '/../enum/FaseQuery.php' );
-include_once 'estrutura/Estrutura.php';
-
-class TriggerBO extends Estrutura {
-	
-	
+class TriggerBO extends TabelaBO {
 	
 	public static function dev() {
 		$lista = array ();
-		$schemas = array_keys ( parent::$dev ['schema'] );
-		foreach ( $schemas as $schema ) {
-			if (isset ( parent::$dev ['schema'] [$schema] ['tabela'] )) {
-				$tabelas = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] );
-				foreach ( $tabelas as $tabela ) {
-					if (isset ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela]['trigger'] )) {
-						$triggers = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['trigger'] );
-						foreach ( $triggers as $trigger ) {
-							$lista [] = "$schema.$tabela.$trigger";
-						}
-					}
+		$tabelas = parent::dev ();
+		foreach ( $tabelas as $tabelaInput ) {
+			list ( $schema, $tabela ) = explode ( ".", $tabelaInput );
+			if (isset ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['trigger'] )) {
+				$triggers = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['trigger'] );
+				foreach ( $triggers as $trigger ) {
+					$lista [] = "$schema.$tabela.$trigger";
 				}
 			}
 		}
@@ -29,22 +19,20 @@ class TriggerBO extends Estrutura {
 	
 	public static function homolog() {
 		$lista = array ();
-		$schemas = array_keys ( parent::$homolog ['schema'] );
-		foreach ( $schemas as $schema ) {
-			if (isset ( parent::$homolog ['schema'] [$schema] ['tabela'] )) {
-				$tabelas = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] );
-				foreach ( $tabelas as $tabela ) {
-					if (isset ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela]['trigger'] )) {
-						$triggers = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['trigger'] );
-						foreach ( $triggers as $trigger ) {
-							$lista [] = "$schema.$tabela.$trigger";
-						}
-					}
+		$tabelas = parent::homolog ();
+		foreach ( $tabelas as $tabelaInput ) {
+			list ( $schema, $tabela ) = explode ( ".", $tabelaInput );
+			if (isset ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['trigger'] )) {
+				$triggers = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['trigger'] );
+				foreach ( $triggers as $trigger ) {
+					$lista [] = "$schema.$tabela.$trigger";
 				}
 			}
 		}
 		return $lista;
 	}
+	
+	
 	
 	public function listarDev() {
 		$lista = self::dev();
@@ -90,21 +78,20 @@ class TriggerBO extends Estrutura {
 		$string = "";
 		if (!empty ( $triggers )) {
 			$string .= "\n\n\n-------------------- DROP TRIGGER --------------------";
-			$string .= "\n/*";
+			$string .= "\n/*\n";
 			foreach ( $triggers as $trigger ) {
 				list($schema, $tabela, $trigger) = explode(".", $trigger);
 				$funcao = substr(parent::$homolog ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger]['action_statement'], strlen("EXECUTE PROCEDURE "));
 				$stringTrigger = "\nDROP TRIGGER IF EXISTS $trigger ON $tabela CASCADE;";
 				$stringTrigger .= "\nDROP FUNCTION IF EXISTS $funcao CASCADE;";
 				$lista[$schema][] = $stringTrigger; 
-				unset ( parent::$result ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger] );
 			}
 			$schemas = array_keys($lista);
 			foreach ($schemas as $schema) {
 				$string .= "\n\nSET SEARCH_PATH TO $schema;";
 				$string .= implode("", $lista[$schema]);
 			}
-			$string .= "\n*/";
+			$string .= "\n\n\n*/";
 		}
 		return $string;
 	}
@@ -130,7 +117,6 @@ class TriggerBO extends Estrutura {
 				$string .= "\n\tON $tabela";
 				$string .= "\n\tFOR EACH $trigger_scope";
 				$string .= "\n\t$action_statement;";
-				parent::$result ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger] = parent::$dev ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger];
 			}
 		}
 		return $string;

@@ -1,9 +1,4 @@
 <?php
-include_once realpath (__DIR__.'/../enum/SchemaType.php');
-include_once realpath (__DIR__.'/../enum/FaseQuery.php');
-include_once 'PropriedadeBO.php';
-include_once 'estrutura/Estrutura.php';
-
 class ColunaBO extends TabelaBO{
 
 	
@@ -82,13 +77,12 @@ class ColunaBO extends TabelaBO{
 		$string = "";
 		if (! empty ( $colunas )) {
 		$string = "\n\n\n-------------------- DROP DE COLUNAS --------------------";
-		$string .= "\n/*";
+		$string .= "\n/*\n";
 			foreach ( $colunas as $coluna ) {
 				list($schema, $tabela, $coluna) = explode(".", $coluna);
 				$string .= "\n\nALTER TABLE IF EXISTS $schema.$tabela \n\tDROP COLUMN IF EXISTS $coluna CASCADE;";
-				unset ( parent::$result ['schema'] [$schema]['tabela'][$tabela]['coluna'] [$coluna] );
 			}
-			$string .= "\n*/";
+			$string .= "\n\n\n*/";
 		}
 		return $string;
 	}
@@ -105,7 +99,6 @@ class ColunaBO extends TabelaBO{
 				parent::$coluna = $coluna;
 				$propriedades = $propriedade->create();
 				$string .= "\t$coluna $propriedades,\n";
-				parent::$result['schema'] [$schema] ['tabela'][$tabela]['coluna'][$coluna] = parent::$dev['schema'] [$schema] ['tabela'][$tabela]['coluna'][$coluna];
 			}
 		}
 		return $string;
@@ -134,7 +127,6 @@ class ColunaBO extends TabelaBO{
 						$string .= "\n\nALTER TABLE $schema.$tabela ADD COLUMN $coluna ";
 						$string .= $propriedade->add ();
 						$string .= ";";
-						parent::$result ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] [$coluna] = parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] [$coluna];
 					}
 				}
 			}
@@ -164,7 +156,6 @@ class ColunaBO extends TabelaBO{
 					foreach ( $colunas as $coluna ) {
 						parent::$coluna = $coluna;
 						$string .= $propriedade->alter ();
-						parent::$result ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] [$coluna] = parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] [$coluna];
 					}
 				}
 				$string .= "\n";

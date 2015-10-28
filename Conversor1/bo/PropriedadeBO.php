@@ -36,12 +36,10 @@ class PropriedadeBO extends Estrutura{
 		parent::$fase = FaseQuery::CREATE;
 		$propriedadesBO = $this->properties;
 		parent::$propriedades = parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['coluna'][$coluna];
-		$stringResult = "";
-		foreach ( parent::$propriedades as $propriedade => $valor ) {
-			$string = GeradorPropriedades::gerarPropriedade ( $propriedadesBO [$propriedade], $valor);
-			$stringResult .= $string;
-		}
-		return $stringResult;
+		$string = "";
+		foreach ( parent::$propriedades as $propriedade => $valor ) 
+			$string .= GeradorPropriedades::gerarPropriedade ( $propriedadesBO [$propriedade], $valor);
+		return $string;
 	}
 	
 	public function add() {
@@ -52,9 +50,8 @@ class PropriedadeBO extends Estrutura{
 		$propriedadesBO = $this->properties;
 		parent::$propriedades = parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['coluna'][$coluna];
 		$string = "";
-		foreach ( parent::$propriedades as $propriedade => $valor ) {
+		foreach ( parent::$propriedades as $propriedade => $valor ) 
 			$string .= GeradorPropriedades::gerarPropriedade ( $propriedadesBO [$propriedade], $valor );
-		}
 		return $string;
 	}
 	
