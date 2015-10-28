@@ -18,17 +18,18 @@ If (isset ( $argv [1] )) {
 	$dbCompany = $argv [1];
 	$cmd = true;
 	If (isset ( $argv [2] )) {
-		$host = $argv [2];
+		$connection = $argv [2];
 	}
 } elseif (isset ( $_GET ['empresa'] )) {
 	$dbCompany = $_GET ['empresa'];
+	if (isset ($_GET['connection'])) $connection = $_GET['connection'];
 	$cmd = false;
 } else {
 	$dbCompany = "teste";
 	$cmd = false;
 }
 
-$saida = new Saida ( $dbCompany, $cmd, $host = NULL );
+$saida = new Saida ( $dbCompany, $cmd, $connection );
 $schema = new SchemaBO ();
 $sequence = new SequenceBO();
 $funcao = new FuncaoBO();

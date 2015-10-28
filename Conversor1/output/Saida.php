@@ -11,14 +11,14 @@ class Saida extends Estrutura{
 	private $cmd;
 	private $path;
 	
-	public function __construct($dbCompany, $cmd, $host) {
+	public function __construct($dbCompany, $cmd, $connection = "connection") {
 		$this->cmd = $cmd;
 		try {
 			$config = parse_ini_file ( __DIR__ . "/../connection/config/config.ini", true );
-			if(!isset($host)) parent::$host = $config ['connection'] ['host'];
-			else parent::$host = $host;
-			parent::$user = $config ['connection'] ['user'];
-			parent::setPass($config['connection']['pass']);
+			
+			parent::$host = $config [$connection] ['host'];
+			parent::$user = $config [$connection] ['user'];
+			parent::setPass($config[$connection]['pass']);
 			parent::$dbHomolog = $config [$dbCompany] ['homolog'];
 			parent::$dbDev = $config [$dbCompany] ['dev'];
 			
