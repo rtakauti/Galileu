@@ -34,7 +34,8 @@ class FuncaoBO extends SchemaBO{
 		$lista = self::dev();
 		$string = "";
 		if (! empty ( $lista )) {
-			$string = "\n\n------ DEV FUNCTIONS ------";
+			$string .= "\n\n\n";
+			$string .= str_pad(" DEV FUNCTIONS ",50,"-",STR_PAD_BOTH);
 			foreach ($lista as $funcao) {
 				list($schema, $funcao) = explode(".", $funcao);
 				$string .= "\n\t-- $schema.$funcao";
@@ -47,6 +48,8 @@ class FuncaoBO extends SchemaBO{
 		$lista = self::homolog();
 		$string = "";
 		if (! empty ( $lista )) {
+			$string .= "\n\n\n";
+			$string .= str_pad(" HOMOLOG FUNCTIONS ",50,"-",STR_PAD_BOTH);
 			foreach ($lista as $funcao) {
 				list($schema, $funcao) = explode(".", $funcao);
 				$string .= "\n\t-- $schema.$funcao";
@@ -69,7 +72,8 @@ class FuncaoBO extends SchemaBO{
 		$funcoes = array_diff ( $homolog, $dev );
 		$string = "";
 		if (! empty ( $funcoes )) {
-			$string .= "\n\n\n--------------------  DROP DE FUNCTION, PROCEDURE, TRIGGER -------------------- ";
+			$string .= "\n\n\n";
+			$string .= str_pad(" DROP DE FUNCTION, PROCEDURE, TRIGGER ",100,"-",STR_PAD_BOTH);
 			$string .= "\n/*\n";
 			foreach ( $funcoes as $funcao ) {
 				list($schema, $funcao) = explode(".", $funcao);
@@ -86,7 +90,8 @@ class FuncaoBO extends SchemaBO{
 		$funcoes = array_diff($dev, $homolog);
 		$string = "";
 		if (! empty ( $funcoes )) {
-			$string .= "\n\n\n--------------------  CREATE DE FUNCTION, PROCEDURE, TRIGGER  -------------------- ";
+			$string .= "\n\n\n";
+			$string .= str_pad(" CREATE DE FUNCTION, PROCEDURE, TRIGGER ",100,"-",STR_PAD_BOTH);
 			foreach ( $funcoes as $funcao ) {
 				list($schema, $funcao) = explode(".", $funcao);
 				$create = parent::$dev ['schema'] [$schema] ['funcao'][$funcao]['create'];
@@ -96,5 +101,33 @@ class FuncaoBO extends SchemaBO{
 		return $string;
 	}
 	
+	public function alter(){
+		$dev = self::dev();
+		$homolog = self::homolog();
+		$funcoes = array_intersect($dev, $homolog);
+		$string = "";
+		if(!empty($funcoes)){
+			$string .= "\n\n\n";
+			$string .= str_pad(" ALTER DE FUNCTION, PROCEDURE, TRIGGER ",100,"-",STR_PAD_BOTH);
+			foreach ($funcoes as $funcoesInput) {
+				list($schema, $funcao) = explode(".", $funcoesInput);
+				$devCreate = parent::$dev ['schema'] [$schema] ['funcao'][$funcao]['create'];
+				$homologCreate = parent::$homolog ['schema'] [$schema] ['funcao'][$funcao]['create'];
+				if($devCreate != $homologCreate){
+					$string .= "\n\nDROP FUNCTION IF EXISTS $schema.$funcao CASCADE;";
+					
+					$string .= "\n\n$devCreate";
+				}
+			}
+		}
+		return $string;
+	}
 	
 }
+
+
+
+
+
+
+

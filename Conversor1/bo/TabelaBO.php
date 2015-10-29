@@ -35,7 +35,8 @@ class TabelaBO extends SchemaBO{
 		$lista = self::dev();
 		$string = "";
 		if (! empty ( $lista )) {
-			$string = "\n\n------ DEV TABELAS ------";
+			$string .= "\n\n\n";
+			$string .= str_pad(" DEV TABELAS ",50,"-",STR_PAD_BOTH);
 			$string .= "\n\t-- " . implode ( "\n\t-- ", $lista );
 		}
 		return $string;
@@ -45,7 +46,8 @@ class TabelaBO extends SchemaBO{
 		$lista = self::homolog();
 		$string = "";
 		if (! empty ( $lista )) {
-			$string = "\n\n------ HOMOLOG TABELAS ------";
+			$string .= "\n\n\n";
+			$string .= str_pad(" HOMOLOG TABELAS ",50,"-",STR_PAD_BOTH);
 			$string .= "\n\t-- " . implode ( "\n\t-- ", $lista );
 		}
 		return $string;
@@ -65,7 +67,8 @@ class TabelaBO extends SchemaBO{
 		$tabelas = array_diff ( $homolog, $dev );
 		$string = "";
 		if(!empty($tabelas)){
-			$string .= "\n\n\n------------------------------ DROP TABLE ------------------------------";
+			$string .= "\n\n\n";
+			$string .= str_pad(" DROP DE TABLE ",100,"-",STR_PAD_BOTH);
 			$string .= "\n/*\n";
 			foreach ($tabelas as $tabela) {
 				list($schema, $tabela) = explode(".", $tabela);
@@ -87,7 +90,8 @@ class TabelaBO extends SchemaBO{
 		if(!empty($tabelas)){
 			$coluna = new ColunaBO();
 			$constraint = new ConstraintBO();
-			$string .= "\n\n\n------------------------------ CREATE TABLE ------------------------------";
+			$string .= "\n\n\n";
+			$string .= str_pad(" CREATE DE TABLE ",100,"-",STR_PAD_BOTH);
 			foreach ($tabelas as $tabelaInput) {
 				list($schema, $tabela) = explode(".", $tabelaInput);
 				parent::$schema = $schema;

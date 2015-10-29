@@ -17,7 +17,8 @@ class SchemaBO extends Estrutura{
 		$dev = self::dev();
 		$string = "";
 		if(!empty($dev)){
-			$string = "\n\n------ DEV SCHEMAS ------";
+			$string .= "\n\n\n";
+			$string .= str_pad(" DEV SCHEMA ",50,"-",STR_PAD_BOTH);
 			$string .= "\n\t-- " . implode ( "\n\t-- ", $dev )  ;
 		}
 		return $string;
@@ -27,7 +28,8 @@ class SchemaBO extends Estrutura{
 		$homolog = self::homolog();
 		$string = "";
 		if(!empty($homolog)){
-			$string = "\n\n------ HOMOLOG SCHEMAS ------";
+			$string .= "\n\n\n";
+			$string .= str_pad(" HOMOLOG SCHEMA ",50,"-",STR_PAD_BOTH);
 			$string .= "\n\t-- " . implode ( "\n\t-- ", $homolog )  ;
 			return $string;
 		}
@@ -47,7 +49,8 @@ class SchemaBO extends Estrutura{
 		$schemas = array_diff ( $homolog, $dev );
 		$string = "";
 		if (! empty ( $schemas )) {
-			$string = "\n\n\n\n------------------------------ DROP DE SCHEMAS ------------------------------";
+			$string .= "\n\n\n";
+			$string .= str_pad(" DROP DE SCHEMA ",100,"-",STR_PAD_BOTH);
 			$string .= "\n/*\n";
 			foreach ( $schemas as $schema ) {
 				$string .= "\nDROP SCHEMA IF EXISTS $schema CASCADE;";
@@ -64,7 +67,8 @@ class SchemaBO extends Estrutura{
 		$schemas = array_diff($dev, $homolog);
 		$string = "";
 		if (! empty ( $schemas ))
-			$string .= "\n\n\n------------------------------ CREATE SCHEMA ------------------------------";
+			$string .= "\n\n\n";
+			$string .= str_pad(" CREATE DE SCHEMA ",100,"-",STR_PAD_BOTH);
 			foreach ( $schemas as $schema ) {
 				$string .= "\nCREATE SCHEMA $schema;";
 			}

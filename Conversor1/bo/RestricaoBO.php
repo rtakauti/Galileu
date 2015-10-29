@@ -34,10 +34,10 @@ class RestricaoBO extends Estrutura{
 		$constraint = parent::$constraint;
 		$string ="";
 		if(isset(parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['constraint'][$constraint]))
-			$constraints = parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['constraint'][$constraint];
-		if(!empty($constraints))
-			foreach ($constraints as $constraint => $valor) 
-				$string .= GeradorRestricoes::gerarRestricao($restricoesBO[$constraint], $valor);
+			$restricoes = parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['constraint'][$constraint];
+		if(!empty($restricoes))
+			foreach ($restricoes as $restricao => $valor) 
+				$string .= GeradorRestricoes::gerarRestricao($restricoesBO[$restricao], $valor);
 		return $string;
 
 	}

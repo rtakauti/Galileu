@@ -44,7 +44,9 @@ class Saida extends Estrutura{
 	private function abre() {
 		$homolog = parent::$dbHomolog;
 		$this->file = fopen ( $this->path."/".$homolog.".Script.".date('d').".".date('m').".".date('Y')."_H".date('H')."m".date('i').".sql", "a+", 0 );
-		$this->gravar("\n\n---------------------- DATABASE: $homolog ----------------------\n");
+		$string = "\n\n\n";
+		$string .= str_pad(" DATABASE: $homolog ",100,"-",STR_PAD_BOTH);
+		$this->gravar($string);
 	}
 	
 	private function fecha() {

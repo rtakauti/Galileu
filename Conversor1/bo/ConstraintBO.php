@@ -37,7 +37,8 @@ class ConstraintBO extends TabelaBO{
 		$lista = self::dev();
 		$string = "";
 		if (! empty ( $lista )) {
-			$string = "\n\n------ DEV CONSTRAINTS ------";
+			$string .= "\n\n\n";
+			$string .= str_pad(" DEV CONSTRAINTS ",50,"-",STR_PAD_BOTH);
 			foreach ($lista as $constraint) {
 				list($schema, $tabela, $constraint) = explode(".", $constraint);
 				$string .= "\n\t-- $schema.$tabela.$constraint" ;
@@ -50,8 +51,8 @@ class ConstraintBO extends TabelaBO{
 		$lista = self::homolog();
 		$string = "";
 		if (! empty ( $lista )) {
-			$string = "\n\n------ HOMOLOG CONSTRAINTS ------";
-			$i = 0;
+			$string .= "\n\n\n";
+			$string .= str_pad(" HOMOLOG CONSTRAINTS ",50,"-",STR_PAD_BOTH);
 			foreach ($lista as $constraint) {
 				list($schema, $tabela, $constraint) = explode(".", $constraint);
 				$string .= "\n\t-- $schema.$tabela.$constraint" ;
@@ -75,12 +76,12 @@ class ConstraintBO extends TabelaBO{
 		$constraints = array_diff ( $homolog, $dev );
 		$string = "";
 		if (! empty ( $constraints )) {
-			$string = "\n\n\n-------------------- DROP CONSTRAINT --------------------";
+			$string .= "\n\n\n";
+			$string .= str_pad(" DROP DE CONSTRAINT ",100,"-",STR_PAD_BOTH);
 			$string .= "\n/*\n";
 			foreach ( $constraints as $constraint ) {
 				list ( $schema, $tabela, $constraint ) = explode ( ".", $constraint );
 				$string .= "\n\nALTER TABLE IF EXISTS $schema.$tabela \n\tDROP CONSTRAINT IF EXISTS $constraint CASCADE;";
-				unset ( parent::$result ['schema'] [$schema] ['tabela'] [$tabela] ['constraint'] [$constraint] );
 			}
 			$string .= "\n\n\n*/";
 		}
@@ -110,11 +111,10 @@ class ConstraintBO extends TabelaBO{
 		$dev = parent::dev ();
 		$homolog = parent::homolog ();
 		$tabelas = array_intersect ( $dev, $homolog );
-		$string1 = $string = "";
-		$restricao = new RestricaoBO ( );
+		$string = "";
+		$stringResult = "";
 		if (! empty ( $tabelas )) {
-			$string = "\n\n\n-------------------- ALTER TABLE ADD CONSTRAINT --------------------";
-			$propriedade = new PropriedadeBO ();
+			$restricao = new RestricaoBO ( );
 			foreach ( $tabelas as $tabelaInput ) {
 				list ( $schema, $tabela ) = explode ( ".", $tabelaInput );
 				parent::$schema = $schema;
@@ -129,34 +129,49 @@ class ConstraintBO extends TabelaBO{
 						parent::$constraint = $constraint;
 						$restricoes = $restricao->construct ( );
 						if($restricoes != ""){
-							$string .= "\nALTER TABLE $schema.$tabela";
-							$string .= "\n\tADD CONSTRAINT $constraint " .$restricoes . ";\n";
-						}
-					}
-				}
-				/*
-				 * alter
-				 */
-				$constraints = array_intersect_assoc(  $dev, $homolog );
-				if (! empty ( $constraints )) {
-					foreach ( $constraints as $constraint ) {
-						parent::$constraint = $constraint;
-						$restricoes = $restricao->construct ();
-						if(parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['constraint'][$constraint] != parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['constraint'][$constraint]){
-						if ($restricoes != "") {
-							$string1 .= "\nALTER TABLE $schema.$tabela";
-							$string1 .= "\n\tADD CONSTRAINT $constraint " . $restricoes . ";\n";
-						}
+							$stringResult = "\n\n\n".str_pad(" ADD DE CONSTRAINT ",100,"-",STR_PAD_BOTH);
+							$string .= "\n\nALTER TABLE $schema.$tabela";
+							$string .= "\n\tADD CONSTRAINT $constraint $restricoes;";
 						}
 					}
 				}
 			}
 		}
-		return $string.$string1;
+		return $stringResult.$string;
 	}
 	
 	
-	
+	public function alter() {
+		$dev = self::dev ();
+		$homolog = self::homolog ();
+		$constraints = array_intersect ( $dev, $homolog );
+		$string = "";
+		$stringResult = "";
+		if (! empty ( $constraints )) {
+			$restricao = new RestricaoBO ( );
+			foreach ( $constraints as $constraintInput ) {
+				list ( $schema, $tabela, $constraint ) = explode ( ".", $constraintInput );
+				parent::$schema = $schema;
+				parent::$tabela = $tabela;
+				$dev = parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['constraint'] [$constraint];
+				$homolog = parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['constraint'] [$constraint];
+				if ($dev != $homolog) {
+					parent::$constraint = $constraint;
+					$restricoes = $restricao->construct ();
+					if ($restricoes != "") {
+						$stringResult = "\n\n\n".str_pad(" ALTER DE CONSTRAINT ",100,"-",STR_PAD_BOTH);
+						
+						$string .= "\n\nALTER TABLE IF EXISTS $schema.$tabela";
+						$string .= "\n\tDROP CONSTRAINT IF EXISTS $constraint CASCADE;";
+						
+						$string .= "\n\nALTER TABLE $schema.$tabela";
+						$string .= "\n\tADD CONSTRAINT $constraint $restricoes;";
+					}
+				}
+			}
+		}
+		return $stringResult.$string;
+	}
 	
 }
 

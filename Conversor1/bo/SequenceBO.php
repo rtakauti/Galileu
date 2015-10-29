@@ -37,7 +37,8 @@ class SequenceBO extends SchemaBO{
 		$dev = self::dev();
 		$string = "";
 		if (! empty ( $dev )) {
-			$string = "\n\n------ DEV SEQUENCES ------";
+			$string .= "\n\n\n";
+			$string .= str_pad(" DEV SEQUENCES ",50,"-",STR_PAD_BOTH);
 			$string .= "\n\t-- " . implode ( "\n\t-- ", $dev );
 		}
 		return $string;
@@ -47,7 +48,8 @@ class SequenceBO extends SchemaBO{
 		$homolog = self::homolog();
 		$string = "";
 		if (! empty ( $homolog )) {
-			$string = "\n\n------ HOMOLOG SEQUENCES ------";
+			$string .= "\n\n\n";
+			$string .= str_pad(" HOMOLOG SEQUENCES ",50,"-",STR_PAD_BOTH);
 			$string .= "\n\t-- " . implode ( "\n\t-- ", $homolog );
 		}
 		return $string;
@@ -67,7 +69,8 @@ class SequenceBO extends SchemaBO{
 		$sequences = array_diff ( $homolog, $dev );
 		$string = "";
 		if (! empty ( $sequences )) {
-			$string .= "\n\n\n--------------------  DROP DE SEQUENCES -------------------- ";
+			$string .= "\n\n\n";
+			$string .= str_pad(" DROP DE SEQUENCES ",100,"-",STR_PAD_BOTH);
 			$string .= "\n/*\n";
 			foreach ( $sequences as $sequence ) {
 				list($schema, $sequence) = explode(".", $sequence);
@@ -85,7 +88,8 @@ class SequenceBO extends SchemaBO{
 		$sequences = array_diff($dev, $homolog);
 		$string = "";
 		if (! empty ( $sequences )) {
-			$string .= "\n\n\n--------------------  CREATE DE SEQUENCES -------------------- ";
+			$string .= "\n\n\n";
+			$string .= str_pad(" CREATE DE SEQUENCES ",100,"-",STR_PAD_BOTH);
 			foreach ( $sequences as $sequenceInput ) {
 				list($schema, $sequence) = explode(".", $sequenceInput);
 				$string .= "\n\nCREATE SEQUENCE $schema.$sequence ";

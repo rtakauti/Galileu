@@ -16,7 +16,8 @@ class DAOImpl implements IDAO {
 	 * @return Uma array simples
 	 */
 	public  function query($schemaType) {
-		$find = $this->conns [$schemaType]->prepare ( $this->query );
+		$query = $this->query;
+		$find = $this->conns [$schemaType]->prepare ( $query );
 		$find->execute ();
 		$resultadoArray = array ();
 		while ($rst =  $find->fetch ( PDO::FETCH_NUM )) {
@@ -30,7 +31,8 @@ class DAOImpl implements IDAO {
 	 * @return Uma array simples
 	 */
 	public  function queryAssoc($schemaType) {
-		$find = $this->conns [$schemaType]->prepare ( $this->query );
+		$query = $this->query;
+		$find = $this->conns [$schemaType]->prepare ( $query );
 		$find->execute ();
 		//$resultado = $find->fetchAll ( PDO::FETCH_ASSOC );
 		$resultado = array();
@@ -51,7 +53,8 @@ class DAOImpl implements IDAO {
 	 * @return Uma array com profundidade de nivel maior que 1 Associativo
 	 */
 	public function queryAllAssoc($schemaType) {
-		$find = $this->conns [$schemaType]->prepare ( $this->query );
+		$query = $this->query;
+		$find = $this->conns [$schemaType]->prepare ( $query );
 		$find->execute ();
 		$resultado = array();
 		while ($rst = $find->fetch ( PDO::FETCH_ASSOC )){

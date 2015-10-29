@@ -17,17 +17,23 @@ class AssemblerBO extends Estrutura{
 	}
 	
 	
-	public static function dev(){
+	public static function devTree(){
 		echo "<pre>";
-		echo "\n\n------------------ DEV TREE-------------------- \n\n";
+		$string = "\n\n\n";
+		$string .= str_pad(" DEV TREE ",100,"-",STR_PAD_BOTH);
+		$string .= "\n\n";
+		echo $string;
 		print_r(parent::$dev);
 		echo "<hr/>";
 		echo "</pre>";
 	}
 	
-	public static function homolog(){
+	public static function homologTree(){
 		echo "<pre>";
-		echo "\n\n------------------ HOMOLOG TREE-------------------- \n\n";
+		$string = "\n\n\n";
+		$string .= str_pad(" HOMOLOG TREE ",100,"-",STR_PAD_BOTH);
+		$string .= "\n\n";
+		echo $string;
 		print_r(parent::$homolog);
 		echo "<hr/>";
 		echo "</pre>";

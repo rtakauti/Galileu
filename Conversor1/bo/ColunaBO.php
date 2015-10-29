@@ -38,7 +38,8 @@ class ColunaBO extends TabelaBO{
 		$colunas = self::dev();
 		$string = "";
 		if (! empty ( $colunas )) {
-			$string = "\n\n------ DEV COLUNAS ------";
+			$string .= "\n\n\n";
+			$string .= str_pad(" DEV COLUNAS ",50,"-",STR_PAD_BOTH);
 			foreach ($colunas as $coluna) {
 				list($schema, $tabela, $coluna) = explode(".", $coluna);
 				$string .= "\n\t-- $schema.$tabela.$coluna" ;
@@ -51,7 +52,8 @@ class ColunaBO extends TabelaBO{
 		$colunas = self::homolog();
 		$string = "";
 		if (! empty ( $colunas )) {
-			$string = "\n\n------ HOMOLOG COLUNAS ------";
+			$string .= "\n\n\n";
+			$string .= str_pad(" HOMOLOG COLUNAS ",50,"-",STR_PAD_BOTH);
 			foreach ($colunas as $coluna) {
 				list($schema, $tabela, $coluna) = explode(".", $coluna);
 				$string .= "\n\t-- $schema.$tabela.$coluna" ;
@@ -76,7 +78,8 @@ class ColunaBO extends TabelaBO{
 		$colunas = array_diff ( $homolog, $dev );
 		$string = "";
 		if (! empty ( $colunas )) {
-		$string = "\n\n\n-------------------- DROP DE COLUNAS --------------------";
+		$string .= "\n\n\n";
+		$string .= str_pad(" DROP COLUMN ",100,"-",STR_PAD_BOTH);
 		$string .= "\n/*\n";
 			foreach ( $colunas as $coluna ) {
 				list($schema, $tabela, $coluna) = explode(".", $coluna);
@@ -109,8 +112,10 @@ class ColunaBO extends TabelaBO{
 		$dev = parent::dev ();
 		$homolog = parent::homolog ();
 		$tabelas = array_intersect ( $dev, $homolog );
+		$string = "";
 		if (! empty ( $tabelas )) {
-			$string = "\n\n\n------------------------------ ALTER TABLE ADD COLUMN ------------------------------";
+			$string .= "\n\n\n";
+			$string .= str_pad(" ADD COLUMN ",100,"-",STR_PAD_BOTH);
 			$propriedade = new PropriedadeBO ();
 			foreach ( $tabelas as $tabelaInput ) {
 				list ( $schema, $tabela ) = explode ( ".", $tabelaInput );
@@ -140,9 +145,11 @@ class ColunaBO extends TabelaBO{
 		$dev = parent::dev ();
 		$homolog = parent::homolog ();
 		$tabelas = array_intersect ( $dev, $homolog );
+		$string = "";
+		$stringResult = "";
+		$line = FALSE;
 		if (! empty ( $tabelas )) {
 			$propriedade = new PropriedadeBO ();
-			$string = "\n\n\n------------------------------ ALTER TABLE ALTER COLUMN ------------------------------";
 			foreach ( $tabelas as $tabelaInput ) {
 				list ( $schema, $tabela ) = explode ( ".", $tabelaInput );
 				parent::$schema = $schema;
@@ -153,15 +160,21 @@ class ColunaBO extends TabelaBO{
 					$homolog = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] );
 				$colunas = array_intersect ( $dev, $homolog );
 				if (! empty ( $colunas )) {
+					$stringResult = "\n\n\n".str_pad(" ALTER COLUMN ",100,"-",STR_PAD_BOTH);
 					foreach ( $colunas as $coluna ) {
 						parent::$coluna = $coluna;
-						$string .= $propriedade->alter ();
+						$propriedades = $propriedade->alter ();
+						if($propriedades != ""){
+							$string .= $propriedades;
+							$line = TRUE;
+						}
 					}
 				}
-				$string .= "\n";
+				if($line)$string .= "\n\n";
+				$line = FALSE;
 			}
 		}
-		return $string;
+		return $stringResult.$string;
 	}
 	
 }
