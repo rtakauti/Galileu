@@ -34,23 +34,31 @@ class SequenceBO extends SchemaBO{
 	
 	
 	public function listarDev() {
-		$dev = self::dev();
+		$sequences = self::dev();
 		$string = "";
-		if (! empty ( $dev )) {
+		if (! empty ( $sequences )) {
 			$string .= "\n\n\n";
 			$string .= str_pad(" DEV SEQUENCES ",50,"-",STR_PAD_BOTH);
-			$string .= "\n\t-- " . implode ( "\n\t-- ", $dev );
+			$i=1;
+			foreach ($sequences as $sequence) {
+				$string .= "\n\t--$i--   $sequence";
+				$i++;
+			}
 		}
 		return $string;
 	}
 	
 	public function listarHomolog() {
-		$homolog = self::homolog();
+		$sequences = self::homolog();
 		$string = "";
-		if (! empty ( $homolog )) {
+		if (! empty ( $sequences )) {
 			$string .= "\n\n\n";
 			$string .= str_pad(" HOMOLOG SEQUENCES ",50,"-",STR_PAD_BOTH);
-			$string .= "\n\t-- " . implode ( "\n\t-- ", $homolog );
+			$i=1;
+			foreach ($sequences as $sequence) {
+				$string .= "\n\t--$i--   $sequence";
+				$i++;
+			}
 		}
 		return $string;
 	}

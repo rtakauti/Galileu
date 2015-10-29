@@ -14,23 +14,31 @@ class SchemaBO extends Estrutura{
 	
 	
 	public function listarDev(){
-		$dev = self::dev();
+		$schemas = self::dev();
 		$string = "";
-		if(!empty($dev)){
+		if(!empty($schemas)){
 			$string .= "\n\n\n";
 			$string .= str_pad(" DEV SCHEMA ",50,"-",STR_PAD_BOTH);
-			$string .= "\n\t-- " . implode ( "\n\t-- ", $dev )  ;
+			$i=1;
+			foreach ($schemas as $schema) {
+				$string .= "\n\t--$i--  $schema";
+				$i++;
+			}
 		}
 		return $string;
 	}
 	
 	public function listarHomolog(){
-		$homolog = self::homolog();
+		$schemas = self::homolog();
 		$string = "";
-		if(!empty($homolog)){
+		if(!empty($schemas)){
 			$string .= "\n\n\n";
 			$string .= str_pad(" HOMOLOG SCHEMA ",50,"-",STR_PAD_BOTH);
-			$string .= "\n\t-- " . implode ( "\n\t-- ", $homolog )  ;
+			$i=1;
+			foreach ($schemas as $schema) {
+				$string .= "\n\t--$i--  $schema";
+				$i++;
+			}
 			return $string;
 		}
 	}

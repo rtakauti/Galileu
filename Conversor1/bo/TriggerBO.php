@@ -35,28 +35,32 @@ class TriggerBO extends TabelaBO {
 	
 	
 	public function listarDev() {
-		$lista = self::dev();
+		$triggers = self::dev();
 		$string = "";
-		if (! empty ( $lista )) {
+		if (! empty ( $triggers )) {
 			$string .= "\n\n\n";
 			$string .= str_pad(" DEV TRIGGERS ",50,"-",STR_PAD_BOTH);
-			foreach ($lista as $trigger) {
+			$i=1;
+			foreach ($triggers as $trigger) {
 				list($schema, $tabela, $trigger) = explode(".", $trigger);
-				$string .= "\n\t-- $schema.$trigger" ;
+				$string .= "\n\t--$i--   $schema.$trigger" ;
+				$i++;
 			}
 		}
 		return $string;
 	}
 	
 	public function listarHomolog() {
-		$lista = self::homolog();
+		$triggers = self::homolog();
 		$string = "";
-		if (! empty ( $lista )) {
+		if (! empty ( $triggers )) {
 			$string .= "\n\n\n";
 			$string .= str_pad(" HOMOLOG TRIGGERS ",50,"-",STR_PAD_BOTH);
-			foreach ($lista as $trigger) {
+			$i=1;
+			foreach ($triggers as $trigger) {
 				list($schema, $tabela, $trigger) = explode(".", $trigger);
-				$string .= "\n\t-- $schema.$trigger" ;
+				$string .= "\n\t--$i--   $schema.$trigger" ;
+				$i++;
 			}
 		}
 		return $string;

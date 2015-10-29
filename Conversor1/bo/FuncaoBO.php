@@ -31,28 +31,32 @@ class FuncaoBO extends SchemaBO{
 	}
 	
 	public function listarDev() {
-		$lista = self::dev();
+		$funcoes = self::dev();
 		$string = "";
-		if (! empty ( $lista )) {
+		if (! empty ( $funcoes )) {
 			$string .= "\n\n\n";
 			$string .= str_pad(" DEV FUNCTIONS ",50,"-",STR_PAD_BOTH);
-			foreach ($lista as $funcao) {
+			$i=1;
+			foreach ($funcoes as $funcao) {
 				list($schema, $funcao) = explode(".", $funcao);
-				$string .= "\n\t-- $schema.$funcao";
+				$string .= "\n\t--$i--   $schema.$funcao";
+				$i++;
 			}
 		}
 		return $string;
 	}
 	
 	public function listarHomolog() {
-		$lista = self::homolog();
+		$funcoes = self::homolog();
 		$string = "";
-		if (! empty ( $lista )) {
+		if (! empty ( $funcoes )) {
 			$string .= "\n\n\n";
 			$string .= str_pad(" HOMOLOG FUNCTIONS ",50,"-",STR_PAD_BOTH);
-			foreach ($lista as $funcao) {
+			$i=1;
+			foreach ($funcoes as $funcao) {
 				list($schema, $funcao) = explode(".", $funcao);
-				$string .= "\n\t-- $schema.$funcao";
+				$string .= "\n\t--$i--   $schema.$funcao";
+				$i++;
 			}
 		}
 		return $string;

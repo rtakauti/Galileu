@@ -36,28 +36,32 @@ class IndiceBO extends TabelaBO{
 	
 	
 	public function listarDev() {
-		$lista = self::dev();
+		$indices = self::dev();
 		$string = "";
-		if (! empty ( $lista )) {
+		if (! empty ( $indices )) {
 			$string .= "\n\n\n";
 			$string .= str_pad(" DEV INDICES ",50,"-",STR_PAD_BOTH);
-			foreach ($lista as $indice) {
+			$i=1;
+			foreach ($indices as $indice) {
 				list($schema, $tabela, $indice) = explode(".", $indice);
-				$string .= "\n\t-- $schema.$indice" ;
+				$string .= "\n\t--$i--   $schema.$indice" ;
+				$i++;
 			}
 		}
 		return $string;
 	}
 	
 	public function listarHomolog() {
-		$lista = self::homolog();
+		$indices = self::homolog();
 		$string = "";
-		if (! empty ( $lista )) {
+		if (! empty ( $indices )) {
 			$string .= "\n\n\n";
 			$string .= str_pad(" HOMOLOG INDICES ",50,"-",STR_PAD_BOTH);
-			foreach ($lista as $indice) {
+			$i=1;
+			foreach ($indices as $indice) {
 				list($schema, $tabela, $indice) = explode(".", $indice);
-				$string .= "\n\t-- $schema.$indice" ;
+				$string .= "\n\t--$i--   $schema.$indice" ;
+				$i++;
 			}
 		}
 		return $string;

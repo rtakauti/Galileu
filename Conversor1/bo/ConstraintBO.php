@@ -34,28 +34,32 @@ class ConstraintBO extends TabelaBO{
 	
 	
 	public function listarDev() {
-		$lista = self::dev();
+		$constraints = self::dev();
 		$string = "";
-		if (! empty ( $lista )) {
+		if (! empty ( $constraints )) {
 			$string .= "\n\n\n";
 			$string .= str_pad(" DEV CONSTRAINTS ",50,"-",STR_PAD_BOTH);
-			foreach ($lista as $constraint) {
+			$i=1;
+			foreach ($constraints as $constraint) {
 				list($schema, $tabela, $constraint) = explode(".", $constraint);
-				$string .= "\n\t-- $schema.$tabela.$constraint" ;
+				$string .= "\n\t--$i--   $schema.$tabela.$constraint" ;
+				$i++;
 			}
 		}
 		return $string;
 	}
 	
 	public function listarHomolog() {
-		$lista = self::homolog();
+		$constraints = self::homolog();
 		$string = "";
-		if (! empty ( $lista )) {
+		if (! empty ( $constraints )) {
 			$string .= "\n\n\n";
 			$string .= str_pad(" HOMOLOG CONSTRAINTS ",50,"-",STR_PAD_BOTH);
-			foreach ($lista as $constraint) {
+			$i=1;
+			foreach ($constraints as $constraint) {
 				list($schema, $tabela, $constraint) = explode(".", $constraint);
-				$string .= "\n\t-- $schema.$tabela.$constraint" ;
+				$string .= "\n\t--$i--   $schema.$tabela.$constraint" ;
+				$i++;
 			}
 		}
 		return $string;

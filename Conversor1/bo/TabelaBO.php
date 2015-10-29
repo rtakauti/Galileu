@@ -32,23 +32,31 @@ class TabelaBO extends SchemaBO{
 	
 	
 	public function listarDev() {
-		$lista = self::dev();
+		$tabelas = self::dev();
 		$string = "";
-		if (! empty ( $lista )) {
+		if (! empty ( $tabelas )) {
 			$string .= "\n\n\n";
 			$string .= str_pad(" DEV TABELAS ",50,"-",STR_PAD_BOTH);
-			$string .= "\n\t-- " . implode ( "\n\t-- ", $lista );
+			$i=1;
+			foreach ($tabelas as $tabela) {
+				$string .= "\n\t--$i--   $tabela";
+				$i++;
+			}
 		}
 		return $string;
 	}
 	
 	public function listarHomolog() {
-		$lista = self::homolog();
+		$tabelas = self::homolog();
 		$string = "";
-		if (! empty ( $lista )) {
+		if (! empty ( $tabelas )) {
 			$string .= "\n\n\n";
 			$string .= str_pad(" HOMOLOG TABELAS ",50,"-",STR_PAD_BOTH);
-			$string .= "\n\t-- " . implode ( "\n\t-- ", $lista );
+			$i=1;
+			foreach ($tabelas as $tabela) {
+				$string .= "\n\t--$i--   $tabela";
+				$i++;
+			}
 		}
 		return $string;
 	}

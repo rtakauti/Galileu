@@ -25,6 +25,7 @@ class AssemblerDAOImpl implements IDAOImpl{
 		$this->indice = new IndiceDAOImpl();
 	}
 	
+	/*
 	public function retorna($schemaType){
 		$arraResult = array();
 		$arrayFuncao = $this->funcao->retorna($schemaType);
@@ -56,6 +57,22 @@ class AssemblerDAOImpl implements IDAOImpl{
 		
 		return $arrayResult;
 	}
+	*/
 	
+	public function  retorna($schemaType){
+		$arraResult = array();
+		$arrayFuncao = $this->funcao->retorna($schemaType);
+		$arraySequence = $this->sequence->retorna($schemaType);
+		$arrayIndice = $this->indice->retorna($schemaType);
+		$arrayTrigger = $this->trigger->retorna($schemaType);
+		$arrayConstraint = $this->constraint->retorna($schemaType);
+		$arraySchema = $this->schema->retorna($schemaType);
+		
+		$arraResult = array_merge_recursive($arraySchema, $arraySequence,$arrayFuncao, $arrayTrigger, $arrayIndice, $arrayConstraint );
+		return  $arraResult;
+	}
 	
 }
+
+
+

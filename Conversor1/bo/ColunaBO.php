@@ -40,9 +40,11 @@ class ColunaBO extends TabelaBO{
 		if (! empty ( $colunas )) {
 			$string .= "\n\n\n";
 			$string .= str_pad(" DEV COLUNAS ",50,"-",STR_PAD_BOTH);
+			$i=1;
 			foreach ($colunas as $coluna) {
 				list($schema, $tabela, $coluna) = explode(".", $coluna);
-				$string .= "\n\t-- $schema.$tabela.$coluna" ;
+				$string .= "\n\t--$i--   $schema.$tabela.$coluna" ;
+				$i++;
 			}
 		}
 		return $string;
@@ -54,9 +56,11 @@ class ColunaBO extends TabelaBO{
 		if (! empty ( $colunas )) {
 			$string .= "\n\n\n";
 			$string .= str_pad(" HOMOLOG COLUNAS ",50,"-",STR_PAD_BOTH);
+			$i=1;
 			foreach ($colunas as $coluna) {
 				list($schema, $tabela, $coluna) = explode(".", $coluna);
-				$string .= "\n\t-- $schema.$tabela.$coluna" ;
+				$string .= "\n\t--$i--   $schema.$tabela.$coluna" ;
+				$i++;
 			}
 		}
 		return $string;
