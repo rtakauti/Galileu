@@ -1,53 +1,32 @@
 <?php
 include_once 'estrutura/Estrutura.php';
-
 class SchemaBO extends Estrutura{
 	
-	
-	public static function dev(){
-		return array_keys(parent::$dev['schema']);
+	private static function dev(){
+		return parent::$dev['schemas'];
 	}
 	
-	public static function homolog(){
-		return array_keys(parent::$homolog['schema']);
+	private static function homolog(){
+		return parent::$homolog['schemas'];
 	}
 	
 	
-	public function listarDev(){
-		$schemas = self::dev();
+	private function listarSchema($schemas, $titulo){
 		$string = "";
 		if(!empty($schemas)){
 			$string .= "\n\n\n";
-			$string .= str_pad(" DEV SCHEMA ",50,"-",STR_PAD_BOTH);
-			$i=1;
-			foreach ($schemas as $schema) {
-				$string .= "\n\t--$i--  $schema";
-				$i++;
-			}
+			$string .= str_pad(" $titulo SCHEMA ",50,"-",STR_PAD_BOTH);
+			foreach ($schemas as $indice => $schema) $string .= "\n\t--$indice--  $schema";
 		}
 		return $string;
 	}
 	
-	public function listarHomolog(){
-		$schemas = self::homolog();
-		$string = "";
-		if(!empty($schemas)){
-			$string .= "\n\n\n";
-			$string .= str_pad(" HOMOLOG SCHEMA ",50,"-",STR_PAD_BOTH);
-			$i=1;
-			foreach ($schemas as $schema) {
-				$string .= "\n\t--$i--  $schema";
-				$i++;
-			}
-			return $string;
-		}
-	}
 	
 	
 	public function listar(){
 		$string = "";
-		$string .= $this->listarDev();
-		$string .= $this->listarHomolog();
+		$string .= $this->listarSchema(self::dev(), "DEV");
+		$string .= $this->listarSchema(self::homolog(), "HOMOLOG");
 		return $string;
 	}
 	
@@ -61,7 +40,7 @@ class SchemaBO extends Estrutura{
 			$string .= str_pad(" DROP DE SCHEMA ",100,"-",STR_PAD_BOTH);
 			$string .= "\n/*\n";
 			foreach ( $schemas as $schema ) {
-				$string .= "\nDROP SCHEMA IF EXISTS $schema CASCADE;";
+				$string .= "\nDROP SCHEMA IF EXISTS $schema;";
 			}
 			$string .= "\n\n\n*/";
 		}

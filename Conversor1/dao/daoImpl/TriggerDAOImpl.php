@@ -29,11 +29,13 @@ class TriggerDAOImpl extends DAOImpl implements IDAOImpl {
 		$arrayResult = array ();
 		$array = $this->queryAllAssoc ( $schemaType );
 		for($i = 0; $i < count ( $array ); $i ++) {
+			$arrayResult ['triggers'][$array [$i] ['schema_name'].".".$array [$i] ['trigger_name']] = $array [$i] ['schema_name'].".".$array [$i] ['trigger_name'];
 			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['trigger'] [$array [$i] ['trigger_name']] ['action_timing'] = $array [$i] ['action_timing'];
 			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['trigger'] [$array [$i] ['trigger_name']] ['event_manipulation'] [] = $array [$i] ['event_manipulation'];
 			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['trigger'] [$array [$i] ['trigger_name']] ['trigger_scope'] = $array [$i] ['trigger_scope'];
 			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['trigger'] [$array [$i] ['trigger_name']] ['action_statement'] = $array [$i] ['action_statement'];
 		}
+		$arrayResult ['triggers'] = array_values($arrayResult ['triggers']);
 		return $arrayResult;
 	}
 }

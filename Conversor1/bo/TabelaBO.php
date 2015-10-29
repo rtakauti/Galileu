@@ -1,70 +1,31 @@
 <?php
-class TabelaBO extends SchemaBO{
+include_once 'estrutura/Estrutura.php';
+class TabelaBO extends Estrutura{
 	
-	public static function dev() {
-		$lista = array ();
-		$schemas = parent::dev();
-		foreach ( $schemas as $schema ) {
-			if (isset ( parent::$dev ['schema'] [$schema] ['tabela'] )) {
-				$tabelas = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] );
-				foreach ( $tabelas as $tabela ) {
-					$lista [] = "$schema.$tabela";
-				}
-			}
-		}
-		return $lista;
+	private static function dev() {
+		return parent::$dev['tabelas'];
 	}
 	
 	
-	public static function homolog() {
-		$lista = array ();
-		$schemas = parent::homolog();
-		foreach ( $schemas as $schema ) {
-			if (isset ( parent::$homolog ['schema'] [$schema] ['tabela'] )) {
-				$tabelas = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] );
-				foreach ( $tabelas as $tabela ) {
-					$lista [] = "$schema.$tabela";
-				}
-			}
-		}
-		return $lista;
+	private static function homolog() {
+		return parent::$homolog['tabelas'];
 	}
 	
 	
-	public function listarDev() {
-		$tabelas = self::dev();
+	private function listarTabela($tabelas, $titulo) {
 		$string = "";
 		if (! empty ( $tabelas )) {
 			$string .= "\n\n\n";
-			$string .= str_pad(" DEV TABELAS ",50,"-",STR_PAD_BOTH);
-			$i=1;
-			foreach ($tabelas as $tabela) {
-				$string .= "\n\t--$i--   $tabela";
-				$i++;
-			}
-		}
-		return $string;
-	}
-	
-	public function listarHomolog() {
-		$tabelas = self::homolog();
-		$string = "";
-		if (! empty ( $tabelas )) {
-			$string .= "\n\n\n";
-			$string .= str_pad(" HOMOLOG TABELAS ",50,"-",STR_PAD_BOTH);
-			$i=1;
-			foreach ($tabelas as $tabela) {
-				$string .= "\n\t--$i--   $tabela";
-				$i++;
-			}
+			$string .= str_pad(" $titulo TABELAS ",50,"-",STR_PAD_BOTH);
+			foreach ($tabelas as $indice => $tabela) $string .= "\n\t--$indice--   $tabela";
 		}
 		return $string;
 	}
 	
 	public function listar(){
 		$string = "";
-		$string .= $this->listarDev();
-		$string .= $this->listarHomolog();
+		$string .= $this->listarTabela(self::dev(), "DEV");
+		$string .= $this->listarTabela(self::homolog(), "HOMOLOG");
 		return $string;
 	}
 	
@@ -80,7 +41,7 @@ class TabelaBO extends SchemaBO{
 			$string .= "\n/*\n";
 			foreach ($tabelas as $tabela) {
 				list($schema, $tabela) = explode(".", $tabela);
-				$string .= "\nDROP TABLE IF EXISTS $schema.$tabela CASCADE;";
+				$string .= "\nDROP TABLE IF EXISTS $schema.$tabela;";
 			}
 			$string .= "\n\n\n*/";
 		}

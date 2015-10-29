@@ -88,12 +88,7 @@ class IndiceBO extends TabelaBO{
 			$string .= "\n/*\n";
 			foreach ( $indices as $indice ) {
 				list($schema, $tabela, $indice) = explode(".", $indice);
-				$lista[$schema][] = "\nDROP INDEX IF EXISTS $indice CASCADE;";
-			}
-			$schemas = array_keys($lista);
-			foreach ($schemas as $schema) {
-				$string .= "\n\nSET SEARCH_PATH TO $schema;";
-				$string .= implode("", $lista[$schema]);
+				$string .= "\nDROP INDEX IF EXISTS $schema.$indice;";
 			}
 			$string .= "\n\n\n*/";
 		}
@@ -115,7 +110,7 @@ class IndiceBO extends TabelaBO{
 				$colunas = parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['indice'][$indice] ;
 				$colunas = implode(", ", $colunas);
 				$string .= "\n\nCREATE INDEX $indice";
-				$string .= "\n\tON $tabela";
+				$string .= "\n\tON $schema.$tabela";
 				$string .= "\n\tUSING btree";
 				$string .= "\n\t($colunas);";
 			}
@@ -137,12 +132,10 @@ class IndiceBO extends TabelaBO{
 				$homologColunas = parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['indice'][$indice] ;
 				if ($devColunas != $homologColunas){
 					$colunas = implode(", ", $devColunas);
-					$string .= "\n\nSET SEARCH_PATH TO $schema;";
-					
-					$string .= "\nDROP INDEX IF EXISTS $indice CASCADE;";
+					$string .= "\n\nDROP INDEX IF EXISTS $schema.$indice;";
 					
 					$string .= "\nCREATE INDEX $indice";
-					$string .= "\n\tON $tabela";
+					$string .= "\n\tON $schema.$tabela";
 					$string .= "\n\tUSING btree";
 					$string .= "\n\t($colunas);";
 				}

@@ -1,76 +1,34 @@
 <?php
-class TriggerBO extends TabelaBO {
+include_once 'estrutura/Estrutura.php';
+class TriggerBO extends Estrutura {
 	
-	public static function dev() {
-		$lista = array ();
-		$tabelas = parent::dev ();
-		foreach ( $tabelas as $tabelaInput ) {
-			list ( $schema, $tabela ) = explode ( ".", $tabelaInput );
-			if (isset ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['trigger'] )) {
-				$triggers = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['trigger'] );
-				foreach ( $triggers as $trigger ) {
-					$lista [] = "$schema.$tabela.$trigger";
-				}
-			}
-		}
-		return $lista;
+	private static function dev() {
+		return parent::$dev['triggers'];
 	}
 	
 	
-	public static function homolog() {
-		$lista = array ();
-		$tabelas = parent::homolog ();
-		foreach ( $tabelas as $tabelaInput ) {
-			list ( $schema, $tabela ) = explode ( ".", $tabelaInput );
-			if (isset ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['trigger'] )) {
-				$triggers = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['trigger'] );
-				foreach ( $triggers as $trigger ) {
-					$lista [] = "$schema.$tabela.$trigger";
-				}
-			}
-		}
-		return $lista;
+	private static function homolog() {
+		return parent::$homolog['triggers'];
 	}
 	
 	
 	
-	public function listarDev() {
-		$triggers = self::dev();
+	private function listarTrigger($triggers, $titulo) {
 		$string = "";
 		if (! empty ( $triggers )) {
 			$string .= "\n\n\n";
-			$string .= str_pad(" DEV TRIGGERS ",50,"-",STR_PAD_BOTH);
-			$i=1;
-			foreach ($triggers as $trigger) {
-				list($schema, $tabela, $trigger) = explode(".", $trigger);
-				$string .= "\n\t--$i--   $schema.$trigger" ;
-				$i++;
-			}
+			$string .= str_pad(" $titulo TRIGGERS ",50,"-",STR_PAD_BOTH);
+			foreach ($triggers as $indice => $trigger) $string .= "\n\t--$indice--   $trigger" ;
 		}
 		return $string;
 	}
 	
-	public function listarHomolog() {
-		$triggers = self::homolog();
-		$string = "";
-		if (! empty ( $triggers )) {
-			$string .= "\n\n\n";
-			$string .= str_pad(" HOMOLOG TRIGGERS ",50,"-",STR_PAD_BOTH);
-			$i=1;
-			foreach ($triggers as $trigger) {
-				list($schema, $tabela, $trigger) = explode(".", $trigger);
-				$string .= "\n\t--$i--   $schema.$trigger" ;
-				$i++;
-			}
-		}
-		return $string;
-	}
 	
 	
 	public function listar(){
 		$string = "";
-		$string .= $this->listarDev();
-		$string .= $this->listarHomolog();
+		$string .= $this->listarTrigger(self::dev(), "DEV");
+		$string .= $this->listarTrigger(self::homolog(), "HOMOLOG");
 		return $string;
 	}
 	
@@ -89,14 +47,8 @@ class TriggerBO extends TabelaBO {
 			foreach ( $triggers as $triggerInput ) {
 				list($schema, $tabela, $trigger) = explode(".", $triggerInput);
 				$funcao = substr(parent::$homolog ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger]['action_statement'], strlen("EXECUTE PROCEDURE "));
-				$stringTrigger = "\nDROP TRIGGER IF EXISTS $trigger ON $tabela;";
-				$stringTrigger .= "\nDROP FUNCTION IF EXISTS $funcao;";
-				$lista[$schema][] = $stringTrigger; 
-			}
-			$schemas = array_keys($lista);
-			foreach ($schemas as $schema) {
-				$string .= "\n\nSET SEARCH_PATH TO $schema;";
-				$string .= implode("", $lista[$schema]);
+				$string .= "\nDROP TRIGGER IF EXISTS $trigger ON $schema.$tabela;";
+				$string .= "\nDROP FUNCTION IF EXISTS $schema.$funcao;";
 			}
 			$string .= "\n\n\n*/";
 		}
@@ -119,14 +71,12 @@ class TriggerBO extends TabelaBO {
 				$eventos = implode ( " OR ", $event_manipulation );
 				$trigger_scope = parent::$dev ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger]['trigger_scope'];
 				$action_statement = parent::$dev ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger]['action_statement'];
-				$string .= "\n\nSET SEARCH_PATH TO $schema;";
 				
 				$string .= "\nCREATE TRIGGER $trigger";
 				$string .= "\n\t$action_timing $eventos";
-				$string .= "\n\tON $tabela";
+				$string .= "\n\tON $schema.$tabela";
 				$string .= "\n\tFOR EACH $trigger_scope";
 				$string .= "\n\t$action_statement;";
-				
 			}
 		}
 		return $string;
@@ -152,15 +102,13 @@ class TriggerBO extends TabelaBO {
 					$action_statement = parent::$dev ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger]['action_statement'];
 					$funcao = substr(parent::$dev ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger]['action_statement'], strlen("EXECUTE PROCEDURE "));
 						
-					$string .= "\n\nSET SEARCH_PATH TO $schema;";
-					$string .= "\nDROP TRIGGER IF EXISTS $trigger ON $tabela;";
-					$string .= "\nDROP FUNCTION IF EXISTS $funcao;";
+					$string .= "\n\nDROP TRIGGER IF EXISTS $trigger ON $schema.$tabela;";
+					$string .= "\nDROP FUNCTION IF EXISTS $schema.$funcao;";
 					$string .= "\nCREATE TRIGGER $trigger";
 					$string .= "\n\t$action_timing $eventos";
 					$string .= "\n\tON $tabela";
 					$string .= "\n\tFOR EACH $trigger_scope";
 					$string .= "\n\t$action_statement;";
-					
 				}
 			}
 		}

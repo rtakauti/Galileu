@@ -66,7 +66,7 @@ class PropriedadeBO extends Estrutura{
 		parent::$propriedades = array_diff_assoc ( $dev, $homolog );
 		$string = $anteriorColuna = $anterior = "";
 		foreach ( parent::$propriedades as $propriedade => $valor ) {
-			$anteriorColuna = "\n-- ESTADO ANTERIOR: $coluna -- ";
+			$anteriorColuna = "\n\n-- ESTADO ANTERIOR: $coluna -- ";
 			$homologValor = parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] [$coluna] [$propriedade];
 			if (! isset ( $homologValor ))
 				$homologValor = "NULO";

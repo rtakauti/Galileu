@@ -1,64 +1,23 @@
 <?php
-
-class SequenceBO extends SchemaBO{
+include_once 'estrutura/Estrutura.php';
+class SequenceBO extends Estrutura{
 	
-	public static function dev() {
-		$lista = array ();
-		$schemas = parent::dev();
-		foreach ( $schemas as $schema ) {
-			if (isset ( parent::$dev ['schema'] [$schema] ['sequence'] )) {
-				$sequences = array_keys ( parent::$dev ['schema'] [$schema] ['sequence'] );
-				foreach ( $sequences as $sequence ) {
-					$lista [] = "$schema.$sequence";
-					parent::$sequences[] = "$schema.$sequence";
-				}
-			}
-		}
-		return $lista;
+	private static function dev() {
+		return parent::$dev['sequences'];
 	}
 	
 	
-	public static function homolog() {
-		$lista = array ();
-		$schemas = parent::homolog();
-		foreach ( $schemas as $schema ) {
-			if (isset ( parent::$homolog ['schema'] [$schema] ['sequence'] )) {
-				$sequences = array_keys ( parent::$homolog ['schema'] [$schema] ['sequence'] );
-				foreach ( $sequences as $sequence ) {
-					$lista [] = "$schema.$sequence";
-				}
-			}
-		}
-		return $lista;
+	private static function homolog() {
+		return parent::$homolog['sequences'];
 	}
 	
 	
-	public function listarDev() {
-		$sequences = self::dev();
+	private function listarSequence($sequences, $titulo) {
 		$string = "";
 		if (! empty ( $sequences )) {
 			$string .= "\n\n\n";
-			$string .= str_pad(" DEV SEQUENCES ",50,"-",STR_PAD_BOTH);
-			$i=1;
-			foreach ($sequences as $sequence) {
-				$string .= "\n\t--$i--   $sequence";
-				$i++;
-			}
-		}
-		return $string;
-	}
-	
-	public function listarHomolog() {
-		$sequences = self::homolog();
-		$string = "";
-		if (! empty ( $sequences )) {
-			$string .= "\n\n\n";
-			$string .= str_pad(" HOMOLOG SEQUENCES ",50,"-",STR_PAD_BOTH);
-			$i=1;
-			foreach ($sequences as $sequence) {
-				$string .= "\n\t--$i--   $sequence";
-				$i++;
-			}
+			$string .= str_pad(" $titulo SEQUENCES ",50,"-",STR_PAD_BOTH);
+			foreach ($sequences as $indice => $sequence) $string .= "\n\t--$indice--   $sequence";
 		}
 		return $string;
 	}
@@ -66,8 +25,8 @@ class SequenceBO extends SchemaBO{
 	
 	public function listar(){
 		$string = "";
-		$string .= $this->listarDev();
-		$string .= $this->listarHomolog();
+		$string .= $this->listarSequence(self::dev(), "DEV");
+		$string .= $this->listarSequence(self::homolog(), "HOMOLOG");
 		return $string;
 	}
 	
@@ -82,7 +41,7 @@ class SequenceBO extends SchemaBO{
 			$string .= "\n/*\n";
 			foreach ( $sequences as $sequence ) {
 				list($schema, $sequence) = explode(".", $sequence);
-				$string .= "\nDROP SEQUENCE IF EXISTS $schema.$sequence CASCADE;";
+				$string .= "\nDROP SEQUENCE IF EXISTS $schema.$sequence;";
 			}
 			$string .= "\n\n\n*/";
 		}

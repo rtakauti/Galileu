@@ -1,71 +1,30 @@
 <?php
-class FuncaoBO extends SchemaBO{
+include_once 'estrutura/Estrutura.php';
+class FuncaoBO extends Estrutura{
 	
 	
-	public static function dev() {
-		$lista = array();
-		$schemas = parent::dev();
-		foreach ( $schemas as $schema ) {
-			if (isset ( parent::$dev ['schema'] [$schema] ['funcao'] )) {
-				$funcoes = array_keys ( parent::$dev ['schema'] [$schema] ['funcao'] );
-				foreach ( $funcoes as $funcao ) {
-					$lista [] = "$schema.$funcao";
-				}
-			}
-		}
-		return $lista;
+	private static function dev() {
+		return parent::$dev['funcoes'];
 	}
 	
-	public static function homolog() {
-		$lista = array ();
-		$schemas = parent::homolog();
-		foreach ( $schemas as $schema ) {
-			if (isset ( parent::$homolog ['schema'] [$schema] ['funcao'] )) {
-				$funcoes = array_keys ( parent::$homolog ['schema'] [$schema] ['funcao'] );
-				foreach ( $funcoes as $funcao ) {
-					$lista [] = "$schema.$funcao";
-				}
-			}
-		}
-		return $lista;
+	private static function homolog() {
+		return parent::$homolog['funcoes'];
 	}
 	
-	public function listarDev() {
-		$funcoes = self::dev();
+	private function listarFuncao($funcoes, $titulo) {
 		$string = "";
 		if (! empty ( $funcoes )) {
 			$string .= "\n\n\n";
-			$string .= str_pad(" DEV FUNCTIONS ",50,"-",STR_PAD_BOTH);
-			$i=1;
-			foreach ($funcoes as $funcao) {
-				list($schema, $funcao) = explode(".", $funcao);
-				$string .= "\n\t--$i--   $schema.$funcao";
-				$i++;
-			}
-		}
-		return $string;
-	}
-	
-	public function listarHomolog() {
-		$funcoes = self::homolog();
-		$string = "";
-		if (! empty ( $funcoes )) {
-			$string .= "\n\n\n";
-			$string .= str_pad(" HOMOLOG FUNCTIONS ",50,"-",STR_PAD_BOTH);
-			$i=1;
-			foreach ($funcoes as $funcao) {
-				list($schema, $funcao) = explode(".", $funcao);
-				$string .= "\n\t--$i--   $schema.$funcao";
-				$i++;
-			}
+			$string .= str_pad(" $titulo FUNCTIONS ",50,"-",STR_PAD_BOTH);
+			foreach ($funcoes as $indice => $funcao) $string .= "\n\t--$indice--   $funcao";
 		}
 		return $string;
 	}
 	
 	public function listar(){
 		$string = "";
-		$string .= $this->listarDev();
-		$string .= $this->listarHomolog();
+		$string .= $this->listarFuncao(self::dev(), "DEV");
+		$string .= $this->listarFuncao(self::homolog(), "HOMOLOG");
 		return $string;
 	}
 	
@@ -81,7 +40,7 @@ class FuncaoBO extends SchemaBO{
 			$string .= "\n/*\n";
 			foreach ( $funcoes as $funcao ) {
 				list($schema, $funcao) = explode(".", $funcao);
-				 $string .= "\nDROP FUNCTION IF EXISTS $schema.$funcao CASCADE;";
+				 $string .= "\nDROP FUNCTION IF EXISTS $schema.$funcao;";
 			}
 			$string .= "\n\n\n*/";
 		}
@@ -118,7 +77,7 @@ class FuncaoBO extends SchemaBO{
 				$devCreate = parent::$dev ['schema'] [$schema] ['funcao'][$funcao]['create'];
 				$homologCreate = parent::$homolog ['schema'] [$schema] ['funcao'][$funcao]['create'];
 				if($devCreate != $homologCreate){
-					$string .= "\n\nDROP FUNCTION IF EXISTS $schema.$funcao CASCADE;";
+					$string .= "\n\nDROP FUNCTION IF EXISTS $schema.$funcao;";
 					
 					$string .= "\n\n$devCreate";
 				}

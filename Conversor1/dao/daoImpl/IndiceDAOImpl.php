@@ -43,8 +43,10 @@ class IndiceDAOImpl extends DAOImpl implements IDAOImpl{
 		$arrayResult = array ();
 		$array = $this->queryAllAssoc ( $schemaType );
 		for($i = 0; $i < count ( $array ); $i ++) {
+			$arrayResult ['indices'][$array [$i] ['index_name']] = $array [$i] ['index_name'];
 			$arrayResult ['schema'][$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']]['indice'] [$array [$i] ['index_name']] [] = $array [$i] ['column_name'];
 		}
+		$arrayResult ['indices'] = array_values($arrayResult ['indices']);
 		return $arrayResult;
 	}
 	

@@ -87,7 +87,8 @@ class ColunaBO extends TabelaBO{
 		$string .= "\n/*\n";
 			foreach ( $colunas as $coluna ) {
 				list($schema, $tabela, $coluna) = explode(".", $coluna);
-				$string .= "\n\nALTER TABLE IF EXISTS $schema.$tabela \n\tDROP COLUMN IF EXISTS $coluna CASCADE;";
+				$string .= "\n\nALTER TABLE IF EXISTS $schema.$tabela";
+				$string .= "\n\tDROP COLUMN IF EXISTS $coluna;";
 			}
 			$string .= "\n\n\n*/";
 		}
@@ -145,40 +146,34 @@ class ColunaBO extends TabelaBO{
 	
 	
 	public function alter() {
-		$lista = array();
-		$dev = parent::dev ();
-		$homolog = parent::homolog ();
-		$tabelas = array_intersect ( $dev, $homolog );
+		$lista = array ();
+		$dev = self::dev ();
+		$homolog = self::homolog ();
+		$colunas = array_intersect ( $dev, $homolog );
 		$string = "";
 		$stringResult = "";
-		$line = FALSE;
-		if (! empty ( $tabelas )) {
+		$valida = "";
+		$titulo = "";
+		if (! empty ( $colunas )) {
 			$propriedade = new PropriedadeBO ();
-			foreach ( $tabelas as $tabelaInput ) {
-				list ( $schema, $tabela ) = explode ( ".", $tabelaInput );
+			foreach ( $colunas as $colunaInput ) {
+				list ( $schema, $tabela, $coluna ) = explode ( ".", $colunaInput );
 				parent::$schema = $schema;
 				parent::$tabela = $tabela;
-				if ((isset ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] )))
-					$dev = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] );
-				if ((isset ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] )))
-					$homolog = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] );
-				$colunas = array_intersect ( $dev, $homolog );
-				if (! empty ( $colunas )) {
-					$stringResult = "\n\n\n".str_pad(" ALTER COLUMN ",100,"-",STR_PAD_BOTH);
-					foreach ( $colunas as $coluna ) {
-						parent::$coluna = $coluna;
-						$propriedades = $propriedade->alter ();
-						if($propriedades != ""){
-							$string .= $propriedades;
-							$line = TRUE;
-						}
+				parent::$coluna = $coluna;
+				$stringResult = "\n\n\n" . str_pad ( " ALTER COLUMN ", 100, "-", STR_PAD_BOTH );
+				$propriedades = $propriedade->alter ();
+				if($propriedades != ""){
+					if($valida != "$schema.$tabela"){
+						$valida = "$schema.$tabela";
+						$titulo = "\n\n\n--TABELA: $schema.$tabela";
 					}
 				}
-				if($line)$string .= "\n\n";
-				$line = FALSE;
+				$string .= "$titulo$propriedades";
+				$titulo = "";
 			}
 		}
-		return $stringResult.$string;
+		return $stringResult . $string;
 	}
 	
 }

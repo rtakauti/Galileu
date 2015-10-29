@@ -53,6 +53,9 @@ class SchemaDAOImpl extends DAOImpl implements IDAOImpl{
 		$arrayResult = array ();
 		$array = $this->queryAllAssoc ( $schemaType );
 		for($i = 0; $i < count ( $array ); $i ++) {
+			$arrayResult ['schemas'][$array [$i] ['schema_name']] = $array [$i] ['schema_name'];
+			$arrayResult ['tabelas'][$array [$i] ['schema_name'].".".$array [$i] ['table_name']] = $array [$i] ['schema_name'].".".$array [$i] ['table_name'];
+			$arrayResult ['colunas'][$array [$i] ['schema_name'].".".$array [$i] ['table_name'].".".$array [$i] ['column_name']] = $array [$i] ['schema_name'].".".$array [$i] ['table_name'].".".$array [$i] ['column_name'];
 			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['coluna'] [$array [$i] ['column_name']] ['udt_name'] = $array [$i] ['udt_name'];
 			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['coluna'] [$array [$i] ['column_name']] ['data_type'] = $array [$i] ['data_type'];
 			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['coluna'] [$array [$i] ['column_name']] ['numeric_precision'] = $array [$i] ['numeric_precision'];
@@ -63,6 +66,9 @@ class SchemaDAOImpl extends DAOImpl implements IDAOImpl{
 			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['coluna'] [$array [$i] ['column_name']] ['is_nullable'] = $array [$i] ['is_nullable'];
 			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['coluna'] [$array [$i] ['column_name']] ['column_default'] = $array [$i] ['column_default'];
 		}
+		$arrayResult ['schemas'] = array_values($arrayResult ['schemas']);
+		$arrayResult ['tabelas'] = array_values($arrayResult ['tabelas']);
+		$arrayResult ['colunas'] = array_values($arrayResult ['colunas']);
 		return $arrayResult;
 	}
 	

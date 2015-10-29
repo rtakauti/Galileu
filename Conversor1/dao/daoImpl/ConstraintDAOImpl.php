@@ -58,6 +58,7 @@ class ConstraintDAOImpl extends DAOImpl implements IDAOImpl{
 		$arrayResult = array ();
 		$array = $this->queryAllAssoc ( $schemaType );
 		for($i = 0; $i < count ( $array ); $i ++) {
+			$arrayResult ['constraints'][$array [$i] ['constraint_name']] = $array [$i] ['constraint_name'];
 			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['table_name']] ['constraint'][$array [$i] ['constraint_name']] ['constraint_type'] = $array [$i] ['constraint_type'];
 			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['table_name']] ['constraint'][$array [$i] ['constraint_name']] ['column_name'] [] = $array [$i] ['column_name'];
 			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['table_name']] ['constraint'][$array [$i] ['constraint_name']] ['foreign_table'] = $array [$i] ['foreign_table'];
@@ -67,6 +68,7 @@ class ConstraintDAOImpl extends DAOImpl implements IDAOImpl{
 			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['table_name']] ['constraint'][$array [$i] ['constraint_name']] ['delete_rule'] = $array [$i] ['delete_rule'];
 			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['table_name']] ['constraint'][$array [$i] ['constraint_name']] ['consrc'] = $array [$i] ['consrc'];
 		}
+		$arrayResult ['constraints'] = array_values($arrayResult ['constraints']);
 		return $arrayResult;
 	}
 }

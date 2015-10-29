@@ -85,7 +85,8 @@ class ConstraintBO extends TabelaBO{
 			$string .= "\n/*\n";
 			foreach ( $constraints as $constraint ) {
 				list ( $schema, $tabela, $constraint ) = explode ( ".", $constraint );
-				$string .= "\n\nALTER TABLE IF EXISTS $schema.$tabela \n\tDROP CONSTRAINT IF EXISTS $constraint CASCADE;";
+				$string .= "\n\nALTER TABLE IF EXISTS $schema.$tabela";
+				$string .= "\n\tDROP CONSTRAINT IF EXISTS $constraint;";
 			}
 			$string .= "\n\n\n*/";
 		}
@@ -166,7 +167,7 @@ class ConstraintBO extends TabelaBO{
 						$stringResult = "\n\n\n".str_pad(" ALTER DE CONSTRAINT ",100,"-",STR_PAD_BOTH);
 						
 						$string .= "\n\nALTER TABLE IF EXISTS $schema.$tabela";
-						$string .= "\n\tDROP CONSTRAINT IF EXISTS $constraint CASCADE;";
+						$string .= "\n\tDROP CONSTRAINT IF EXISTS $constraint;";
 						
 						$string .= "\n\nALTER TABLE $schema.$tabela";
 						$string .= "\n\tADD CONSTRAINT $constraint $restricoes;";
