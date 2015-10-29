@@ -58,7 +58,7 @@ class ConstraintDAOImpl extends DAOImpl implements IDAOImpl{
 		$arrayResult = array ();
 		$array = $this->queryAllAssoc ( $schemaType );
 		for($i = 0; $i < count ( $array ); $i ++) {
-			$arrayResult ['constraints'][$array [$i] ['constraint_name']] = $array [$i] ['constraint_name'];
+			$arrayResult ['constraints'][$array [$i] ['schema_name'].".".$array [$i] ['table_name'].".".$array [$i] ['constraint_name']] = $array [$i] ['schema_name'].".".$array [$i] ['table_name'].".".$array [$i] ['constraint_name'];
 			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['table_name']] ['constraint'][$array [$i] ['constraint_name']] ['constraint_type'] = $array [$i] ['constraint_type'];
 			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['table_name']] ['constraint'][$array [$i] ['constraint_name']] ['column_name'] [] = $array [$i] ['column_name'];
 			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['table_name']] ['constraint'][$array [$i] ['constraint_name']] ['foreign_table'] = $array [$i] ['foreign_table'];

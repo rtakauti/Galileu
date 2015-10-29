@@ -30,7 +30,7 @@ class SequenceDAOImpl extends DAOImpl implements IDAOImpl{
 		$arrayResult = array ();
 		$array = $this->queryAllAssoc ( $schemaType );
 		for($i = 0; $i < count ( $array ); $i ++) {
-			$arrayResult ['sequences'][$array [$i] ['sequence_name']] = $array [$i] ['sequence_name'];
+			$arrayResult ['sequences'][$array [$i] ['schema_name'].".".$array [$i] ['sequence_name']] = $array [$i] ['schema_name'].".".$array [$i] ['sequence_name'];
 			$arrayResult ['schema'][$array [$i] ['schema_name']]['sequence'][$array [$i] ['sequence_name']] = $array [$i] ['sequence_name'];
 		}
 		$arrayResult ['sequences'] = array_values($arrayResult ['sequences']);
