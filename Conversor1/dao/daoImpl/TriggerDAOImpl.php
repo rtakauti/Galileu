@@ -14,14 +14,18 @@ class TriggerDAOImpl extends DAOImpl implements IDAOImpl {
 	public function setQuery() {
 		// Retorna dados das TRIGGER
 		$query = "	select distinct ";
-		$query .= " trigger_name ,  ";
-		$query .= " action_timing ,  ";
-		$query .= " event_manipulation ,  ";
-		$query .= " action_orientation as trigger_scope,  ";
-		$query .= " action_statement,  ";
-		$query .= " event_object_table as table_name,  ";
-		$query .= " event_object_schema as schema_name ";
-		$query .= " from information_schema.triggers  ";
+		$query .= " tr.trigger_name ,  ";
+		$query .= " tr.action_timing ,  ";
+		$query .= " tr.event_manipulation ,  ";
+		$query .= " tr.action_orientation as trigger_scope,  ";
+		$query .= " tr.action_statement,  ";
+		$query .= " tr.event_object_table as table_name,  ";
+		$query .= " tr.event_object_schema as schema_name ";
+		$query .= " from information_schema.triggers tr, ";
+		$query .= " pg_class cl  ";
+		$query .= " where tr.event_object_table = cl.relname";
+		$query .= " and cl.relkind ='r' ";
+		$query .= " and cl.oid not in (select inhrelid from pg_inherits  ) ";
 		$this->query = $query;
 	}
 	
