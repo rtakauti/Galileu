@@ -48,14 +48,16 @@ class IndiceBO extends TabelaBO{
 	
 	public function alter(){
 		$indices = array_intersect(parent::$dev['indices'],  parent::$homolog['indices']);
-		$string = "";
+		$string = $stringResult = "";
 		if (! empty ( $indices )) {
-			$string .= "\n\n\n".str_pad(" ALTER DE INDICES ",100,"-",STR_PAD_BOTH);
 			foreach ( $indices as $indiceInput ) {
 				list($schema, $tabela, $indice) = explode(".", $indiceInput);
+				sort(parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['indice'][$indice]);
+				sort(parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['indice'][$indice]);
 				$dev = parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['indice'][$indice] ;
 				$homolog = parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['indice'][$indice] ;
 				if ($dev != $homolog){
+					$stringResult = "\n\n\n".str_pad(" ALTER DE INDICES ",100,"-",STR_PAD_BOTH);
 					$colunas = implode(", ", $dev);
 					$string .= "\n\nDROP INDEX IF EXISTS $schema.$indice;";
 					
@@ -66,7 +68,7 @@ class IndiceBO extends TabelaBO{
 				}
 			}
 		}
-		return $string;
+		return $stringResult.$string;
 	}
 	
 }

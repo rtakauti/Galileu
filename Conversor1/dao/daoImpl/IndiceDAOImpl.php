@@ -29,11 +29,13 @@ class IndiceDAOImpl extends DAOImpl implements IDAOImpl{
 			$query .= " and t.oid = ix.indrelid ";
 			$query .= " and i.oid = ix.indexrelid ";
 			$query .= " and a.attrelid = t.oid ";
-			$query .= " and a.attnum = ANY(ix.indkey) ";
+			$query .= " and a.attnum = any(ix.indkey) ";
 			$query .= " and n.oid = t.relnamespace ";
 			$query .= " and t.relkind = 'r' ";
 			$query .= " and indisunique != 't' ";
 			$query .= " and indisprimary != 't' ";
+			$query .= " and t.oid not in (select inhrelid from pg_inherits  ) ";
+			$query .= " and i.oid not in (select inhrelid from pg_inherits  ) ";
 			$this->query = $query;
 	}
 	

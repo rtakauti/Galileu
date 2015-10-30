@@ -55,8 +55,7 @@ class PropriedadeBO extends Estrutura{
 		foreach ( parent::$propriedades as $propriedade => $valor ) {
 			$anteriorColuna = "\n\n-- ESTADO ANTERIOR: $coluna -- ";
 			$homologValor = parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] [$coluna] [$propriedade];
-			if (! isset ( $homologValor ))
-				$homologValor = "NULO";
+			if (! isset ( $homologValor ))	$homologValor = "NULO";
 			$anterior .= " $propriedade => $homologValor, ";
 			$string .= GeradorPropriedades::gerarPropriedade ( $propriedadesBO [$propriedade], $valor );
 		}

@@ -37,11 +37,11 @@ class TabelaBO extends Estrutura{
 				$string .= "\n\n\nCREATE TABLE $tabela";
 				$string .="\n(\n";
 				$string .= $coluna->create();
-				$string .= $constraint->create();
+				//$string .= $constraint->create();
 				$string = substr($string, 0, -2);
-				$string .= "\n)";
-				$string .= "\nWITH (\n\tOIDS=FALSE\n);";
-				$string .= "\nALTER TABLE ".parent::$tabela." \n\tOWNER TO ".parent::$user.";";
+				$string .= "\n);";
+				//$string .= "\nWITH (\n\tOIDS=FALSE\n);";
+				//$string .= "\nALTER TABLE ".parent::$tabela." \n\tOWNER TO ".parent::$user.";";
 			}
 			return $string;
 		}

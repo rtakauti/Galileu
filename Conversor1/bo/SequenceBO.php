@@ -30,11 +30,11 @@ public function listar(){
 		if (! empty ( $sequences )) {
 			$string .= "\n\n\n".str_pad(" CREATE DE SEQUENCES ",100,"-",STR_PAD_BOTH);
 			foreach ( $sequences as $sequence) {
-				$string .= "\n\nCREATE SEQUENCE $sequence ";
-				$string .= "\n\tINCREMENT 1";
-				$string .= "\n\tMINVALUE 1";
-				$string .= "\n\tSTART 1";
-				$string .= "\n\tCACHE 1;";
+				$string .= "\n\nCREATE SEQUENCE $sequence;";
+				//$string .= "\n\tINCREMENT 1";
+				//$string .= "\n\tMINVALUE 1";
+				//$string .= "\n\tSTART 1";
+				//$string .= "\n\tCACHE 1;";
 			}
 		}
 		return $string;

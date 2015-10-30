@@ -34,6 +34,8 @@ class ConstraintDAOImpl extends DAOImpl implements IDAOImpl{
 		$query .= "  when tc.constraint_type = 'CHECK' then 4";
 		$query .= " end as ordem ";
 		$query .= " from information_schema.table_constraints tc ";
+		$query .= " inner join pg_class cl ";
+		$query .= " on tc.table_name = cl.relname ";
 		$query .= " left join information_schema.key_column_usage kcu ";
 		$query .= " on tc.constraint_catalog = kcu.constraint_catalog ";
 		$query .= " and tc.constraint_schema = kcu.constraint_schema ";
@@ -49,6 +51,8 @@ class ConstraintDAOImpl extends DAOImpl implements IDAOImpl{
 		$query .= " left join pg_constraint c ";
 		$query .= " on tc.constraint_name = c.conname ";
 		$query .= " where upper(tc.constraint_name) not like '%NOT_NULL%'";
+		$query .= " and cl.oid not in (select inhrelid from pg_inherits  ) ";
+		$query .= " and cl.relkind ='r' ";
 		$query .= " order by ordem";
 		$this->query = $query;
 	}

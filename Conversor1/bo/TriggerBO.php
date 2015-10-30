@@ -73,7 +73,7 @@ class TriggerBO extends Estrutura {
 					$funcao = substr(parent::$dev ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger]['action_statement'], strlen("EXECUTE PROCEDURE "));
 						
 					$string .= "\n\nDROP TRIGGER IF EXISTS $trigger ON $schema.$tabela;";
-					$string .= "\n\nDROP FUNCTION IF EXISTS $schema.$funcao;";
+					//$string .= "\n\nDROP FUNCTION IF EXISTS $schema.$funcao;";
 					$string .= "\n\nCREATE TRIGGER $trigger";
 					$string .= "\n\t$action_timing $eventos";
 					$string .= "\n\tON $tabela";

@@ -26,6 +26,28 @@ class ConstraintBO extends Estrutura{
 	}
 	
 	
+	public function add() {
+		$string = $stringResult = "";
+		$constraints = array_diff ( parent::$dev ['constraints'], parent::$homolog ['constraints'] );
+		if (! empty ( $constraints )) {
+			$restricao = new RestricaoBO ();
+			foreach ( $constraints as $constraintInput ) {
+				list ( parent::$schema, parent::$tabela, parent::$constraint ) = explode ( ".", $constraintInput );
+				$schema = parent::$schema;
+				$tabela = parent::$tabela;
+				$constraint = parent::$constraint;
+				$restricoes = $restricao->construct ();
+				if ($restricoes != "") {
+					$stringResult = "\n\n\n" . str_pad ( " ADD DE CONSTRAINT ", 100, "-", STR_PAD_BOTH );
+					$string .= "\n\nALTER TABLE $schema.$tabela";
+					$string .= "\n\tADD CONSTRAINT $constraint $restricoes;";
+				}
+			}
+		}
+		return $stringResult . $string;
+	}
+	
+	/*
 	public function create() {
 		$schema = parent::$schema;
 		$tabela = parent::$tabela;
@@ -73,7 +95,7 @@ class ConstraintBO extends Estrutura{
 		}
 		return $stringResult.$string;
 	}
-	
+	*/
 	
 	public function alter() {
 		$constraints = array_intersect ( parent::$dev['constraints'], parent::$homolog['constraints'] );
