@@ -48,9 +48,8 @@ class ColunaBO extends Estrutura{
 	
 	public function add() {
 		$tabelas = array_intersect ( parent::$dev['tabelas'], parent::$homolog['tabelas'] );
-		$string = "";
+		$string = $stringResult = "";
 		if (! empty ( $tabelas )) {
-			$string .= "\n\n\n".str_pad(" ADD COLUMN ",100,"-",STR_PAD_BOTH);
 			$propriedade = new PropriedadeBO ();
 			parent::$fase = FaseQuery::ADD;
 			foreach ( $tabelas as $tabelaInput ) {
@@ -63,6 +62,7 @@ class ColunaBO extends Estrutura{
 					$homolog = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['coluna'] );
 				$colunas = array_diff ( $dev, $homolog );
 				if (! empty ( $colunas )) {
+					$stringResult = "\n\n\n".str_pad(" ADD COLUMN ",100,"-",STR_PAD_BOTH);
 					foreach ( $colunas as $coluna ) {
 						parent::$coluna = $coluna;
 						$string .= "\n\nALTER TABLE $schema.$tabela ADD COLUMN $coluna ";
@@ -71,25 +71,22 @@ class ColunaBO extends Estrutura{
 				}
 			}
 		}
-		return $string;
+		return $stringResult.$string;
 	}
 	
 	
 	public function alter() {
 		$colunas = array_intersect ( parent::$dev['colunas'], parent::$homolog['colunas'] );
-		$string = "";
-		$stringResult = "";
-		$valida = "";
-		$titulo = "";
+		$titulo = $valida = $string = $stringResult = "";
 		if (! empty ( $colunas )) {
 			$propriedade = new PropriedadeBO ();
 			foreach ( $colunas as $colunaInput ) {
 				list ( parent::$schema, parent::$tabela, parent::$coluna ) = explode ( ".", $colunaInput );
 				$path = parent::$schema.parent::$tabela;
-				$stringResult = "\n\n\n" . str_pad ( " ALTER COLUMN ", 100, "-", STR_PAD_BOTH );
 				$propriedades = $propriedade->alter ();
 				if($propriedades != ""){
 					if($valida != $path){
+						$stringResult = "\n\n\n" . str_pad ( " ALTER COLUMN ", 100, "-", STR_PAD_BOTH );
 						$valida = $path;
 						$titulo = "\n\n\n--TABELA: $path";
 					}

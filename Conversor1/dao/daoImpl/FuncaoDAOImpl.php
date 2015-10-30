@@ -26,7 +26,7 @@ class FuncaoDAOImpl extends DAOImpl implements IDAOImpl {
 		$query .= " where pl.lanname NOT IN ('c','internal') ";
 		$query .= " and pn.nspname NOT LIKE 'pg_%' ";
 		$query .= " and pn.nspname <> 'information_schema' ";
-		//$query .= " and (pp.proname like 'f_%' or pp.proname like 'tf_%') ";
+		$query .= " and (pp.proname like 'f_%' or pp.proname like 'tf_%') ";
 		$query .= " order by 2 ";
 		$this->query = $query;
 		

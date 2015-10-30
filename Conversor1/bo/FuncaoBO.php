@@ -31,7 +31,7 @@ public function listar(){
 			$string .= "\n\n\n".str_pad(" CREATE DE FUNCTION, PROCEDURE, TRIGGER ",100,"-",STR_PAD_BOTH);
 			foreach ( $funcoes as $funcaoInput ) {
 				list($schema, $funcao) = explode(".", $funcaoInput);
-				$string .= "\n\n".parent::$dev ['schema'] [$schema] ['funcao'][$funcao]['create'];
+				$string .= "\n\n".parent::$dev ['schema'] [$schema] ['funcao'][$funcao]['create'].";";
 			}
 		}
 		return $string;
@@ -39,21 +39,20 @@ public function listar(){
 	
 	public function alter(){
 		$funcoes = array_intersect(parent::$dev['funcoes'], parent::$homolog['funcoes']);
-		$string = "";
+		$string = $stringResult = "";
 		if(!empty($funcoes)){
-			$string .= "\n\n\n".str_pad(" ALTER DE FUNCTION, PROCEDURE, TRIGGER ",100,"-",STR_PAD_BOTH);
 			foreach ($funcoes as $funcoesInput) {
 				list($schema, $funcao) = explode(".", $funcoesInput);
 				$dev = parent::$dev ['schema'] [$schema] ['funcao'][$funcao]['create'];
 				$homolog = parent::$homolog ['schema'] [$schema] ['funcao'][$funcao]['create'];
-				if($dev != $homolog){
-					$string .= "\n\nDROP FUNCTION IF EXISTS $schema.$funcao;";
-					
-					$string .= "\n\n$dev";
+				if($dev != $homolog){ 
+					$stringResult = "\n\n\n".str_pad(" ALTER DE FUNCTION, PROCEDURE, TRIGGER ",100,"-",STR_PAD_BOTH);
+					$string .= "\n\n$dev;";
 				}
+				
 			}
 		}
-		return $string;
+		return $stringResult.$string;
 	}
 	
 }

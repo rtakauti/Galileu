@@ -43,7 +43,7 @@ class TriggerBO extends Estrutura {
 				$trigger_scope = parent::$dev ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger]['trigger_scope'];
 				$action_statement = parent::$dev ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger]['action_statement'];
 				
-				$string .= "\nCREATE TRIGGER $trigger";
+				$string .= "\n\nCREATE TRIGGER $trigger";
 				$string .= "\n\t$action_timing $eventos";
 				$string .= "\n\tON $schema.$tabela";
 				$string .= "\n\tFOR EACH $trigger_scope";
@@ -57,14 +57,14 @@ class TriggerBO extends Estrutura {
 	
 	public  function alter(){
 		$triggers = array_intersect(parent::$dev['triggers'] , parent::$homolog['triggers']);
-		$string = "";
+		$string = $stringResult = "";
 		if (!empty ( $triggers )) {
-			$string .= "\n\n\n".str_pad(" ALTER DE TRIGGER ",100,"-",STR_PAD_BOTH);
 			foreach ( $triggers as $triggerInput ) {
 				list($schema, $tabela, $trigger) = explode(".", $triggerInput);
 				$dev = parent::$dev ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger];
 				$homolog = parent::$homolog ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger];
 				if($dev != $homolog){
+					$stringResult = "\n\n\n".str_pad(" ALTER DE TRIGGER ",100,"-",STR_PAD_BOTH);
 					$event_manipulation = parent::$dev ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger]['event_manipulation'];
 					$action_timing = parent::$dev ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger]['action_timing'];
 					$eventos = implode ( " OR ", $event_manipulation );
@@ -82,7 +82,7 @@ class TriggerBO extends Estrutura {
 				}
 			}
 		}
-		return $string;
+		return $stringResult.$string;
 	}
 	
 	
