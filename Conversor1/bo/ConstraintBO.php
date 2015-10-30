@@ -1,90 +1,22 @@
 <?php
-class ConstraintBO extends TabelaBO{
-	
-	
-	public static function dev() {
-		$lista = array ();
-		$tabelas = parent::dev ();
-		foreach ( $tabelas as $tabelaInput ) {
-			list ( $schema, $tabela ) = explode ( ".", $tabelaInput );
-			if (isset ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['constraint'] )) {
-				$constraints = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['constraint'] );
-				foreach ( $constraints as $constraint ) {
-					$lista [] = "$schema.$tabela.$constraint";
-				}
-			}
-		}
-		return $lista;
-	}
-	
-	public static function homolog() {
-		$lista = array ();
-		$tabelas = parent::homolog ();
-		foreach ( $tabelas as $tabelaInput ) {
-			list ( $schema, $tabela ) = explode ( ".", $tabelaInput );
-			if (isset ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['constraint'] )) {
-				$constraints = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['constraint'] );
-				foreach ( $constraints as $constraint ) {
-					$lista [] = "$schema.$tabela.$constraint";
-				}
-			}
-		}
-		return $lista;
-	}
-	
-	
-	public function listarDev() {
-		$constraints = self::dev();
-		$string = "";
-		if (! empty ( $constraints )) {
-			$string .= "\n\n\n";
-			$string .= str_pad(" DEV CONSTRAINTS ",50,"-",STR_PAD_BOTH);
-			$i=1;
-			foreach ($constraints as $constraint) {
-				list($schema, $tabela, $constraint) = explode(".", $constraint);
-				$string .= "\n\t--$i--   $schema.$tabela.$constraint" ;
-				$i++;
-			}
-		}
-		return $string;
-	}
-	
-	public function listarHomolog() {
-		$constraints = self::homolog();
-		$string = "";
-		if (! empty ( $constraints )) {
-			$string .= "\n\n\n";
-			$string .= str_pad(" HOMOLOG CONSTRAINTS ",50,"-",STR_PAD_BOTH);
-			$i=1;
-			foreach ($constraints as $constraint) {
-				list($schema, $tabela, $constraint) = explode(".", $constraint);
-				$string .= "\n\t--$i--   $schema.$tabela.$constraint" ;
-				$i++;
-			}
-		}
-		return $string;
-	}
-	
+include_once 'estrutura/Estrutura.php';
+class ConstraintBO extends Estrutura{
 	
 	public function listar(){
 		$string = "";
-		$string .= $this->listarDev();
-		$string .= $this->listarHomolog();
+		$string .= parent::lista(parent::$dev['constraints'], "DEV CONSTRAINT");
+		$string .= parent::lista(parent::$homolog['constraints'], "HOMOLOG CONSTRAINT");
 		return $string;
 	}
 	
-	
 	public function drop() {
-		$dev = self::dev ();
-		$homolog = self::homolog ();
-		$constraints = array_diff ( $homolog, $dev );
+		$constraints = array_diff ( parent::$homolog['constraints'], parent::$dev['constraints'] );
 		$string = "";
 		if (! empty ( $constraints )) {
-			$string .= "\n\n\n";
-			$string .= str_pad(" DROP DE CONSTRAINT ",100,"-",STR_PAD_BOTH);
+			$string .= "\n\n\n".str_pad(" DROP DE CONSTRAINT ",100,"-",STR_PAD_BOTH);
 			$string .= "\n/*\n";
-			foreach ( $constraints as $constraint ) {
-				list ( $schema, $tabela, $constraint ) = explode ( ".", $constraint );
+			foreach ( $constraints as $constraintInput ) {
+				list ( $schema, $tabela, $constraint ) = explode ( ".", $constraintInput );
 				$string .= "\n\nALTER TABLE IF EXISTS $schema.$tabela";
 				$string .= "\n\tDROP CONSTRAINT IF EXISTS $constraint;";
 			}
@@ -113,17 +45,14 @@ class ConstraintBO extends TabelaBO{
 	
 	
 	public function add() {
-		$dev = parent::dev ();
-		$homolog = parent::homolog ();
-		$tabelas = array_intersect ( $dev, $homolog );
-		$string = "";
-		$stringResult = "";
+		$tabelas = array_intersect ( parent::$dev['tabelas'], parent::$homolog['tabelas'] );
+		$string = $stringResult = "";
 		if (! empty ( $tabelas )) {
 			$restricao = new RestricaoBO ( );
 			foreach ( $tabelas as $tabelaInput ) {
-				list ( $schema, $tabela ) = explode ( ".", $tabelaInput );
-				parent::$schema = $schema;
-				parent::$tabela = $tabela;
+				list ( parent::$schema, parent::$tabela ) = explode ( ".", $tabelaInput );
+				$schema = parent::$schema;
+				$tabela = parent::$tabela;
 				if ((isset ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['constraint'] )))
 					$dev =  array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['constraint']) ;
 				if ((isset ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['constraint'] )))
@@ -147,17 +76,14 @@ class ConstraintBO extends TabelaBO{
 	
 	
 	public function alter() {
-		$dev = self::dev ();
-		$homolog = self::homolog ();
-		$constraints = array_intersect ( $dev, $homolog );
-		$string = "";
-		$stringResult = "";
+		$constraints = array_intersect ( parent::$dev['constraints'], parent::$homolog['constraints'] );
+		$string = $stringResult = "";
 		if (! empty ( $constraints )) {
 			$restricao = new RestricaoBO ( );
 			foreach ( $constraints as $constraintInput ) {
-				list ( $schema, $tabela, $constraint ) = explode ( ".", $constraintInput );
-				parent::$schema = $schema;
-				parent::$tabela = $tabela;
+				list ( parent::$schema, parent::$tabela, $constraint ) = explode ( ".", $constraintInput );
+				$schema = parent::$schema;
+				$tabela = parent::$tabela;
 				$dev = parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['constraint'] [$constraint];
 				$homolog = parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['constraint'] [$constraint];
 				if ($dev != $homolog) {

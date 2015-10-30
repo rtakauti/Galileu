@@ -27,6 +27,7 @@ class TriggerDAOImpl extends DAOImpl implements IDAOImpl {
 	
 	public function retorna($schemaType) {
 		$arrayResult = array ();
+		$arrayResult ['triggers'] = array();
 		$array = $this->queryAllAssoc ( $schemaType );
 		for($i = 0; $i < count ( $array ); $i ++) {
 			$arrayResult ['triggers'][$array [$i] ['schema_name'].".".$array [$i] ['table_name'].".".$array [$i] ['trigger_name']] = $array [$i] ['schema_name'].".".$array [$i] ['table_name'].".".$array [$i] ['trigger_name'];
@@ -35,7 +36,7 @@ class TriggerDAOImpl extends DAOImpl implements IDAOImpl {
 			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['trigger'] [$array [$i] ['trigger_name']] ['trigger_scope'] = $array [$i] ['trigger_scope'];
 			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['trigger'] [$array [$i] ['trigger_name']] ['action_statement'] = $array [$i] ['action_statement'];
 		}
-		$arrayResult ['triggers'] = array_values($arrayResult ['triggers']);
+		sort($arrayResult ['triggers']);
 		return $arrayResult;
 	}
 }

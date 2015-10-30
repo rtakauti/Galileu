@@ -20,12 +20,21 @@ abstract class Estrutura {
 	protected static $result;
 	private static $pass;
 
-	public static function getPass(){
+	protected  static function getPass(){
 		return self::$pass;
 	}
 	
-	public static function setPass($senha){
+	protected  static function setPass($senha){
 		self::$pass = $senha;
+	}
+	
+	protected static function lista($objetos, $titulo){
+		$string = "";
+		if(!empty($objetos)){
+			$string .= "\n\n\n".str_pad("  $titulo  ",50,"-",STR_PAD_BOTH);
+			foreach ($objetos as $indice => $objeto) $string .= "\n\t-- $indice    $objeto ";
+		}
+		return $string;
 	}
 	
 }

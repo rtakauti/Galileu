@@ -26,7 +26,7 @@ class FuncaoDAOImpl extends DAOImpl implements IDAOImpl {
 		$query .= " where pl.lanname NOT IN ('c','internal') ";
 		$query .= " and pn.nspname NOT LIKE 'pg_%' ";
 		$query .= " and pn.nspname <> 'information_schema' ";
-		$query .= " and (pp.proname like 'f_%' or pp.proname like 'tf_%') ";
+		//$query .= " and (pp.proname like 'f_%' or pp.proname like 'tf_%') ";
 		$query .= " order by 2 ";
 		$this->query = $query;
 		
@@ -35,6 +35,7 @@ class FuncaoDAOImpl extends DAOImpl implements IDAOImpl {
 	
 	public function retorna($schemaType) {
 		$arrayResult = array ();
+		$arrayResult ['funcoes'] = array();
 		$array = $this->queryAllAssoc ( $schemaType );
 		for($i = 0; $i < count ( $array ); $i ++) {
 			$arrayResult ['funcoes'][$array [$i] ['schema_name'].".".$array [$i] ['function_name']."(".$array [$i] ['parameter'].")"] = $array [$i] ['schema_name'].".".$array [$i] ['function_name']."(".$array [$i] ['parameter'].")";
@@ -42,7 +43,7 @@ class FuncaoDAOImpl extends DAOImpl implements IDAOImpl {
 			$arrayResult ['schema'][$array [$i] ['schema_name']]['funcao'][$array [$i] ['function_name']."(".$array [$i] ['parameter'].")"] ['return'] = $array [$i] ['return'];
 			$arrayResult ['schema'][$array [$i] ['schema_name']]['funcao'][$array [$i] ['function_name']."(".$array [$i] ['parameter'].")"] ['parameter'] = $array [$i] ['parameter'];
 		}
-		$arrayResult ['funcoes'] = array_values($arrayResult ['funcoes']);
+		sort($arrayResult ['funcoes']);
 		return $arrayResult;
 	}
 	

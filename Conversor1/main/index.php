@@ -40,9 +40,10 @@ $coluna = new ColunaBO();
 $constraint = new ConstraintBO();
 
 
+/*
 AssemblerBO::devTree();
 AssemblerBO::homologTree();
-
+*/
 $saida->gravar($schema->listar());
 $saida->gravar($sequence->listar());
 $saida->gravar($funcao->listar());
@@ -77,6 +78,5 @@ $saida->gravar($constraint->alter());
 $saida->gravar($funcao->alter());
 $saida->gravar($indice->alter());
 $saida->gravar($trigger->alter());
-
 
 ?>

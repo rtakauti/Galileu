@@ -29,11 +29,10 @@ class PropriedadeBO extends Estrutura{
 		$this->properties['interval_type'] = new TipoIntervaloTO();
 	}
 	
-	public function create() {
+	public function construct() {
 		$schema = parent::$schema;
 		$tabela = parent::$tabela;
 		$coluna = parent::$coluna;
-		parent::$fase = FaseQuery::CREATE;
 		$propriedadesBO = $this->properties;
 		parent::$propriedades = parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['coluna'][$coluna];
 		$string = "";
@@ -42,18 +41,6 @@ class PropriedadeBO extends Estrutura{
 		return $string;
 	}
 	
-	public function add() {
-		$schema = parent::$schema;
-		$tabela = parent::$tabela;
-		$coluna = parent::$coluna;
-		parent::$fase = FaseQuery::ADD;
-		$propriedadesBO = $this->properties;
-		parent::$propriedades = parent::$dev ['schema'] [$schema] ['tabela'][$tabela]['coluna'][$coluna];
-		$string = "";
-		foreach ( parent::$propriedades as $propriedade => $valor ) 
-			$string .= GeradorPropriedades::gerarPropriedade ( $propriedadesBO [$propriedade], $valor );
-		return $string;
-	}
 	
 	public function alter() {
 		$schema = parent::$schema;

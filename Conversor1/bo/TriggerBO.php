@@ -2,47 +2,21 @@
 include_once 'estrutura/Estrutura.php';
 class TriggerBO extends Estrutura {
 	
-	private static function dev() {
-		return parent::$dev['triggers'];
-	}
-	
-	
-	private static function homolog() {
-		return parent::$homolog['triggers'];
-	}
-	
-	
-	
-	private function listarTrigger($triggers, $titulo) {
-		$string = "";
-		if (! empty ( $triggers )) {
-			$string .= "\n\n\n";
-			$string .= str_pad(" $titulo TRIGGERS ",50,"-",STR_PAD_BOTH);
-			foreach ($triggers as $indice => $trigger) $string .= "\n\t--$indice--   $trigger" ;
-		}
-		return $string;
-	}
-	
 	
 	
 	public function listar(){
 		$string = "";
-		$string .= $this->listarTrigger(self::dev(), "DEV");
-		$string .= $this->listarTrigger(self::homolog(), "HOMOLOG");
+		$string .= parent::lista(parent::$dev['triggers'], "DEV TRIGGER");
+		$string .= parent::lista(parent::$homolog['triggers'], "HOMOLOG TRIGGER");
 		return $string;
 	}
 	
 	
-	
-	
 	public function drop(){
-		$dev = self::dev();
-		$homolog = self::homolog();
-		$triggers = array_diff ( $homolog, $dev );
+		$triggers = array_diff ( parent::$homolog['triggers'], parent::$dev['triggers'] );
 		$string = "";
 		if (!empty ( $triggers )) {
-			$string .= "\n\n\n";
-			$string .= str_pad(" DROP DE TRIGGER ",100,"-",STR_PAD_BOTH);
+			$string .= "\n\n\n".str_pad(" DROP DE TRIGGER ",100,"-",STR_PAD_BOTH);
 			$string .= "\n/*\n";
 			foreach ( $triggers as $triggerInput ) {
 				list($schema, $tabela, $trigger) = explode(".", $triggerInput);
@@ -57,15 +31,12 @@ class TriggerBO extends Estrutura {
 	
 	
 	public function create() {
-		$dev = self::dev();
-		$homolog = self::homolog();
-		$triggers = array_diff($dev, $homolog);
+		$triggers = array_diff(parent::$dev['triggers'] , parent::$homolog['triggers']);
 		$string = "";
 		if (!empty ( $triggers )) {
-			$string .= "\n\n\n";
-			$string .= str_pad(" CREATE DE TRIGGER ",100,"-",STR_PAD_BOTH);
-			foreach ( $triggers as $trigger ) {
-				list($schema, $tabela, $trigger) = explode(".", $trigger);
+			$string .= "\n\n\n".str_pad(" CREATE DE TRIGGER ",100,"-",STR_PAD_BOTH);
+			foreach ( $triggers as $triggerInput ) {
+				list($schema, $tabela, $trigger) = explode(".", $triggerInput);
 				$event_manipulation = parent::$dev ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger]['event_manipulation'];
 				$action_timing = parent::$dev ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger]['action_timing'];
 				$eventos = implode ( " OR ", $event_manipulation );
@@ -82,19 +53,18 @@ class TriggerBO extends Estrutura {
 		return $string;
 	}
 	
+	
+	
 	public  function alter(){
-		$dev = self::dev();
-		$homolog = self::homolog();
-		$triggers = array_intersect($dev, $homolog);
+		$triggers = array_intersect(parent::$dev['triggers'] , parent::$homolog['triggers']);
 		$string = "";
 		if (!empty ( $triggers )) {
-			$string .= "\n\n\n";
-			$string .= str_pad(" ALTER DE TRIGGER ",100,"-",STR_PAD_BOTH);
-			foreach ( $triggers as $trigger ) {
-				list($schema, $tabela, $trigger) = explode(".", $trigger);
-				$devTrigger = parent::$dev ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger];
-				$homologTrigger = parent::$homolog ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger];
-				if($devTrigger != $homologTrigger){
+			$string .= "\n\n\n".str_pad(" ALTER DE TRIGGER ",100,"-",STR_PAD_BOTH);
+			foreach ( $triggers as $triggerInput ) {
+				list($schema, $tabela, $trigger) = explode(".", $triggerInput);
+				$dev = parent::$dev ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger];
+				$homolog = parent::$homolog ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger];
+				if($dev != $homolog){
 					$event_manipulation = parent::$dev ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger]['event_manipulation'];
 					$action_timing = parent::$dev ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger]['action_timing'];
 					$eventos = implode ( " OR ", $event_manipulation );
@@ -103,8 +73,8 @@ class TriggerBO extends Estrutura {
 					$funcao = substr(parent::$dev ['schema'] [$schema]['tabela'][$tabela]['trigger'] [$trigger]['action_statement'], strlen("EXECUTE PROCEDURE "));
 						
 					$string .= "\n\nDROP TRIGGER IF EXISTS $trigger ON $schema.$tabela;";
-					$string .= "\nDROP FUNCTION IF EXISTS $schema.$funcao;";
-					$string .= "\nCREATE TRIGGER $trigger";
+					$string .= "\n\nDROP FUNCTION IF EXISTS $schema.$funcao;";
+					$string .= "\n\nCREATE TRIGGER $trigger";
 					$string .= "\n\t$action_timing $eventos";
 					$string .= "\n\tON $tabela";
 					$string .= "\n\tFOR EACH $trigger_scope";

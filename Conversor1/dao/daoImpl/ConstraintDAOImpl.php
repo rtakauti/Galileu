@@ -56,6 +56,7 @@ class ConstraintDAOImpl extends DAOImpl implements IDAOImpl{
 	
 	public function retorna($schemaType) {
 		$arrayResult = array ();
+		$arrayResult ['constraints'] = array();
 		$array = $this->queryAllAssoc ( $schemaType );
 		for($i = 0; $i < count ( $array ); $i ++) {
 			$arrayResult ['constraints'][$array [$i] ['schema_name'].".".$array [$i] ['table_name'].".".$array [$i] ['constraint_name']] = $array [$i] ['schema_name'].".".$array [$i] ['table_name'].".".$array [$i] ['constraint_name'];
@@ -68,7 +69,7 @@ class ConstraintDAOImpl extends DAOImpl implements IDAOImpl{
 			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['table_name']] ['constraint'][$array [$i] ['constraint_name']] ['delete_rule'] = $array [$i] ['delete_rule'];
 			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['table_name']] ['constraint'][$array [$i] ['constraint_name']] ['consrc'] = $array [$i] ['consrc'];
 		}
-		$arrayResult ['constraints'] = array_values($arrayResult ['constraints']);
+		sort($arrayResult ['constraints']);
 		return $arrayResult;
 	}
 }
