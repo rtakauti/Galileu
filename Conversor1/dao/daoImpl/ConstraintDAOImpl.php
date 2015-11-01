@@ -73,7 +73,6 @@ class ConstraintDAOImpl extends DAOImpl implements IDAOImpl{
 			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['table_name']] ['constraint'][$array [$i] ['constraint_name']] ['delete_rule'] = $array [$i] ['delete_rule'];
 			$arrayResult ['schema'][$array [$i] ['schema_name']]['tabela'][$array [$i] ['table_name']] ['constraint'][$array [$i] ['constraint_name']] ['consrc'] = $array [$i] ['consrc'];
 		}
-		sort($arrayResult ['constraints']);
 		return $arrayResult;
 	}
 }

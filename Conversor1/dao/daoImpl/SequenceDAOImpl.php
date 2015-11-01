@@ -34,7 +34,6 @@ class SequenceDAOImpl extends DAOImpl implements IDAOImpl{
 			$arrayResult ['sequences'][$array [$i] ['schema_name'].".".$array [$i] ['sequence_name']] = $array [$i] ['schema_name'].".".$array [$i] ['sequence_name'];
 			$arrayResult ['schema'][$array [$i] ['schema_name']]['sequence'][$array [$i] ['sequence_name']] = $array [$i] ['sequence_name'];
 		}
-		sort($arrayResult ['sequences']);
 		return $arrayResult;
 		
 	}

@@ -29,7 +29,6 @@ class FuncaoDAOImpl extends DAOImpl implements IDAOImpl {
 		$query .= " and (pp.proname like 'f_%' or pp.proname like 'tf_%') ";
 		$query .= " order by 2 ";
 		$this->query = $query;
-		
 	}
 	
 	

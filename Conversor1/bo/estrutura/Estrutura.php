@@ -32,7 +32,7 @@ abstract class Estrutura {
 		$string = "";
 		if(!empty($objetos)){
 			$string .= "\n\n\n".str_pad("  $titulo  ",50,"-",STR_PAD_BOTH);
-			foreach ($objetos as $indice => $objeto) $string .= "\n\t-- $indice    $objeto ";
+			for ($indice = 0; $indice < count($objetos); $indice++) $string .= "\n\t-- $indice    $objetos[$indice] ";
 		}
 		return $string;
 	}

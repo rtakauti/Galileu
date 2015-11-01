@@ -25,28 +25,7 @@ class DAOImpl implements IDAO {
 		}
 		return $resultadoArray;
 	}
-	/**
-	 * @param $schemaType - tipo do Ambiente DEV ou HOMOLOG
-	 * @example Ex. SchemaType::HOMOLOG
-	 * @return Uma array simples
-	 */
-	public  function queryAssoc($schemaType) {
-		$query = $this->query;
-		$find = $this->conns [$schemaType]->prepare ( $query );
-		$find->execute ();
-		//$resultado = $find->fetchAll ( PDO::FETCH_ASSOC );
-		$resultado = array();
-		while ($rst = $find->fetch ( PDO::FETCH_ASSOC )){
-			$resultado[]=$rst;
-		}
-		$resultadoArray = array ();
-		foreach ( $resultado as $values ) {
-			foreach ( $values as $key => $value ) {
-				$resultadoArray [$key] = $value;
-			}
-		}
-		return $resultadoArray;
-	}
+
 	/**
 	 * @param $schemaType - tipo do Ambiente DEV ou HOMOLOG
 	 * @example Ex. SchemaType::HOMOLOG

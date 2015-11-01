@@ -52,8 +52,6 @@ class IndiceBO extends TabelaBO{
 		if (! empty ( $indices )) {
 			foreach ( $indices as $indiceInput ) {
 				list($schema, $tabela, $indice) = explode(".", $indiceInput);
-				sort(parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['indice'][$indice]);
-				sort(parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['indice'][$indice]);
 				$dev = parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['indice'][$indice] ;
 				$homolog = parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['indice'][$indice] ;
 				if ($dev != $homolog){

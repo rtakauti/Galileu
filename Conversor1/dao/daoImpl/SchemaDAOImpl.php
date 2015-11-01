@@ -46,8 +46,6 @@ class SchemaDAOImpl extends DAOImpl implements IDAOImpl{
 	
 	public function retorna($schemaType) {
 		$arrayResult = array ();
-		$arrayResult ['tabelas'] = array();
-		$arrayResult ['colunas'] = array();
 		$array = $this->queryAllAssoc ( $schemaType );
 		for($i = 0; $i < count ( $array ); $i ++) {
 			$arrayResult ['schemas'][$array [$i] ['schema_name']] = $array [$i] ['schema_name'];
@@ -63,9 +61,6 @@ class SchemaDAOImpl extends DAOImpl implements IDAOImpl{
 			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['coluna'] [$array [$i] ['column_name']] ['is_nullable'] = $array [$i] ['is_nullable'];
 			$arrayResult ['schema'] [$array [$i] ['schema_name']] ['tabela'] [$array [$i] ['table_name']] ['coluna'] [$array [$i] ['column_name']] ['column_default'] = $array [$i] ['column_default'];
 		}
-		sort($arrayResult ['schemas']);
-		sort($arrayResult ['tabelas']);
-		sort($arrayResult ['colunas']);
 		return $arrayResult;
 	}
 	
