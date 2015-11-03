@@ -25,7 +25,7 @@ If (isset ( $argv [1] )) {
 	if (isset ($_GET['connection'])) $connection = $_GET['connection'];
 	$cmd = false;
 } else {
-	$dbCompany = "teste";
+	$dbCompany = "test";
 	$cmd = false;
 }
 
@@ -40,9 +40,10 @@ $coluna = new ColunaBO();
 $constraint = new ConstraintBO();
 
 
+/*
 AssemblerBO::devTree();
 AssemblerBO::homologTree();
-/*
+
 $saida->gravar($schema->listar());
 $saida->gravar($sequence->listar());
 $saida->gravar($funcao->listar());

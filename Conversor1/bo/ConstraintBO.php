@@ -47,55 +47,6 @@ class ConstraintBO extends Estrutura{
 		return $stringResult . $string;
 	}
 	
-	/*
-	public function create() {
-		$schema = parent::$schema;
-		$tabela = parent::$tabela;
-		if (isset ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['constraint'] ))
-			$constraints = array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['constraint'] );
-		$string = "";
-		if (! empty ( $constraints )) {
-			$restricao = new RestricaoBO ();
-			foreach ( $constraints as $constraint ) {
-				parent::$constraint = $constraint;
-				$restricoes = $restricao->construct ( );
-				$string .= "\tCONSTRAINT $constraint $restricoes,\n";
-			}
-		}
-		return $string;
-	}
-	
-	
-	public function add() {
-		$tabelas = array_intersect ( parent::$dev['tabelas'], parent::$homolog['tabelas'] );
-		$string = $stringResult = "";
-		if (! empty ( $tabelas )) {
-			$restricao = new RestricaoBO ( );
-			foreach ( $tabelas as $tabelaInput ) {
-				list ( parent::$schema, parent::$tabela ) = explode ( ".", $tabelaInput );
-				$schema = parent::$schema;
-				$tabela = parent::$tabela;
-				if ((isset ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['constraint'] )))
-					$dev =  array_keys ( parent::$dev ['schema'] [$schema] ['tabela'] [$tabela] ['constraint']) ;
-				if ((isset ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['constraint'] )))
-					$homolog = array_keys ( parent::$homolog ['schema'] [$schema] ['tabela'] [$tabela] ['constraint']);
-				$constraints = array_diff ( $dev, $homolog );
-				if (! empty ( $constraints )) {
-					foreach ( $constraints as $constraint) {
-						parent::$constraint = $constraint;
-						$restricoes = $restricao->construct ( );
-						if($restricoes != ""){
-							$stringResult = "\n\n\n".str_pad(" ADD DE CONSTRAINT ",100,"-",STR_PAD_BOTH);
-							$string .= "\n\nALTER TABLE $schema.$tabela";
-							$string .= "\n\tADD CONSTRAINT $constraint $restricoes;";
-						}
-					}
-				}
-			}
-		}
-		return $stringResult.$string;
-	}
-	*/
 	
 	public function alter() {
 		$constraints = array_intersect ( parent::$dev['constraints'], parent::$homolog['constraints'] );
